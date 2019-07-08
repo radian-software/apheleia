@@ -70,7 +70,6 @@ text of S1 surrounding P1."
          (i1 0)
          (i2 0))
     (while (< i1 p1)
-      (message "currently at %S, %S" i1 i2)
       (let* ((costs
               `(,(gethash (cons (1+ i1) (1+ i2)) memo)
                 ;; Replicate the short-circuiting in our dynamic
@@ -94,12 +93,16 @@ text of S1 surrounding P1."
 
 (defun apheleia--map-rcs-patch (func)
   "Map over the RCS patch in the current buffer.
-For each RCS patch command, FUNC is called with two arguments:
-START, which is a line number; and TEXT, which is a string if the
-command is an addition and which is a number of lines if the
-command is a deletion. See
-<https://tools.ietf.org/doc/tcllib/html/rcs.html#section4> for
-documentation on the RCS patch format."
+For each RCS patch command, FUNC is called with an alist that has
+the following keys:
+
+- `command': either `addition' or `deletion'
+- `start': line number, an integer
+- `lines': number of lines to be inserted or removed
+- `text': the string to be inserted, only for `addition'
+
+See <https://tools.ietf.org/doc/tcllib/html/rcs.html#section4>
+for documentation on the RCS patch format."
   (save-excursion
     (goto-char (point-min))
     (while (not (= (point) (point-max)))
@@ -108,45 +111,124 @@ documentation on the RCS patch format."
       (forward-line)
       (when-let ((command (match-string 1)))
         (let ((start (string-to-number (match-string 2)))
-              (n (string-to-number (match-string 3))))
+              (lines (string-to-number (match-string 3))))
           (pcase command
             ("a"
              (let ((text-start (point)))
-               (forward-line n)
-               (funcall func start (buffer-substring-no-properties
-                                    text-start (point)))))
+               (forward-line lines)
+               (funcall
+                func
+                `((command . addition)
+                  (start . ,start)
+                  (lines . ,lines)
+                  (text . ,(buffer-substring-no-properties
+                            text-start (point)))))))
             ("d"
-             (funcall func start n))))))))
+             (funcall
+              func
+              `((command . deletion)
+                (start . ,start)
+                (lines . ,lines))))))))))
 
 (defun apheleia--apply-rcs-patch (content-buffer patch-buffer)
   "Apply RCS patch.
 CONTENT-BUFFER contains the text to be patched, and PATCH-BUFFER
 contains the patch."
-  (let ((commands nil))
+  (let ((commands nil)
+        (point-list nil))
+    (with-current-buffer content-buffer
+      (push (cons nil (point)) point-list)
+      (dolist (w (get-buffer-window-list nil nil t))
+        (push (cons w (window-point w)) point-list)))
+    (message "point-list: %S" point-list)
     (with-current-buffer patch-buffer
       (apheleia--map-rcs-patch
-       (lambda (start text)
+       (lambda (command)
          (with-current-buffer content-buffer
-           ;; Could be optimized significantly.
+           ;; Could be optimized significantly by moving only as many
+           ;; lines as needed, rather than returning to the beginning
+           ;; of the buffer first.
            (save-excursion
              (goto-char (point-min))
-             (forward-line (1- start))
+             (forward-line (1- (alist-get 'start command)))
              ;; Account for the off-by-one error in the RCS patch spec
              ;; (namely, text is added *after* the line mentioned in
              ;; the patch).
-             (when (stringp text)
+             (when (eq (alist-get 'command command) 'addition)
                (forward-line))
-             (push (cons (point-marker) text) commands))))))
+             (push `(marker . ,(point-marker)) command)
+             (push command commands)
+             ;; If we delete a region just before inserting new text
+             ;; at the same place, then it is a replacement. In this
+             ;; case, check if the replaced region includes the window
+             ;; point for any window currently displaying the content
+             ;; buffer. If so, figure out where that window point
+             ;; should be moved to, and record the information in an
+             ;; additional command.
+             ;;
+             ;; See <https://www.gnu.org/software/emacs/manual/html_node/elisp/Window-Point.html>.
+             ;;
+             ;; Note that the commands get pushed in reverse order
+             ;; because of how linked lists work.
+             (let ((deletion (nth 1 commands))
+                   (addition (nth 0 commands)))
+               (when (and (eq (alist-get 'command deletion) 'deletion)
+                          (eq (alist-get 'command addition) 'addition)
+                          ;; Again with the weird off-by-one
+                          ;; computations. For example, if you replace
+                          ;; lines 68 through 71 inclusive, then the
+                          ;; deletion is for line 68 and the addition
+                          ;; is for line 70. Blame RCS.
+                          (= (+ (alist-get 'start deletion)
+                                (alist-get 'lines deletion)
+                                -1)
+                             (alist-get 'start addition)))
+                 (let ((text-start (alist-get 'marker deletion)))
+                   (forward-line (alist-get 'lines deletion))
+                   (let ((text-end (point)))
+                     (dolist (entry point-list)
+                       ;; Check if the (window) point is within the
+                       ;; replaced region.
+                       (cl-destructuring-bind (w . p) entry
+                         (when (and (< text-start p)
+                                    (< p text-end))
+                           (message "point %S for window %S is inside region" p w)
+                           (let* ((old-text (buffer-substring-no-properties
+                                             text-start text-end))
+                                  (new-text (alist-get 'text addition))
+                                  (old-relative-point (- p text-start))
+                                  (new-relative-point
+                                   (apheleia--align-point
+                                    old-text new-text old-relative-point)))
+                             (goto-char text-start)
+                             (push `((marker . ,(point-marker))
+                                     (command . set-point)
+                                     (window . ,w)
+                                     (relative-point . ,new-relative-point))
+                                   commands))))))))))))))
     (with-current-buffer content-buffer
-      (save-excursion
-        (dolist (command (nreverse commands))
-          (cl-destructuring-bind (marker . text) command
-            (goto-char marker)
-            (if (integerp text)
-                (let ((text-start (point)))
-                  (forward-line text)
-                  (delete-region text-start (point)))
-              (insert text))))))))
+      (let ((move-to nil))
+        (save-excursion
+          (dolist (command (nreverse commands))
+            (goto-char (alist-get 'marker command))
+            (pcase (alist-get 'command command)
+              (`addition
+               (insert (alist-get 'text command)))
+              (`deletion
+               (let ((text-start (point)))
+                 (forward-line (alist-get 'lines command))
+                 (delete-region text-start (point))))
+              (`set-point
+               (let ((new-point
+                      (+ (point) (alist-get 'relative-point command))))
+                 (message "setting point for window %S to %S"
+                          (alist-get 'window command)
+                          new-point)
+                 (if-let ((w (alist-get 'window command)))
+                     (set-window-point w new-point)
+                   (setq move-to new-point)))))))
+        (when move-to
+          (goto-char move-to))))))
 
 (provide 'apheleia)
 
