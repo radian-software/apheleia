@@ -92,6 +92,62 @@ text of S1 surrounding P1."
           (cl-incf i1)))))
     i2))
 
+(defun apheleia--map-rcs-patch (func)
+  "Map over the RCS patch in the current buffer.
+For each RCS patch command, FUNC is called with two arguments:
+START, which is a line number; and TEXT, which is a string if the
+command is an addition and which is a number of lines if the
+command is a deletion. See
+<https://tools.ietf.org/doc/tcllib/html/rcs.html#section4> for
+documentation on the RCS patch format."
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (= (point) (point-max)))
+      (unless (looking-at "$\\|\\([ad]\\)\\([0-9]+\\) \\([0-9]+\\)")
+        (error "Malformed RCS patch: %S" (point)))
+      (forward-line)
+      (when-let ((command (match-string 1)))
+        (let ((start (string-to-number (match-string 2)))
+              (n (string-to-number (match-string 3))))
+          (pcase command
+            ("a"
+             (let ((text-start (point)))
+               (forward-line n)
+               (funcall func start (buffer-substring-no-properties
+                                    text-start (point)))))
+            ("d"
+             (funcall func start n))))))))
+
+(defun apheleia--apply-rcs-patch (content-buffer patch-buffer)
+  "Apply RCS patch.
+CONTENT-BUFFER contains the text to be patched, and PATCH-BUFFER
+contains the patch."
+  (let ((commands nil))
+    (with-current-buffer patch-buffer
+      (apheleia--map-rcs-patch
+       (lambda (start text)
+         (with-current-buffer content-buffer
+           ;; Could be optimized significantly.
+           (save-excursion
+             (goto-char (point-min))
+             (forward-line (1- start))
+             ;; Account for the off-by-one error in the RCS patch spec
+             ;; (namely, text is added *after* the line mentioned in
+             ;; the patch).
+             (when (stringp text)
+               (forward-line))
+             (push (cons (point-marker) text) commands))))))
+    (with-current-buffer content-buffer
+      (save-excursion
+        (dolist (command (nreverse commands))
+          (cl-destructuring-bind (marker . text) command
+            (goto-char marker)
+            (if (integerp text)
+                (let ((text-start (point)))
+                  (forward-line text)
+                  (delete-region text-start (point)))
+              (insert text))))))))
+
 (provide 'apheleia)
 
 ;; Local Variables:
