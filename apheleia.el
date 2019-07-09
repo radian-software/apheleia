@@ -129,7 +129,6 @@ contains the patch."
       (push (cons nil (point)) point-list)
       (dolist (w (get-buffer-window-list nil nil t))
         (push (cons w (window-point w)) point-list)))
-    (message "point-list: %S" point-list)
     (with-current-buffer patch-buffer
       (apheleia--map-rcs-patch
        (lambda (command)
@@ -181,7 +180,6 @@ contains the patch."
                        (cl-destructuring-bind (w . p) entry
                          (when (and (< text-start p)
                                     (< p text-end))
-                           (message "point %S for window %S is inside region" p w)
                            (let* ((old-text (buffer-substring-no-properties
                                              text-start text-end))
                                   (new-text (alist-get 'text addition))
@@ -210,9 +208,6 @@ contains the patch."
               (`set-point
                (let ((new-point
                       (+ (point) (alist-get 'relative-point command))))
-                 (message "setting point for window %S to %S"
-                          (alist-get 'window command)
-                          new-point)
                  (if-let ((w (alist-get 'window command)))
                      (set-window-point w new-point)
                    (setq move-to new-point)))))))
