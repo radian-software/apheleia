@@ -23,6 +23,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'subr-x)
 
 (defgroup apheleia nil
   "Better mode lighter overriding."
@@ -30,56 +31,44 @@
   :link '(url-link :tag "GitHub" "https://github.com/raxod502/apheleia")
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
 
-(cl-defun apheleia--align-strings (s1 s2 &key i1 i2 memo)
+(cl-defun apheleia--edit-distance-table (s1 s2)
   "Align strings S1 and S2 for minimum edit distance.
-Return a hash table mapping (I1 . I2) to COST, where I1 and I2
-are indices into S1 and S2, and COST is the edit distance between
-the substrings of S1 and S2 starting at I1 and I2 respectively.
-
-Recursively, I1 and I2 are indices as explained above, and MEMO
-is the hash table being filled."
-  (if (null memo)
-      (let ((memo (make-hash-table :test #'equal)))
-        (prog1 memo
-          (apheleia--align-strings s1 s2 :i1 0 :i2 0 :memo memo)))
-    (or
-     (gethash (cons i1 i2) memo)
-     (puthash
-      (cons i1 i2)
-      (cond
-       ((= i1 (length s1))
-        (- (length s2) i2))
-       ((= i2 (length s2))
-        (- (length s1) i1))
-       ((= (aref s1 i1) (aref s2 i2))
-        (apheleia--align-strings s1 s2 :i1 (1+ i1) :i2 (1+ i2) :memo memo))
-       (t
-        (1+
-         (min
-          (apheleia--align-strings s1 s2 :i1 (1+ i1) :i2 (1+ i2) :memo memo)
-          (apheleia--align-strings s1 s2 :i1     i1  :i2 (1+ i2) :memo memo)
-          (apheleia--align-strings s1 s2 :i1 (1+ i1) :i2     i2  :memo memo)))))
-      memo))))
+Return the dynamic programming table as a vector of vectors which
+can be indexed by integers I1 and I2. The entry at (I1, I2) is
+the edit distance between the first I1 characters of S1 and the
+first I2 characters of S2."
+  (let ((table (make-vector (length s1) nil)))
+    (dotimes (i1 (length s1))
+      (let ((row (aset table i1 (make-vector (length s2) nil))))
+        (dotimes (i2 (length s2))
+          (aset
+           row i2
+           (cond
+            ((zerop i1) i2)
+            ((zerop i2) i1)
+            (t
+             (min
+              (thread-first table (aref     i1 ) (aref (1- i2)) (1+))
+              (thread-first table (aref (1- i1)) (aref     i2 ) (1+))
+              (thread-first table (aref (1- i1)) (aref (1- i2))
+                            (+ (if (/= (aref s1 i1) (aref s2 i2)) 1 0))))))))))
+    table))
 
 (defun apheleia--align-point (s1 s2 p1)
   "Given strings S1 and S2 and index P1 in S1, return matching index P2 in S2.
 If S1 and S2 are the same, then P1 and P2 will also be the same.
 Otherwise, the text of S2 surrounding P2 is \"similar\" to the
 text of S1 surrounding P1."
-  (let* ((memo (apheleia--align-strings s1 s2))
+  (let* ((table (apheleia--edit-distance-table s1 s2))
          (i1 0)
          (i2 0))
     (while (< i1 p1)
       (let* ((costs
-              `(,(gethash (cons (1+ i1) (1+ i2)) memo)
-                ;; Replicate the short-circuiting in our dynamic
-                ;; programming implementation; otherwise we will be
-                ;; trying to look up hash table entries that don't
-                ;; exist.
-                ,@(unless (= (aref s1 i1) (aref s2 i2))
-                    (list
-                     (gethash (cons     i1  (1+ i2)) memo)
-                     (gethash (cons (1+ i1)     i2)  memo)))))
+              (list
+               (thread-first table (aref     i1 ) (aref (1- i2)) (1+))
+               (thread-first table (aref (1- i1)) (aref     i2 ) (1+))
+               (thread-first table (aref (1- i1)) (aref (1- i2))
+                             (+ (if (/= (aref s1 i1) (aref s2 i2)) 1 0)))))
              (min-cost (apply #'min costs)))
         (cond
          ((= min-cost (nth 0 costs))
