@@ -124,11 +124,13 @@ for documentation on the RCS patch format."
 CONTENT-BUFFER contains the text to be patched, and PATCH-BUFFER
 contains the patch."
   (let ((commands nil)
-        (point-list nil))
+        (point-list nil)
+        (window-line-list nil))
     (with-current-buffer content-buffer
       (push (cons nil (point)) point-list)
       (dolist (w (get-buffer-window-list nil nil t))
-        (push (cons w (window-point w)) point-list)))
+        (push (cons w (window-point w)) point-list)
+        (push (cons w (count-lines (window-start w) (point))) window-line-list)))
     (with-current-buffer patch-buffer
       (apheleia--map-rcs-patch
        (lambda (command)
@@ -212,7 +214,15 @@ contains the patch."
                      (set-window-point w new-point)
                    (setq move-to new-point)))))))
         (when move-to
-          (goto-char move-to))))))
+          (goto-char move-to))))
+    ;; Restore the scroll position of each window displaying the
+    ;; buffer.
+    (dolist (entry window-line-list)
+      (cl-destructuring-bind (w . old-window-line) entry
+        (let ((new-window-line
+               (count-lines (window-start w) (point))))
+          (with-selected-window w
+            (scroll-down (- old-window-line new-window-line))))))))
 
 (provide 'apheleia)
 
