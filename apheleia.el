@@ -244,9 +244,11 @@ provided that its exit status is 0."
     (accept-process-output apheleia--current-process 0.1 nil 'just-this-one)
     (when (process-live-p apheleia--current-process)
       (kill-process apheleia--current-process)))
-  (let ((name (car command))
-        (stdout (get-buffer-create " *apheleia-stdout*"))
-        (stderr (get-buffer-create " *apheleia-stderr*")))
+  (let* ((name (car command))
+         (stdout (get-buffer-create
+                  (format " *apheleia-%s-stdout*" name)))
+         (stderr (get-buffer-create
+                  (format " *apheleia-%s-stderr*" name))))
     (dolist (buf (list stdout stderr))
       (with-current-buffer buf
         (erase-buffer)))
@@ -275,9 +277,10 @@ provided that its exit status is 0."
                        (message
                         (concat
                          "Failed to run %s: exit status %s "
-                         "(see hidden buffer *apheleia-stderr*)")
+                         "(see hidden buffer%s)")
                         (car command)
-                        (process-exit-status proc)))))))
+                        (process-exit-status proc)
+                        stderr))))))
           (set-process-sentinel (get-buffer-process stderr) #'ignore)
           (when stdin
             (process-send-string
@@ -318,20 +321,9 @@ as its sole argument."
 
 (defun apheleia--run-formatter (command callback)
   "Run a code formatter on the current buffer.
-The formatter is specified by COMMAND, a list of strings (or
-symbols, as below). Invoke CALLBACK with one argument, a buffer
-containing the output of the formatter.
-
-COMMAND is similar to what you pass to `make-process', except as
-follows. Normally, the contents of the current buffer are passed
-to the command on stdin, and the output is read from stdout.
-However, if you use the symbol `input' as one of the elements of
-COMMAND, then the contents of the current buffer are written to a
-temporary file and its name is substituted for `input'. Also, if
-you use the symbol `output' as one of the elements of COMMAND,
-then it is substituted with the name of a temporary file. In that
-case, it is expected that the command writes to that file, and
-the file is then read into an Emacs buffer."
+The formatter is specified by COMMAND, a list of strings or
+symbols (see `apheleia-format-buffer'). Invoke CALLBACK with one
+argument, a buffer containing the output of the formatter."
   (let ((input-fname nil)
         (output-fname nil))
     (when (memq 'input command)
@@ -360,6 +352,43 @@ the file is then read into an Emacs buffer."
                    (erase-buffer)
                    (insert-file-contents-literally output-fname))
                  (funcall callback stdout)))))
+
+(defvar apheleia--buffer-hash nil
+  "Return value of `buffer-hash' when formatter started running.")
+
+(defun apheleia-format-buffer (command)
+  "Run code formatter asynchronously on current buffer, preserving point.
+
+COMMAND is similar to what you pass to `make-process', except as
+follows. Normally, the contents of the current buffer are passed
+to the command on stdin, and the output is read from stdout.
+However, if you use the symbol `input' as one of the elements of
+COMMAND, then the contents of the current buffer are written to a
+temporary file and its name is substituted for `input'. Also, if
+you use the symbol `output' as one of the elements of COMMAND,
+then it is substituted with the name of a temporary file. In that
+case, it is expected that the command writes to that file, and
+the file is then read into an Emacs buffer.
+
+In any case, after the formatter finishes running, the diff
+utility is invoked to determine what changes it made. That diff
+is then used to apply the formatter's changes to the current
+buffer without moving point or changing the scroll position in
+any window displaying the buffer. If the buffer has been modified
+since the formatter started running, however, the operation is
+aborted."
+  (setq-local apheleia--buffer-hash (buffer-hash))
+  (apheleia--run-formatter
+   command
+   (lambda (formatted-buffer)
+     ;; Short-circuit.
+     (when (equal apheleia--buffer-hash (buffer-hash))
+       (apheleia--create-rcs-patch
+        (current-buffer) formatted-buffer
+        (lambda (patch-buffer)
+          (when (equal apheleia--buffer-hash (buffer-hash))
+            (apheleia--apply-rcs-patch
+             (current-buffer) patch-buffer))))))))
 
 (provide 'apheleia)
 
