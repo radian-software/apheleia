@@ -224,6 +224,143 @@ contains the patch."
           (with-selected-window w
             (scroll-down (- old-window-line new-window-line))))))))
 
+(defvar apheleia--current-process nil
+  "Current process that Apheleia is running, or nil.
+Keeping track of this helps avoid running more than one process
+at once.")
+
+(cl-defun apheleia--make-process (&key command stdin callback exit-status)
+  "Wrapper for `make-process' that behaves a bit more nicely.
+COMMAND is as in `make-process'. STDIN, if given, is a buffer
+whose contents are fed to the process on stdin. CALLBACK is
+invoked with one argument, the buffer containing the text from
+stdout, when the process terminates (if it succeeds). EXIT-STATUS
+is a function which is called with the exit status of the
+command; it should return non-nil to indicate that the command
+succeeded. If EXIT-STATUS is omitted, then the command succeeds
+provided that its exit status is 0."
+  (when (process-live-p apheleia--current-process)
+    (interrupt-process apheleia--current-process)
+    (accept-process-output apheleia--current-process 0.1 nil 'just-this-one)
+    (when (process-live-p apheleia--current-process)
+      (kill-process apheleia--current-process)))
+  (let ((name (car command))
+        (stdout (get-buffer-create " *apheleia-stdout*"))
+        (stderr (get-buffer-create " *apheleia-stderr*")))
+    (dolist (buf (list stdout stderr))
+      (with-current-buffer buf
+        (erase-buffer)))
+    (condition-case-unless-debug e
+        (progn
+          (setq apheleia--current-process
+                (make-process
+                 :name (format "aphelieia-%s" name)
+                 :buffer stdout
+                 :stderr stderr
+                 :command command
+                 :noquery t
+                 :sentinel
+                 (lambda (proc _event)
+                   (unless (process-live-p proc)
+                     (with-current-buffer stderr
+                       (when (= 0 (buffer-size))
+                         (insert "[No output received on stderr]\n")))
+                     (if (funcall
+                          (or exit-status
+                              (lambda (status)
+                                (= 0 status)))
+                          (process-exit-status proc))
+                         (when callback
+                           (funcall callback stdout))
+                       (message
+                        (concat
+                         "Failed to run %s: exit status %s "
+                         "(see hidden buffer *apheleia-stderr*)")
+                        (car command)
+                        (process-exit-status proc)))))))
+          (set-process-sentinel (get-buffer-process stderr) #'ignore)
+          (when stdin
+            (process-send-string
+             apheleia--current-process
+             (with-current-buffer stdin
+               (buffer-string))))
+          (process-send-eof apheleia--current-process))
+      (error (message "Failed to run %s: %s" name (error-message-string e))))))
+
+(defun apheleia--create-rcs-patch (old-buffer new-buffer callback)
+  "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
+Once finished, invoke CALLBACK with a buffer containing the patch
+as its sole argument."
+  ;; Make sure at least one of the two buffers is saved to a file. The
+  ;; other one we can feed on stdin.
+  (let ((old-fname
+         (with-current-buffer old-buffer
+           (and (not (buffer-modified-p)) buffer-file-name)))
+        (new-fname
+         (with-current-buffer new-buffer
+           (and (not (buffer-modified-p)) buffer-file-name))))
+    (unless (or old-fname new-fname)
+      (with-current-buffer new-saved
+        (write-file (make-temp-file "apheleia"))
+        (setq new-saved buffer-file-name)))
+    (with-current-buffer (get-buffer-create " *apheleia-patch*")
+      (erase-buffer)
+      (apheleia--make-process
+       :command `("diff" "--rcs" "--"
+                  ,(or old-fname "-")
+                  ,(or new-fname "-"))
+       :stdin (if new-fname old-buffer new-buffer)
+       :callback callback
+       :exit-status (lambda (status)
+                      ;; Exit status is 0 if no changes, 1 if some
+                      ;; changes, and 2 if error.
+                      (memq status '(0 1)))))))
+
+(defun apheleia--run-formatter (command callback)
+  "Run a code formatter on the current buffer.
+The formatter is specified by COMMAND, a list of strings (or
+symbols, as below). Invoke CALLBACK with one argument, a buffer
+containing the output of the formatter.
+
+COMMAND is similar to what you pass to `make-process', except as
+follows. Normally, the contents of the current buffer are passed
+to the command on stdin, and the output is read from stdout.
+However, if you use the symbol `input' as one of the elements of
+COMMAND, then the contents of the current buffer are written to a
+temporary file and its name is substituted for `input'. Also, if
+you use the symbol `output' as one of the elements of COMMAND,
+then it is substituted with the name of a temporary file. In that
+case, it is expected that the command writes to that file, and
+the file is then read into an Emacs buffer."
+  (let ((input-fname nil)
+        (output-fname nil))
+    (when (memq 'input command)
+      (let ((input-fname (make-temp-file "apheleia"))
+            ;; Suppress message.
+            (noninteractive t))
+        (write-region (point-min) (point-max) input-fname nil 0)
+        (setq command (mapcar (lambda (arg)
+                                (if (eq arg 'input)
+                                    input-fname
+                                  arg))
+                              command))))
+    (when (memq 'output command)
+      (setq output-fname (make-temp-file "apheleia"))
+      (setq command (mapcar (lambda (arg)
+                              (if (eq arg 'output)
+                                  output-fname
+                                arg))
+                            command)))
+    (apheleia--make-process
+     :command command
+     :stdin (unless input-fname
+              (current-buffer))
+     :callback (lambda (stdout)
+                 (when output-fname
+                   (erase-buffer)
+                   (insert-file-contents-literally output-fname))
+                 (funcall callback stdout)))))
+
 (provide 'apheleia)
 
 ;; Local Variables:
