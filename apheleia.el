@@ -494,6 +494,12 @@ even if a formatter is configured."
         (user-error "No configuration for formatter `%S'"
                     formatter))))
 
+(defun apheleia--buffer-hash ()
+  "Compute hash of current buffer."
+  (if (fboundp 'buffer-hash)
+      (buffer-hash)
+    (md5 (current-buffer))))
+
 (defvar apheleia--buffer-hash nil
   "Return value of `buffer-hash' when formatter started running.")
 
@@ -536,16 +542,16 @@ changes), CALLBACK, if provided, is invoked with no arguments."
                       (if current-prefix-arg
                           'prompt
                         'interactive))))
-  (setq-local apheleia--buffer-hash (buffer-hash))
+  (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
   (apheleia--run-formatter
    command
    (lambda (formatted-buffer)
      ;; Short-circuit.
-     (when (equal apheleia--buffer-hash (buffer-hash))
+     (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
        (apheleia--create-rcs-patch
         (current-buffer) formatted-buffer
         (lambda (patch-buffer)
-          (when (equal apheleia--buffer-hash (buffer-hash))
+          (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
             (apheleia--apply-rcs-patch
              (current-buffer) patch-buffer)
             (when callback
