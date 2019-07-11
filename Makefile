@@ -52,7 +52,7 @@ clean: ## Remove build artifacts
 	@rm -f *.elc
 
 .PHONY: docker
-docker: ## Start a Docker shell with source code and given Emacs VERSION
+docker: ## Start a Docker shell; e.g. make docker VERSION=25.3
 	@scripts/docker.bash $(VERSION)
 
 .PHONY: help
