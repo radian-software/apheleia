@@ -26,7 +26,7 @@
 (require 'subr-x)
 
 (defgroup apheleia nil
-  "Better mode lighter overriding."
+  "Reformat buffer without moving point."
   :group 'external
   :link '(url-link :tag "GitHub" "https://github.com/raxod502/apheleia")
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
@@ -244,7 +244,7 @@ provided that its exit status is 0."
     (accept-process-output apheleia--current-process 0.1 nil 'just-this-one)
     (when (process-live-p apheleia--current-process)
       (kill-process apheleia--current-process)))
-  (let* ((name (car command))
+  (let* ((name (file-name-nondirectory (car command)))
          (stdout (get-buffer-create
                   (format " *apheleia-%s-stdout*" name)))
          (stderr (get-buffer-create
@@ -290,6 +290,33 @@ provided that its exit status is 0."
           (process-send-eof apheleia--current-process))
       (error (message "Failed to run %s: %s" name (error-message-string e))))))
 
+(defun apheleia--write-region-silently
+    (start end filename &optional append visit lockname mustbenew write-region)
+  "Like `write-region', but silent.
+START, END, FILENAME, APPEND, VISIT, LOCKNAME, and MUSTBENEW are
+as in `write-region'. WRITE-REGION is used instead of the actual
+`write-region' function, if provided."
+  (funcall (or write-region #'write-region)
+           start end filename append 0 lockname mustbenew)
+  (set-buffer-modified-p nil)
+  (set-visited-file-modtime))
+
+(defun apheleia--write-file-silently (&optional filename)
+  "Write contents of current buffer into file FILENAME, silently.
+FILENAME defaults to `buffer-file-name'."
+  (cl-letf* ((write-region (symbol-function #'write-region))
+             ((symbol-function #'write-region)
+              (lambda (start end filename &optional
+                             append visit lockname mustbenew)
+                (apheleia--write-region-silently
+                 start end filename append 0 lockname mustbenew write-region)))
+             (message (symbol-function #'message))
+             ((symbol-function #'message)
+              (lambda (format &rest args)
+                (unless (equal format "Saving file %s...")
+                  (apply message format args)))))
+    (write-file (or filename buffer-file-name))))
+
 (defun apheleia--create-rcs-patch (old-buffer new-buffer callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
 Once finished, invoke CALLBACK with a buffer containing the patch
@@ -303,9 +330,9 @@ as its sole argument."
          (with-current-buffer new-buffer
            (and (not (buffer-modified-p)) buffer-file-name))))
     (unless (or old-fname new-fname)
-      (with-current-buffer new-saved
-        (write-file (make-temp-file "apheleia"))
-        (setq new-saved buffer-file-name)))
+      (with-temp-buffer
+        (apheleia--write-file-silently (make-temp-file "apheleia"))
+        (setq new-fname buffer-file-name)))
     (with-current-buffer (get-buffer-create " *apheleia-patch*")
       (erase-buffer)
       (apheleia--make-process
@@ -325,12 +352,29 @@ The formatter is specified by COMMAND, a list of strings or
 symbols (see `apheleia-format-buffer'). Invoke CALLBACK with one
 argument, a buffer containing the output of the formatter."
   (let ((input-fname nil)
-        (output-fname nil))
+        (output-fname nil)
+        (npx nil))
+    (when (memq 'npx command)
+      (setq npx t)
+      (setq command (remq 'npx command)))
+    (unless (stringp (car command))
+      (error "Command cannot start with %S" (car command)))
+    (when npx
+      (when-let ((project-dir
+                  (locate-dominating-file default-directory "node_modules")))
+        (let ((binary
+               (expand-file-name
+                (car command)
+                (expand-file-name
+                 ".bin"
+                 (expand-file-name
+                  "node_modules"
+                  project-dir)))))
+          (when (file-executable-p binary)
+            (setcar command binary)))))
     (when (memq 'input command)
-      (let ((input-fname (make-temp-file "apheleia"))
-            ;; Suppress message.
-            (noninteractive t))
-        (write-region (point-min) (point-max) input-fname nil 0)
+      (let ((input-fname (make-temp-file "apheleia")))
+        (apheleia--write-region-silently nil nil input-fname)
         (setq command (mapcar (lambda (arg)
                                 (if (eq arg 'input)
                                     input-fname
@@ -353,22 +397,114 @@ argument, a buffer containing the output of the formatter."
                    (insert-file-contents-literally output-fname))
                  (funcall callback stdout)))))
 
+(defcustom apheleia-formatters
+  '((black . ("black" "-"))
+    (prettier . (npx "prettier"))
+    (gofmt . ("gofmt")))
+  "Alist of code formatting commands.
+The keys may be any symbols you want, and the values are
+commands, lists of strings and symbols, in the format of
+`apheleia-format-buffer' (which see)."
+  :type '(alist
+          :key-type symbol
+          :value-type
+          (repeat
+           (choice
+            (string :tag "Argument")
+            (const :tag "Name of temporary file used for input" input)
+            (const :tag "Name of temporary file used for output" output)))))
+
+(defcustom apheleia-mode-alist
+  '((css-mode . prettier)
+    (go-mode . gofmt)
+    (js-mode . prettier)
+    (js3-mode . prettier)
+    (json-mode . prettier)
+    (html-mode . prettier)
+    (python-mode . black)
+    (sass-mode . prettier)
+    (typescript-mode . prettier)
+    (web-mode . prettier)
+    (yaml-mode . prettier))
+  "Alist mapping major mode names to formatters to use in those modes.
+This determines what formatter to use in buffers without a
+setting for `apheleia-formatter'. The keys are major mode
+symbols (matched against `major-mode' with `derived-mode-p') or
+strings (matched against `buffer-file-name' with
+`string-match-p'), and the values are symbols with entries in
+`apheleia-formatters' (or equivalently, they are allowed values
+for `apheleia-formatter'). Earlier entries take precedence over
+later ones.
+
+Be careful when writing regexps to include \"\\'\" and to escape
+\"\\.\" in order to properly match a file extension. For example,
+to match \".jsx\" files you might use \"\\.jsx\\'\".")
+
+(defvar-local apheleia-formatter nil
+  "Name of formatter to use in current buffer, a symbol or nil.
+If non-nil, then `apheleia-formatters' should have a matching
+entry. This overrides `apheleia-mode-alist'.")
+
+(defun apheleia--get-formatter-command (&optional interactive)
+  "Return the formatter command to use for the current buffer.
+This is a value suitable for `apheleia--run-formatter', or nil if
+no formatter is configured for the current buffer. Consult the
+values of `apheleia-mode-alist' and `apheleia-formatter' to
+determine which formatter is configured.
+
+If INTERACTIVE is non-nil, then prompt the user for which
+formatter to run if none is configured, instead of returning nil.
+If INTERACTIVE is the special symbol `prompt', then prompt
+even if a formatter is configured."
+  (when-let ((formatter
+              (or (and (not (eq interactive 'prompt))
+                       (or apheleia-formatter
+                           (cl-dolist (entry apheleia-mode-alist)
+                             (when (or (and (symbolp (car entry))
+                                            (derived-mode-p (car entry)))
+                                       (and (stringp (car entry))
+                                            buffer-file-name
+                                            (string-match-p
+                                             (car entry) buffer-file-name)))
+                               (cl-return (cdr entry))))))
+                  (and interactive
+                       (intern
+                        (completing-read
+                         "Formatter: "
+                         (or (map-keys apheleia-formatters)
+                             (user-error
+                              "No formatters in `apheleia-formatters'"))
+                         nil 'require-match))))))
+    (or (alist-get formatter apheleia-formatters)
+        (user-error "No configuration for formatter `%S'"
+                    formatter))))
+
 (defvar apheleia--buffer-hash nil
   "Return value of `buffer-hash' when formatter started running.")
 
-(defun apheleia-format-buffer (command)
+;;;###autoload
+(defun apheleia-format-buffer (command &optional callback)
   "Run code formatter asynchronously on current buffer, preserving point.
 
-COMMAND is similar to what you pass to `make-process', except as
-follows. Normally, the contents of the current buffer are passed
-to the command on stdin, and the output is read from stdout.
-However, if you use the symbol `input' as one of the elements of
-COMMAND, then the contents of the current buffer are written to a
-temporary file and its name is substituted for `input'. Also, if
-you use the symbol `output' as one of the elements of COMMAND,
-then it is substituted with the name of a temporary file. In that
-case, it is expected that the command writes to that file, and
-the file is then read into an Emacs buffer.
+Interactively, run the currently configured formatter (see
+`apheleia-formatter' and `apheleia-mode-alist'), or prompt from
+`apheleia-formatters' if there is none configured for the current
+buffer. With a prefix argument, prompt always.
+
+In Lisp code, COMMAND is similar to what you pass to
+`make-process', except as follows. Normally, the contents of the
+current buffer are passed to the command on stdin, and the output
+is read from stdout. However, if you use the symbol `input' as
+one of the elements of COMMAND, then the contents of the current
+buffer are written to a temporary file and its name is
+substituted for `input'. Also, if you use the symbol `output' as
+one of the elements of COMMAND, then it is substituted with the
+name of a temporary file. In that case, it is expected that the
+command writes to that file, and the file is then read into an
+Emacs buffer. Finally, if you use the symbol `npx' as one of the
+elements of COMMAND, then the first string element of COMMAND is
+resolved inside node_modules/.bin if such a directory exists
+anywhere above the current `default-directory'.
 
 In any case, after the formatter finishes running, the diff
 utility is invoked to determine what changes it made. That diff
@@ -376,7 +512,15 @@ is then used to apply the formatter's changes to the current
 buffer without moving point or changing the scroll position in
 any window displaying the buffer. If the buffer has been modified
 since the formatter started running, however, the operation is
-aborted."
+aborted.
+
+If the formatter actually finishes running and the buffer is
+successfully updated (even if the formatter has not made any
+changes), CALLBACK, if provided, is invoked with no arguments."
+  (interactive (list (apheleia--get-formatter-command
+                      (if current-prefix-arg
+                          'prompt
+                        'interactive))))
   (setq-local apheleia--buffer-hash (buffer-hash))
   (apheleia--run-formatter
    command
@@ -388,7 +532,41 @@ aborted."
         (lambda (patch-buffer)
           (when (equal apheleia--buffer-hash (buffer-hash))
             (apheleia--apply-rcs-patch
-             (current-buffer) patch-buffer))))))))
+             (current-buffer) patch-buffer)
+            (when callback
+              (funcall callback)))))))))
+
+;; Autoload because the user may enable `apheleia-mode' without
+;; loading Apheleia; thus this function may be invoked as an autoload.
+;;;###autoload
+(defun apheleia--format-after-save ()
+  "Run code formatter for current buffer if any configured, then save."
+  (when-let ((command (apheleia--get-formatter-command)))
+    (apheleia-format-buffer
+     command
+     (lambda ()
+       (ignore-errors
+         (apheleia--write-file-silently buffer-file-name))))))
+
+;; Use `progn' to force the entire minor mode definition to be copied
+;; into the autoloads file, so that the minor mode can be enabled
+;; without pulling in all of Apheleia during init.
+;;;###autoload
+(progn
+
+  (define-minor-mode apheleia-mode
+    "Minor mode for reformatting code on save without moving point.
+It is customized by means of the variables `apheleia-mode-alist'
+and `apheleia-formatters'."
+    :lighter " Apheleia"
+    (if apheleia-mode
+        (add-hook 'after-save-hook #'apheleia--format-after-save nil 'local)
+      (remove-hook 'after-save-hook #'apheleia--format-after-save 'local)))
+
+  (define-globalized-minor-mode apheleia-global-mode
+    apheleia-mode apheleia-mode)
+
+  (put 'apheleia-mode 'safe-local-variable #'booleanp))
 
 (provide 'apheleia)
 
