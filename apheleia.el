@@ -376,7 +376,11 @@ argument, a buffer containing the output of the formatter."
           (when (file-executable-p binary)
             (setcar command binary)))))
     (when (memq 'input command)
-      (let ((input-fname (make-temp-file "apheleia")))
+      (let ((input-fname (make-temp-file
+                          "apheleia" nil
+                          (and buffer-file-name
+                               (file-name-extension
+                                buffer-file-name 'period)))))
         (apheleia--write-region-silently nil nil input-fname)
         (setq command (mapcar (lambda (arg)
                                 (if (eq arg 'input)
@@ -402,7 +406,7 @@ argument, a buffer containing the output of the formatter."
 
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
-    (prettier . (npx "prettier"))
+    (prettier . (npx "prettier" input))
     (gofmt . ("gofmt")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
