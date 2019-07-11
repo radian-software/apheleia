@@ -1,0 +1,24 @@
+version: v1.0
+name: Apheleia
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+blocks:
+  - name: Apheleia CI
+    task:
+      jobs:
+        - name: Apheleia CI
+          matrix:
+            - env_var: EMACS_VERSION
+              values:
+                - "25.2"
+                - "25.3"
+                - "26.1"
+                - "26.2"
+          commands:
+            - checkout
+            - >-
+              docker run --rm -v "$PWD:/src"
+              silex/emacs:"$EMACS_VERSION" sh -c
+              'apt-get update && apt-get install -y make && make -C /src'
