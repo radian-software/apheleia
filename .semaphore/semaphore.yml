@@ -20,5 +20,5 @@ blocks:
             - checkout
             - >-
               docker run --rm -v "$PWD:/src"
-              silex/emacs:"$EMACS_VERSION" sh -c
+              silex/emacs:"$EMACS_VERSION" bash -c
               'apt-get update && apt-get install -y make && make -C /src'
