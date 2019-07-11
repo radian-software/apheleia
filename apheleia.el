@@ -224,7 +224,12 @@ contains the patch."
         (let ((new-window-line
                (count-lines (window-start w) (point))))
           (with-selected-window w
-            (scroll-down (- old-window-line new-window-line))))))))
+            ;; Sometimes if the text is less than a buffer long, and
+            ;; we do a deletion, it might not be possible to keep the
+            ;; vertical position of point the same by scrolling.
+            ;; That's okay. We just go as far as we can.
+            (ignore-errors
+              (scroll-down (- old-window-line new-window-line)))))))))
 
 (defvar apheleia--current-process nil
   "Current process that Apheleia is running, or nil.
