@@ -23,6 +23,7 @@
 ;;; Code:
 
 (require 'cl-lib)
+(require 'map)
 (require 'subr-x)
 
 (defgroup apheleia nil
@@ -130,7 +131,8 @@ contains the patch."
       (push (cons nil (point)) point-list)
       (dolist (w (get-buffer-window-list nil nil t))
         (push (cons w (window-point w)) point-list)
-        (push (cons w (count-lines (window-start w) (point))) window-line-list)))
+        (push (cons w (count-lines (window-start w) (point)))
+              window-line-list)))
     (with-current-buffer patch-buffer
       (apheleia--map-rcs-patch
        (lambda (command)
@@ -291,7 +293,8 @@ provided that its exit status is 0."
       (error (message "Failed to run %s: %s" name (error-message-string e))))))
 
 (defun apheleia--write-region-silently
-    (start end filename &optional append visit lockname mustbenew write-region)
+    (start end filename &optional
+           append _visit lockname mustbenew write-region)
   "Like `write-region', but silent.
 START, END, FILENAME, APPEND, VISIT, LOCKNAME, and MUSTBENEW are
 as in `write-region'. WRITE-REGION is used instead of the actual
@@ -303,11 +306,11 @@ as in `write-region'. WRITE-REGION is used instead of the actual
 
 (defun apheleia--write-file-silently (&optional filename)
   "Write contents of current buffer into file FILENAME, silently.
-FILENAME defaults to `buffer-file-name'."
+FILENAME defaults to value of variable `buffer-file-name'."
   (cl-letf* ((write-region (symbol-function #'write-region))
              ((symbol-function #'write-region)
               (lambda (start end filename &optional
-                             append visit lockname mustbenew)
+                             append _visit lockname mustbenew)
                 (apheleia--write-region-silently
                  start end filename append 0 lockname mustbenew write-region)))
              (message (symbol-function #'message))
@@ -430,15 +433,18 @@ commands, lists of strings and symbols, in the format of
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode
 symbols (matched against `major-mode' with `derived-mode-p') or
-strings (matched against `buffer-file-name' with
-`string-match-p'), and the values are symbols with entries in
-`apheleia-formatters' (or equivalently, they are allowed values
-for `apheleia-formatter'). Earlier entries take precedence over
-later ones.
+strings (matched against value of variable `buffer-file-name'
+with `string-match-p'), and the values are symbols with entries
+in `apheleia-formatters' (or equivalently, they are allowed
+values for `apheleia-formatter'). Earlier entries take precedence
+over later ones.
 
 Be careful when writing regexps to include \"\\'\" and to escape
 \"\\.\" in order to properly match a file extension. For example,
-to match \".jsx\" files you might use \"\\.jsx\\'\".")
+to match \".jsx\" files you might use \"\\.jsx\\'\"."
+  :type '(alist
+          :key-type symbol
+          :value-type symbol))
 
 (defvar-local apheleia-formatter nil
   "Name of formatter to use in current buffer, a symbol or nil.
