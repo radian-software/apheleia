@@ -552,7 +552,9 @@ changes), CALLBACK, if provided, is invoked with no arguments."
      command
      (lambda ()
        (ignore-errors
-         (apheleia--write-file-silently buffer-file-name))))))
+         (let ((after-save-hook
+                (remq #'apheleia--format-after-save after-save-hook)))
+           (apheleia--write-file-silently buffer-file-name)))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied
 ;; into the autoloads file, so that the minor mode can be enabled
