@@ -11,8 +11,13 @@ all: compile checkdoc longlines ## Build project and run all linters
 
 .PHONY: compile
 compile: ## Check for byte-compiler errors
+# Deleting the .elc file first is sometimes necessary
+# apparently when switching between different versions of
+# Emacs; otherwise we may get an error saying we can't
+# overwrite the file.
 	@for file in $(for_compile); do \
 	    echo "[compile] $$file" ;\
+	    rm -f "$${file}c" ;\
 	    $(EMACS) -Q --batch -L . -f batch-byte-compile $$file 2>&1 \
 	        | grep -v "^Wrote" \
 	        | grep . && exit 1 || true ;\
