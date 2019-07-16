@@ -565,19 +565,23 @@ changes), CALLBACK, if provided, is invoked with no arguments."
             (when callback
               (funcall callback)))))))))
 
+;; Handle recursive references.
+(defvar apheleia-mode)
+
 ;; Autoload because the user may enable `apheleia-mode' without
 ;; loading Apheleia; thus this function may be invoked as an autoload.
 ;;;###autoload
 (defun apheleia--format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
-  (when-let ((command (apheleia--get-formatter-command)))
-    (apheleia-format-buffer
-     command
-     (lambda ()
-       (ignore-errors
-         (let ((after-save-hook
-                (remq #'apheleia--format-after-save after-save-hook)))
-           (apheleia--write-file-silently buffer-file-name)))))))
+  (when apheleia-mode
+    (when-let ((command (apheleia--get-formatter-command)))
+      (apheleia-format-buffer
+       command
+       (lambda ()
+         (ignore-errors
+           (let ((after-save-hook
+                  (remq #'apheleia--format-after-save after-save-hook)))
+             (apheleia--write-file-silently buffer-file-name))))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied
 ;; into the autoloads file, so that the minor mode can be enabled
