@@ -380,6 +380,12 @@ argument, a buffer containing the output of the formatter."
                   project-dir)))))
           (when (file-executable-p binary)
             (setcar command binary)))))
+    (when (memq 'file command)
+      (setq command (mapcar (lambda (arg)
+                              (if (eq arg 'file)
+                                  buffer-file-name
+                                arg))
+                            command)))
     (when (memq 'input command)
       (let ((input-fname (make-temp-file
                           "apheleia" nil
@@ -411,7 +417,7 @@ argument, a buffer containing the output of the formatter."
 
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
-    (prettier . (npx "prettier" input))
+    (prettier . (npx "prettier" file))
     (gofmt . ("gofmt")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
@@ -515,16 +521,18 @@ buffer. With a prefix argument, prompt always.
 In Lisp code, COMMAND is similar to what you pass to
 `make-process', except as follows. Normally, the contents of the
 current buffer are passed to the command on stdin, and the output
-is read from stdout. However, if you use the symbol `input' as
-one of the elements of COMMAND, then the contents of the current
-buffer are written to a temporary file and its name is
-substituted for `input'. Also, if you use the symbol `output' as
-one of the elements of COMMAND, then it is substituted with the
-name of a temporary file. In that case, it is expected that the
-command writes to that file, and the file is then read into an
-Emacs buffer. Finally, if you use the symbol `npx' as one of the
-elements of COMMAND, then the first string element of COMMAND is
-resolved inside node_modules/.bin if such a directory exists
+is read from stdout. However, if you use the symbol `file' as one
+of the elements of COMMAND, then the filename of the current
+buffer is substituted for it. If you instead use the symbol
+`input' as one of the elements of COMMAND, then the contents of
+the current buffer are written to a temporary file and its name
+is substituted for `input'. Also, if you use the symbol `output'
+as one of the elements of COMMAND, then it is substituted with
+the name of a temporary file. In that case, it is expected that
+the command writes to that file, and the file is then read into
+an Emacs buffer. Finally, if you use the symbol `npx' as one of
+the elements of COMMAND, then the first string element of COMMAND
+is resolved inside node_modules/.bin if such a directory exists
 anywhere above the current `default-directory'.
 
 In any case, after the formatter finishes running, the diff
