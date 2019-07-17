@@ -89,6 +89,12 @@ the configured formatter for the current buffer. Running with a prefix
 argument will cause the command to prompt you for which formatter to
 run.
 
+The following user options are also available:
+
+* `apheleia-post-format-hook`: Normal hook run after Apheleia formats
+  a buffer. Run if the formatting is successful, even when no changes
+  are made to the buffer.
+
 ## Contributing
 
 Development of Apheleia happens using the provided Makefile:

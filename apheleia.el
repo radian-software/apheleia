@@ -565,6 +565,10 @@ changes), CALLBACK, if provided, is invoked with no arguments."
             (when callback
               (funcall callback)))))))))
 
+(defcustom apheleia-post-format-hook nil
+  "Normal hook run after Apheleia formats a buffer."
+  :type 'hook)
+
 ;; Handle recursive references.
 (defvar apheleia-mode)
 
@@ -581,7 +585,8 @@ changes), CALLBACK, if provided, is invoked with no arguments."
          (ignore-errors
            (let ((after-save-hook
                   (remq #'apheleia--format-after-save after-save-hook)))
-             (apheleia--write-file-silently buffer-file-name))))))))
+             (apheleia--write-file-silently buffer-file-name)
+             (run-hooks 'apheleia-post-format-hook))))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied
 ;; into the autoloads file, so that the minor mode can be enabled
