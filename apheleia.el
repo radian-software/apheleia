@@ -437,7 +437,6 @@ commands, lists of strings and symbols, in the format of
     (go-mode . gofmt)
     (js-mode . prettier)
     (js3-mode . prettier)
-    (json-mode . prettier)
     (html-mode . prettier)
     (python-mode . black)
     (sass-mode . prettier)
