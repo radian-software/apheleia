@@ -289,6 +289,9 @@ provided that its exit status is 0."
                         (process-exit-status proc)
                         stderr))))))
           (set-process-sentinel (get-buffer-process stderr) #'ignore)
+          (set-process-coding-system apheleia--current-process
+                                     nil
+                                     (buffer-local-value 'buffer-file-coding-system stdin))
           (when stdin
             (process-send-string
              apheleia--current-process
