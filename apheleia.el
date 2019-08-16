@@ -421,7 +421,8 @@ argument, a buffer containing the output of the formatter."
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
     (prettier . (npx "prettier" file))
-    (gofmt . ("gofmt")))
+    (gofmt . ("gofmt"))
+    (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
 commands, lists of strings and symbols, in the format of
@@ -445,7 +446,8 @@ commands, lists of strings and symbols, in the format of
     (sass-mode . prettier)
     (typescript-mode . prettier)
     (web-mode . prettier)
-    (yaml-mode . prettier))
+    (yaml-mode . prettier)
+    (terraform-mode . terraform))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode
