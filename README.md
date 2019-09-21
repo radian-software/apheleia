@@ -89,6 +89,9 @@ the configured formatter for the current buffer. Running with a prefix
 argument will cause the command to prompt you for which formatter to
 run.
 
+Apheleia does not currently support TRAMP, and is therefore
+automatically disabled for remote files.
+
 The following user options are also available:
 
 * `apheleia-post-format-hook`: Normal hook run after Apheleia formats

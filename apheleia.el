@@ -513,6 +513,11 @@ even if a formatter is configured."
 (defvar apheleia--buffer-hash nil
   "Return value of `buffer-hash' when formatter started running.")
 
+(defun apheleia--disallowed-p ()
+  "Return an error message if Apheleia cannot be run, else nil."
+  (when (and buffer-file-name (file-remote-p buffer-file-name))
+    "Apheleia does not support remote files"))
+
 ;;;###autoload
 (defun apheleia-format-buffer (command &optional callback)
   "Run code formatter asynchronously on current buffer, preserving point.
@@ -550,24 +555,30 @@ aborted.
 If the formatter actually finishes running and the buffer is
 successfully updated (even if the formatter has not made any
 changes), CALLBACK, if provided, is invoked with no arguments."
-  (interactive (list (apheleia--get-formatter-command
-                      (if current-prefix-arg
-                          'prompt
-                        'interactive))))
-  (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
-  (apheleia--run-formatter
-   command
-   (lambda (formatted-buffer)
-     ;; Short-circuit.
-     (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
-       (apheleia--create-rcs-patch
-        (current-buffer) formatted-buffer
-        (lambda (patch-buffer)
-          (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
-            (apheleia--apply-rcs-patch
-             (current-buffer) patch-buffer)
-            (when callback
-              (funcall callback)))))))))
+  (interactive (progn
+                 (when-let ((err (apheleia--disallowed-p)))
+                   (user-error err))
+                 (list (apheleia--get-formatter-command
+                        (if current-prefix-arg
+                            'prompt
+                          'interactive)))))
+  ;; Fail silently if disallowed, since we don't want to throw an
+  ;; error on `post-command-hook'.
+  (unless (apheleia--disallowed-p)
+    (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
+    (apheleia--run-formatter
+     command
+     (lambda (formatted-buffer)
+       ;; Short-circuit.
+       (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
+         (apheleia--create-rcs-patch
+          (current-buffer) formatted-buffer
+          (lambda (patch-buffer)
+            (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
+              (apheleia--apply-rcs-patch
+               (current-buffer) patch-buffer)
+              (when callback
+                (funcall callback))))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer."
