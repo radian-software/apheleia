@@ -7,7 +7,7 @@
 ;; Homepage: https://github.com/raxod502/apheleia
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "25.2"))
-;; Version: 0
+;; Version: 1.0
 
 ;;; Commentary:
 
