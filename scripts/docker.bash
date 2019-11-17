@@ -3,11 +3,16 @@
 set -e
 set -o pipefail
 
-if [[ -z "$1" ]]; then
-    echo "docker.sh: no tag provided" 1>&2
+if [[ -n "$1" && "$1" != master && ! "$1" =~ [0-9]+\.[0-9]+ ]]; then
+    echo "docker.bash: malformed tag: $1" >&2
     exit 1
-else
-    tag="$1"
+fi
+
+tag="${1:-latest}"
+
+args=(bash)
+if [[ -n "$2" ]]; then
+    args=("${args[@]}" -c "$2")
 fi
 
 docker() {
@@ -18,15 +23,8 @@ docker() {
     fi
 }
 
-script="$(cat <<"EOF"
+docker build . -t "apheleia:$tag" \
+       --build-arg "UID=$UID"     \
+       --build-arg "VERSION=$tag"
 
-apt-get update
-apt-get install -y bsdmainutils make
-cd /src
-make help
-exec bash
-
-EOF
-)"
-
-docker run -it --rm -v "$PWD:/src" silex/emacs:"$tag" bash -c "$script"
+docker run -it --rm -v "$PWD:/home/docker/src" "apheleia:$tag" "${args[@]}"

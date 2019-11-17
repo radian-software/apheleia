@@ -100,22 +100,11 @@ The following user options are also available:
 
 ## Contributing
 
-Development of Apheleia happens using the provided Makefile:
-
-    % make help
-    usage:
-      make all        Build project and run all linters
-      make compile    Check for byte-compiler errors
-      make checkdoc   Check for missing or poorly formatted docstrings
-      make longlines  Check for lines longer than 79 characters
-      make clean      Remove build artifacts
-      make docker     Start a Docker shell; e.g. make docker VERSION=25.3
-      make help       Show this message
-
-All commits are automatically tested using `make all` (== `make`) for
-all supported Emacs versions on the excellent [Semaphore
-CI](https://semaphoreci.com/) platform. Please make sure you can
-successfully run `make` before submitting a pull request.
+Development of Apheleia happens using the provided Makefile. Run `make
+help` for documentation. All commits are automatically tested using
+`make lint` for all supported Emacs versions on the excellent
+[CircleCI](https://circleci.com/) platform. Please make sure you can
+successfully run `make lint` before submitting a pull request.
 
 If the CI fails, it may be that your change is not compatible with one
 of the Emacs versions supported by Apheleia. Suppose that the failure

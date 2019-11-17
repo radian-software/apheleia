@@ -1,20 +1,27 @@
+VERSION ?=
+CMD ?=
+
 EMACS ?= emacs
-VERSION ?= latest
 
 # The order is important for compilation.
 for_compile := *.el
 for_checkdoc := *.el
 for_longlines := $(wildcard *.el *.md *.yml) Makefile
 
-.PHONY: all
-all: compile checkdoc longlines ## Build project and run all linters
+.PHONY: help
+help: ## Show this message
+	@echo "usage:" >&2
+	@grep -h "[#]# " $(MAKEFILE_LIST)	| \
+		sed 's/^/  make /'		| \
+		sed 's/:[^#]*[#]# /|/'		| \
+		sed 's/%/LANG/'			| \
+		column -t -s'|' >&2
+
+.PHONY: lint
+lint: compile checkdoc longlines ## Build project and run all linters
 
 .PHONY: compile
 compile: ## Check for byte-compiler errors
-# Deleting the .elc file first is sometimes necessary
-# apparently when switching between different versions of
-# Emacs; otherwise we may get an error saying we can't
-# overwrite the file.
 	@for file in $(for_compile); do \
 	    echo "[compile] $$file" ;\
 	    rm -f "$${file}c" ;\
@@ -36,8 +43,8 @@ checkdoc: ## Check for missing or poorly formatted docstrings
 
 .PHONY: longlines
 longlines: ## Check for lines longer than 79 characters
-	@echo "[longlines] $(for_longlines)"
 	@for file in $(for_longlines); do \
+	    echo "[longlines] $$file" ;\
 	    cat "$$file" \
 	        | sed '/[l]onglines-start/,/longlines-stop/d' \
 	        | grep -E '.{80}' \
@@ -54,12 +61,3 @@ clean: ## Remove build artifacts
 .PHONY: docker
 docker: ## Start a Docker shell; e.g. make docker VERSION=25.3
 	@scripts/docker.bash $(VERSION)
-
-.PHONY: help
-help: ## Show this message
-	@echo "usage:" >&2
-	@grep -h "[#]# " $(MAKEFILE_LIST)	| \
-		sed 's/^/  make /'		| \
-		sed 's/:[^#]*[#]# /|/'		| \
-		sed 's/%/LANG/'			| \
-		column -t -s'|' >&2
