@@ -60,4 +60,4 @@ clean: ## Remove build artifacts
 
 .PHONY: docker
 docker: ## Start a Docker shell; e.g. make docker VERSION=25.3
-	@scripts/docker.bash $(VERSION)
+	@scripts/docker.bash "$(VERSION)" "$(CMD)"
