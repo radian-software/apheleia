@@ -362,62 +362,69 @@ as its sole argument."
   "Run a code formatter on the current buffer.
 The formatter is specified by COMMAND, a list of strings or
 symbols (see `apheleia-format-buffer'). Invoke CALLBACK with one
-argument, a buffer containing the output of the formatter."
-  (let ((input-fname nil)
-        (output-fname nil)
-        (npx nil))
-    (when (memq 'npx command)
-      (setq npx t)
-      (setq command (remq 'npx command)))
-    (unless (stringp (car command))
-      (error "Command cannot start with %S" (car command)))
-    (when npx
-      (when-let ((project-dir
-                  (locate-dominating-file default-directory "node_modules")))
-        (let ((binary
-               (expand-file-name
-                (car command)
-                (expand-file-name
-                 ".bin"
+argument, a buffer containing the output of the formatter.
+
+If COMMAND uses the symbol `file' and the current buffer is
+modified from what is written to disk, then don't do anything."
+  (cl-block nil
+    (let ((input-fname nil)
+          (output-fname nil)
+          (npx nil))
+      (when (memq 'npx command)
+        (setq npx t)
+        (setq command (remq 'npx command)))
+      (unless (stringp (car command))
+        (error "Command cannot start with %S" (car command)))
+      (when npx
+        (when-let ((project-dir
+                    (locate-dominating-file
+                     default-directory "node_modules")))
+          (let ((binary
                  (expand-file-name
-                  "node_modules"
-                  project-dir)))))
-          (when (file-executable-p binary)
-            (setcar command binary)))))
-    (when (memq 'file command)
-      (setq command (mapcar (lambda (arg)
-                              (if (eq arg 'file)
-                                  buffer-file-name
-                                arg))
-                            command)))
-    (when (memq 'input command)
-      (let ((input-fname (make-temp-file
-                          "apheleia" nil
-                          (and buffer-file-name
-                               (file-name-extension
-                                buffer-file-name 'period)))))
-        (apheleia--write-region-silently nil nil input-fname)
+                  (car command)
+                  (expand-file-name
+                   ".bin"
+                   (expand-file-name
+                    "node_modules"
+                    project-dir)))))
+            (when (file-executable-p binary)
+              (setcar command binary)))))
+      (when (memq 'file command)
         (setq command (mapcar (lambda (arg)
-                                (if (eq arg 'input)
-                                    input-fname
+                                (if (eq arg 'file)
+                                    (prog1 buffer-file-name
+                                      (when (buffer-modified-p)
+                                        (cl-return)))
                                   arg))
-                              command))))
-    (when (memq 'output command)
-      (setq output-fname (make-temp-file "apheleia"))
-      (setq command (mapcar (lambda (arg)
-                              (if (eq arg 'output)
-                                  output-fname
-                                arg))
-                            command)))
-    (apheleia--make-process
-     :command command
-     :stdin (unless input-fname
-              (current-buffer))
-     :callback (lambda (stdout)
-                 (when output-fname
-                   (erase-buffer)
-                   (insert-file-contents-literally output-fname))
-                 (funcall callback stdout)))))
+                              command)))
+      (when (memq 'input command)
+        (let ((input-fname (make-temp-file
+                            "apheleia" nil
+                            (and buffer-file-name
+                                 (file-name-extension
+                                  buffer-file-name 'period)))))
+          (apheleia--write-region-silently nil nil input-fname)
+          (setq command (mapcar (lambda (arg)
+                                  (if (eq arg 'input)
+                                      input-fname
+                                    arg))
+                                command))))
+      (when (memq 'output command)
+        (setq output-fname (make-temp-file "apheleia"))
+        (setq command (mapcar (lambda (arg)
+                                (if (eq arg 'output)
+                                    output-fname
+                                  arg))
+                              command)))
+      (apheleia--make-process
+       :command command
+       :stdin (unless input-fname
+                (current-buffer))
+       :callback (lambda (stdout)
+                   (when output-fname
+                     (erase-buffer)
+                     (insert-file-contents-literally output-fname))
+                   (funcall callback stdout))))))
 
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
