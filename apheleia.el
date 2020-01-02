@@ -120,6 +120,17 @@ for documentation on the RCS patch format."
                 (start . ,start)
                 (lines . ,lines))))))))))
 
+(defcustom apheleia-max-alignment-size 400
+  "Maximum size for diff regions that will have point aligned.
+Apheleia uses a dynamic programming algorithm to determine where
+point should be placed within a diff region, but this algorithm
+has quadratic runtime so it will lock up Emacs if it is run on a
+diff region that is too large. The value of this variable serves
+as a limit on the input size to the algorithm; larger diff
+regions will still be applied, but Apheleia won't try to move
+point correctly."
+  :type 'integer)
+
 (defun apheleia--apply-rcs-patch (content-buffer patch-buffer)
   "Apply RCS patch.
 CONTENT-BUFFER contains the text to be patched, and PATCH-BUFFER
@@ -189,8 +200,12 @@ contains the patch."
                                   (new-text (alist-get 'text addition))
                                   (old-relative-point (- p text-start))
                                   (new-relative-point
-                                   (apheleia--align-point
-                                    old-text new-text old-relative-point)))
+                                   (if (> (max (length old-text)
+                                               (length new-text))
+                                          apheleia-max-alignment-size)
+                                       old-relative-point
+                                     (apheleia--align-point
+                                      old-text new-text old-relative-point))))
                              (goto-char text-start)
                              (push `((marker . ,(point-marker))
                                      (command . set-point)
