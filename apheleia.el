@@ -357,9 +357,9 @@ as its sole argument."
          (with-current-buffer new-buffer
            (and (not (buffer-modified-p)) buffer-file-name))))
     (unless (or old-fname new-fname)
-      (with-temp-buffer
-        (apheleia--write-file-silently (make-temp-file "apheleia"))
-        (setq new-fname buffer-file-name)))
+      (with-current-buffer new-buffer
+        (setq new-fname (make-temp-file "apheleia"))
+        (apheleia--write-file-silently new-fname)))
     (with-current-buffer (get-buffer-create " *apheleia-patch*")
       (erase-buffer)
       (apheleia--make-process
