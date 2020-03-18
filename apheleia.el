@@ -625,7 +625,7 @@ changes), CALLBACK, if provided, is invoked with no arguments."
       (apheleia-format-buffer
        command
        (lambda ()
-         (ignore-errors
+         (with-demoted-errors "Apheleia: %s"
            (let ((after-save-hook
                   (remq #'apheleia--format-after-save after-save-hook)))
              (apheleia--write-file-silently buffer-file-name)
