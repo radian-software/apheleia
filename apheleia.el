@@ -591,19 +591,22 @@ changes), CALLBACK, if provided, is invoked with no arguments."
   ;; error on `post-command-hook'.
   (unless (apheleia--disallowed-p)
     (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
-    (apheleia--run-formatter
-     command
-     (lambda (formatted-buffer)
-       ;; Short-circuit.
-       (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
-         (apheleia--create-rcs-patch
-          (current-buffer) formatted-buffer
-          (lambda (patch-buffer)
-            (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
-              (apheleia--apply-rcs-patch
-               (current-buffer) patch-buffer)
-              (when callback
-                (funcall callback))))))))))
+    (let ((cur-buffer (current-buffer)))
+      (apheleia--run-formatter
+       command
+       (lambda (formatted-buffer)
+         (with-current-buffer cur-buffer
+           ;; Short-circuit.
+           (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
+             (apheleia--create-rcs-patch
+              (current-buffer) formatted-buffer
+              (lambda (patch-buffer)
+                (with-current-buffer cur-buffer
+                  (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
+                    (apheleia--apply-rcs-patch
+                     (current-buffer) patch-buffer)
+                    (when callback
+                      (funcall callback)))))))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer."
