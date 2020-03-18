@@ -318,15 +318,19 @@ provided that its exit status is 0."
 
 (defun apheleia--write-region-silently
     (start end filename &optional
-           append _visit lockname mustbenew write-region)
+           append visit lockname mustbenew write-region)
   "Like `write-region', but silent.
 START, END, FILENAME, APPEND, VISIT, LOCKNAME, and MUSTBENEW are
 as in `write-region'. WRITE-REGION is used instead of the actual
 `write-region' function, if provided."
   (funcall (or write-region #'write-region)
            start end filename append 0 lockname mustbenew)
-  (set-buffer-modified-p nil)
-  (set-visited-file-modtime))
+  (when (or (eq visit t) (stringp visit))
+    (setq buffer-file-name (if (eq visit t)
+                               filename
+                             visit))
+    (set-visited-file-modtime)
+    (set-buffer-modified-p nil)))
 
 (defun apheleia--write-file-silently (&optional filename)
   "Write contents of current buffer into file FILENAME, silently.
@@ -336,7 +340,7 @@ FILENAME defaults to value of variable `buffer-file-name'."
               (lambda (start end filename &optional
                              append _visit lockname mustbenew)
                 (apheleia--write-region-silently
-                 start end filename append 0 lockname mustbenew write-region)))
+                 start end filename append t lockname mustbenew write-region)))
              (message (symbol-function #'message))
              ((symbol-function #'message)
               (lambda (format &rest args)
