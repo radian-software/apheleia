@@ -97,6 +97,11 @@ The following user options are also available:
 * `apheleia-post-format-hook`: Normal hook run after Apheleia formats
   a buffer. Run if the formatting is successful, even when no changes
   are made to the buffer.
+* `apheleia-max-alignment-size`: The maximum number of characters that
+  a diff region can have to be processed using Apheleia's dynamic
+  programming algorithm for point alignment. This cannot be too big or
+  Emacs will hang noticeably on large reformatting operations, since
+  the DP algorithm is quadratic-time.
 
 ## Contributing
 
