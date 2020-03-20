@@ -326,11 +326,9 @@ as in `write-region'. WRITE-REGION is used instead of the actual
   (funcall (or write-region #'write-region)
            start end filename append 0 lockname mustbenew)
   (when (or (eq visit t) (stringp visit))
-    (setq buffer-file-name (if (eq visit t)
-                               filename
-                             visit))
-    (set-visited-file-modtime)
-    (set-buffer-modified-p nil)))
+    (let ((buffer-file-name (if (eq visit t) filename visit)))
+      (set-visited-file-modtime)
+      (set-buffer-modified-p nil))))
 
 (defun apheleia--write-file-silently (&optional filename)
   "Write contents of current buffer into file FILENAME, silently.
