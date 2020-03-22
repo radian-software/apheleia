@@ -334,7 +334,8 @@ as in `write-region'. WRITE-REGION is used instead of the actual
 
 (defun apheleia--write-file-silently (&optional filename)
   "Write contents of current buffer into file FILENAME, silently.
-FILENAME defaults to value of variable `buffer-file-name'."
+FILENAME defaults to value of variable `buffer-file-name'. Do not
+mark the buffer as visiting FILENAME."
   (cl-letf* ((write-region (symbol-function #'write-region))
              ((symbol-function #'write-region)
               (lambda (start end filename &optional
@@ -363,7 +364,7 @@ as its sole argument."
     (unless (or old-fname new-fname)
       (with-current-buffer new-buffer
         (setq new-fname (make-temp-file "apheleia"))
-        (apheleia--write-file-silently new-fname)))
+        (apheleia--write-region-silently (point-min) (point-max) new-fname)))
     (with-current-buffer (get-buffer-create " *apheleia-patch*")
       (erase-buffer)
       (apheleia--make-process
