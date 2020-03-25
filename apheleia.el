@@ -323,8 +323,11 @@ provided that its exit status is 0."
 START, END, FILENAME, APPEND, VISIT, LOCKNAME, and MUSTBENEW are
 as in `write-region'. WRITE-REGION is used instead of the actual
 `write-region' function, if provided."
-  (funcall (or write-region #'write-region)
-           start end filename append 0 lockname mustbenew)
+  ;; Avoid infinite loop.
+  (let ((after-save-hook
+         (remq #'apheleia--format-after-save after-save-hook)))
+    (funcall (or write-region #'write-region)
+             start end filename append 0 lockname mustbenew))
   (when (or (eq visit t) (stringp visit))
     (setq buffer-file-name (if (eq visit t)
                                filename
@@ -631,10 +634,8 @@ changes), CALLBACK, if provided, is invoked with no arguments."
        command
        (lambda ()
          (with-demoted-errors "Apheleia: %s"
-           (let ((after-save-hook
-                  (remq #'apheleia--format-after-save after-save-hook)))
-             (apheleia--write-file-silently buffer-file-name)
-             (run-hooks 'apheleia-post-format-hook))))))))
+           (apheleia--write-file-silently buffer-file-name)
+           (run-hooks 'apheleia-post-format-hook)))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied
 ;; into the autoloads file, so that the minor mode can be enabled
