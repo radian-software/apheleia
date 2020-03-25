@@ -323,11 +323,8 @@ provided that its exit status is 0."
 START, END, FILENAME, APPEND, VISIT, LOCKNAME, and MUSTBENEW are
 as in `write-region'. WRITE-REGION is used instead of the actual
 `write-region' function, if provided."
-  ;; Avoid infinite loop.
-  (let ((after-save-hook
-         (remq #'apheleia--format-after-save after-save-hook)))
-    (funcall (or write-region #'write-region)
-             start end filename append 0 lockname mustbenew))
+  (funcall (or write-region #'write-region)
+           start end filename append 0 lockname mustbenew)
   (when (or (eq visit t) (stringp visit))
     (setq buffer-file-name (if (eq visit t)
                                filename
@@ -350,7 +347,10 @@ mark the buffer as visiting FILENAME."
               (lambda (format &rest args)
                 (unless (equal format "Saving file %s...")
                   (apply message format args)))))
-    (write-file (or filename buffer-file-name))))
+    ;; Avoid infinite loop.
+    (let ((after-save-hook
+           (remq #'apheleia--format-after-save after-save-hook)))
+      (write-file (or filename buffer-file-name)))))
 
 (defun apheleia--create-rcs-patch (old-buffer new-buffer callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
