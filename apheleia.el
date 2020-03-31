@@ -451,10 +451,10 @@ modified from what is written to disk, then don't do anything."
 
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
+    (brittany . ("brittany" file))
     (prettier . (npx "prettier" file))
     (gofmt . ("gofmt"))
-    (terraform . ("terraform" "fmt" "-"))
-    (brittany . ("brittany" file)))
+    (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
 commands, lists of strings and symbols, in the format of
