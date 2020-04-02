@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Bugs fixed
+* Previously, there were some race conditions related to switching the
+  current buffer. In particular, if you switched the current buffer
+  right after saving, or save two buffers in quick succession, then it
+  was possible for one buffer to be overwritten or to not be
+  formatted. These problems have been fixed ([#8]).
+* Previously, enabling `undo-tree-auto-save-history` caused Apheleia
+  to mark the buffer as modified after formatting. This has been
+  fixed ([#10]).
+
+[#8]: https://github.com/raxod502/apheleia/issues/8
+[#10]: https://github.com/raxod502/apheleia/issues/10
+
+## 1.1 (released 2020-04-02)
 ### Enhancements
 * There is now a maximum length for the dynamic programming algorithm,
   controlled by `apheleia-max-alignment-size`. This prevents Emacs
@@ -24,19 +38,9 @@ The format is based on [Keep a Changelog].
   buffer that had no backing file. This has been fixed, and Apheleia
   can run correctly on buffers both with and without backing files
   ([#9]).
-* Previously, there were some race conditions related to switching the
-  current buffer. In particular, if you switched the current buffer
-  right after saving, or save two buffers in quick succession, then it
-  was possible for one buffer to be overwritten or to not be
-  formatted. These problems have been fixed ([#8]).
-* Previously, enabling `undo-tree-auto-save-history` caused Apheleia
-  to mark the buffer as modified after formatting. This has been
-  fixed ([#10]).
 
 [#4]: https://github.com/raxod502/apheleia/issues/4
-[#8]: https://github.com/raxod502/apheleia/issues/8
 [#9]: https://github.com/raxod502/apheleia/pull/9
-[#10]: https://github.com/raxod502/apheleia/issues/10
 
 ## 1.0 (released 2019-09-20)
 ### Added
