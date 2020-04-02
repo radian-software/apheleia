@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 1.1 (released 2020-04-02)
 ### Enhancements
 * There is now a maximum length for the dynamic programming algorithm,
   controlled by `apheleia-max-alignment-size`. This prevents Emacs
