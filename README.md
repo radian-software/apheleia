@@ -105,24 +105,8 @@ The following user options are also available:
 
 ## Contributing
 
-Development of Apheleia happens using the provided Makefile. Run `make
-help` for documentation. All commits are automatically tested using
-`make lint` for all supported Emacs versions on the excellent
-[CircleCI](https://circleci.com/) platform. Please make sure you can
-successfully run `make lint` before submitting a pull request.
-
-If the CI fails, it may be that your change is not compatible with one
-of the Emacs versions supported by Apheleia. Suppose that the failure
-is for Emacs 25.3. To test this locally, you can install
-[Docker](https://www.docker.com/) and run:
-
-    % make docker VERSION=25.3
-
-This will start a shell inside of Docker with the specified version of
-Emacs available. The Apheleia source code on your filesystem is
-synchronized with the filesystem inside of Docker, so you need not
-restart the shell after making changes. To test, simply use the same
-Makefile targets as usual.
+Please see [the contributor guide for my
+projects](https://github.com/raxod502/contributor-guide).
 
 ## Acknowledgements
 
