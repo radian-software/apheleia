@@ -75,6 +75,15 @@ variables:
   like `black` and `prettier`) to commands used to run those
   formatters (such as `("black" "-")` and `(npx "prettier" input)`).
   See the docstring for more information.
+    * You can manipulate this alist using standard Emacs functions.
+      For example, to add some command-line options to Black, you
+      could use:
+
+      ```elisp
+      (setf (alist-get 'black apheleia-formatters)
+            '("black" "--option" "..." "-"))
+      ```
+
 * `apheleia-mode-alist`: Alist mapping major modes and filename
   regexps to names of formatters to use in those modes and files. See
   the docstring for more information.
