@@ -13,9 +13,14 @@ The format is based on [Keep a Changelog].
 * Previously, enabling `undo-tree-auto-save-history` caused Apheleia
   to mark the buffer as modified after formatting. This has been
   fixed ([#10]).
+* Under some circumstances Apheleia would cause the buffer's undo
+  history to be lost. An attempt has been made to fix this, although
+  it's not obvious how to reproduce the problem so the fix has not
+  been verified ([#15]).
 
 [#8]: https://github.com/raxod502/apheleia/issues/8
 [#10]: https://github.com/raxod502/apheleia/issues/10
+[#15]: https://github.com/raxod502/apheleia/issues/15
 
 ## 1.1 (released 2020-04-02)
 ### Enhancements
