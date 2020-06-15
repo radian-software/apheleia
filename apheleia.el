@@ -132,120 +132,133 @@ regions will still be applied, but Apheleia won't try to move
 point correctly."
   :type 'integer)
 
+(defmacro apheleia--with-single-undo (content-buffer &rest body)
+  "Within CONTENT-BUFFER, execute BODY as a single undo step."
+  (declare (indent 1))
+  (let ((marker (cl-gensym "marker")))
+    `(let ((,marker (prepare-change-group ,content-buffer)))
+       (unwind-protect
+           (progn ,@body)
+         (undo-amalgamate-change-group ,marker)))))
+
 (defun apheleia--apply-rcs-patch (content-buffer patch-buffer)
   "Apply RCS patch.
 CONTENT-BUFFER contains the text to be patched, and PATCH-BUFFER
 contains the patch."
-  (let ((commands nil)
-        (point-list nil)
-        (window-line-list nil))
-    (with-current-buffer content-buffer
-      (push (cons nil (point)) point-list)
-      (dolist (w (get-buffer-window-list nil nil t))
-        (push (cons w (window-point w)) point-list)
-        (push (cons w (count-lines (window-start w) (point)))
-              window-line-list)))
-    (with-current-buffer patch-buffer
-      (apheleia--map-rcs-patch
-       (lambda (command)
-         (with-current-buffer content-buffer
-           ;; Could be optimized significantly by moving only as many
-           ;; lines as needed, rather than returning to the beginning
-           ;; of the buffer first.
-           (save-excursion
-             (goto-char (point-min))
-             (forward-line (1- (alist-get 'start command)))
-             ;; Account for the off-by-one error in the RCS patch spec
-             ;; (namely, text is added *after* the line mentioned in
-             ;; the patch).
-             (when (eq (alist-get 'command command) 'addition)
-               (forward-line))
-             (push `(marker . ,(point-marker)) command)
-             (push command commands)
-             ;; If we delete a region just before inserting new text
-             ;; at the same place, then it is a replacement. In this
-             ;; case, check if the replaced region includes the window
-             ;; point for any window currently displaying the content
-             ;; buffer. If so, figure out where that window point
-             ;; should be moved to, and record the information in an
-             ;; additional command.
-             ;;
-             ;; See <https://www.gnu.org/software/emacs/manual/html_node/elisp/Window-Point.html>.
-             ;;
-             ;; Note that the commands get pushed in reverse order
-             ;; because of how linked lists work.
-             (let ((deletion (nth 1 commands))
-                   (addition (nth 0 commands)))
-               (when (and (eq (alist-get 'command deletion) 'deletion)
-                          (eq (alist-get 'command addition) 'addition)
-                          ;; Again with the weird off-by-one
-                          ;; computations. For example, if you replace
-                          ;; lines 68 through 71 inclusive, then the
-                          ;; deletion is for line 68 and the addition
-                          ;; is for line 70. Blame RCS.
-                          (= (+ (alist-get 'start deletion)
-                                (alist-get 'lines deletion)
-                                -1)
-                             (alist-get 'start addition)))
-                 (let ((text-start (alist-get 'marker deletion)))
-                   (forward-line (alist-get 'lines deletion))
-                   (let ((text-end (point)))
-                     (dolist (entry point-list)
-                       ;; Check if the (window) point is within the
-                       ;; replaced region.
-                       (cl-destructuring-bind (w . p) entry
-                         (when (and (< text-start p)
-                                    (< p text-end))
-                           (let* ((old-text (buffer-substring-no-properties
-                                             text-start text-end))
-                                  (new-text (alist-get 'text addition))
-                                  (old-relative-point (- p text-start))
-                                  (new-relative-point
-                                   (if (> (max (length old-text)
-                                               (length new-text))
-                                          apheleia-max-alignment-size)
-                                       old-relative-point
-                                     (apheleia--align-point
-                                      old-text new-text old-relative-point))))
-                             (goto-char text-start)
-                             (push `((marker . ,(point-marker))
-                                     (command . set-point)
-                                     (window . ,w)
-                                     (relative-point . ,new-relative-point))
-                                   commands))))))))))))))
-    (with-current-buffer content-buffer
-      (let ((move-to nil))
-        (save-excursion
-          (dolist (command (nreverse commands))
-            (goto-char (alist-get 'marker command))
-            (pcase (alist-get 'command command)
-              (`addition
-               (insert (alist-get 'text command)))
-              (`deletion
-               (let ((text-start (point)))
-                 (forward-line (alist-get 'lines command))
-                 (delete-region text-start (point))))
-              (`set-point
-               (let ((new-point
-                      (+ (point) (alist-get 'relative-point command))))
-                 (if-let ((w (alist-get 'window command)))
-                     (set-window-point w new-point)
-                   (setq move-to new-point)))))))
-        (when move-to
-          (goto-char move-to))))
-    ;; Restore the scroll position of each window displaying the
-    ;; buffer.
-    (dolist (entry window-line-list)
-      (cl-destructuring-bind (w . old-window-line) entry
-        (let ((new-window-line
-               (count-lines (window-start w) (point))))
-          (with-selected-window w
-            ;; Sometimes if the text is less than a buffer long, and
-            ;; we do a deletion, it might not be possible to keep the
-            ;; vertical position of point the same by scrolling.
-            ;; That's okay. We just go as far as we can.
-            (ignore-errors
-              (scroll-down (- old-window-line new-window-line)))))))))
+  (apheleia--with-single-undo
+      content-buffer
+    (let ((commands nil)
+          (point-list nil)
+          (window-line-list nil))
+      (with-current-buffer content-buffer
+        (push (cons nil (point)) point-list)
+        (dolist (w (get-buffer-window-list nil nil t))
+          (push (cons w (window-point w)) point-list)
+          (push (cons w (count-lines (window-start w) (point)))
+                window-line-list)))
+      (with-current-buffer patch-buffer
+        (apheleia--map-rcs-patch
+         (lambda (command)
+           (with-current-buffer content-buffer
+             ;; Could be optimized significantly by moving only as many
+             ;; lines as needed, rather than returning to the beginning
+             ;; of the buffer first.
+             (save-excursion
+               (goto-char (point-min))
+               (forward-line (1- (alist-get 'start command)))
+               ;; Account for the off-by-one error in the RCS patch spec
+               ;; (namely, text is added *after* the line mentioned in
+               ;; the patch).
+               (when (eq (alist-get 'command command) 'addition)
+                 (forward-line))
+               (push `(marker . ,(point-marker)) command)
+               (push command commands)
+               ;; If we delete a region just before inserting new text
+               ;; at the same place, then it is a replacement. In this
+               ;; case, check if the replaced region includes the window
+               ;; point for any window currently displaying the content
+               ;; buffer. If so, figure out where that window point
+               ;; should be moved to, and record the information in an
+               ;; additional command.
+               ;;
+               ;; See <https://www.gnu.org/software/emacs/manual/html_node/elisp/Window-Point.html>.
+               ;;
+               ;; Note that the commands get pushed in reverse order
+               ;; because of how linked lists work.
+               (let ((deletion (nth 1 commands))
+                     (addition (nth 0 commands)))
+                 (when (and (eq (alist-get 'command deletion) 'deletion)
+                            (eq (alist-get 'command addition) 'addition)
+                            ;; Again with the weird off-by-one
+                            ;; computations. For example, if you replace
+                            ;; lines 68 through 71 inclusive, then the
+                            ;; deletion is for line 68 and the addition
+                            ;; is for line 70. Blame RCS.
+                            (= (+ (alist-get 'start deletion)
+                                  (alist-get 'lines deletion)
+                                  -1)
+                               (alist-get 'start addition)))
+                   (let ((text-start (alist-get 'marker deletion)))
+                     (forward-line (alist-get 'lines deletion))
+                     (let ((text-end (point)))
+                       (dolist (entry point-list)
+                         ;; Check if the (window) point is within the
+                         ;; replaced region.
+                         (cl-destructuring-bind (w . p) entry
+                           (when (and (< text-start p)
+                                      (< p text-end))
+                             (let* ((old-text (buffer-substring-no-properties
+                                               text-start text-end))
+                                    (new-text (alist-get 'text addition))
+                                    (old-relative-point (- p text-start))
+                                    (new-relative-point
+                                     (if (> (max (length old-text)
+                                                 (length new-text))
+                                            apheleia-max-alignment-size)
+                                         old-relative-point
+                                       (apheleia--align-point
+                                        old-text
+                                        new-text
+                                        old-relative-point))))
+                               (goto-char text-start)
+                               (push `((marker . ,(point-marker))
+                                       (command . set-point)
+                                       (window . ,w)
+                                       (relative-point . ,new-relative-point))
+                                     commands))))))))))))))
+      (with-current-buffer content-buffer
+        (let ((move-to nil))
+          (save-excursion
+            (dolist (command (nreverse commands))
+              (goto-char (alist-get 'marker command))
+              (pcase (alist-get 'command command)
+                (`addition
+                 (insert (alist-get 'text command)))
+                (`deletion
+                 (let ((text-start (point)))
+                   (forward-line (alist-get 'lines command))
+                   (delete-region text-start (point))))
+                (`set-point
+                 (let ((new-point
+                        (+ (point) (alist-get 'relative-point command))))
+                   (if-let ((w (alist-get 'window command)))
+                       (set-window-point w new-point)
+                     (setq move-to new-point)))))))
+          (when move-to
+            (goto-char move-to))))
+      ;; Restore the scroll position of each window displaying the
+      ;; buffer.
+      (dolist (entry window-line-list)
+        (cl-destructuring-bind (w . old-window-line) entry
+          (let ((new-window-line
+                 (count-lines (window-start w) (point))))
+            (with-selected-window w
+              ;; Sometimes if the text is less than a buffer long, and
+              ;; we do a deletion, it might not be possible to keep the
+              ;; vertical position of point the same by scrolling.
+              ;; That's okay. We just go as far as we can.
+              (ignore-errors
+                (scroll-down (- old-window-line new-window-line))))))))))
 
 (defvar apheleia--current-process nil
   "Current process that Apheleia is running, or nil.

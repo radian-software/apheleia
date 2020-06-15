@@ -38,9 +38,14 @@ The format is based on [Keep a Changelog].
   buffer that had no backing file. This has been fixed, and Apheleia
   can run correctly on buffers both with and without backing files
   ([#9]).
+* Under some circumstances Apheleia would cause the buffer's undo
+  history to be lost. An attempt has been made to fix this, although
+  it's not obvious how to reproduce the problem so the fix has not
+  been verified ([#17]).
 
 [#4]: https://github.com/raxod502/apheleia/issues/4
 [#9]: https://github.com/raxod502/apheleia/pull/9
+[#17]: https://github.com/raxod502/apheleia/pull/17
 
 ## 1.0 (released 2019-09-20)
 ### Added
