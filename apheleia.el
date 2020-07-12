@@ -455,6 +455,7 @@ modified from what is written to disk, then don't do anything."
     (brittany . ("brittany" file))
     (prettier . (npx "prettier" file))
     (gofmt . ("gofmt"))
+    (ocamlformat . ("ocamlformat" file))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
@@ -481,6 +482,7 @@ commands, lists of strings and symbols, in the format of
     (web-mode . prettier)
     (yaml-mode . prettier)
     (terraform-mode . terraform)
+    (tuareg-mode . ocamlformat)
     (haskell-mode . brittany))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
