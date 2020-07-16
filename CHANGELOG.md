@@ -3,7 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 1.1.1 (released 2020-07-16)
+### Formatters
+* New: [OCamlFormat](https://github.com/ocaml-ppx/ocamlformat) for
+  [Ocaml](https://ocaml.org/) ([#19]).
+
 ### Bugs fixed
 * Previously, there were some race conditions related to switching the
   current buffer. In particular, if you switched the current buffer
@@ -13,9 +17,13 @@ The format is based on [Keep a Changelog].
 * Previously, enabling `undo-tree-auto-save-history` caused Apheleia
   to mark the buffer as modified after formatting. This has been
   fixed ([#10]).
+* Apheleia now tries harder to accidentally enter an infinite
+  formatting loop ([#12]).
 
 [#8]: https://github.com/raxod502/apheleia/issues/8
 [#10]: https://github.com/raxod502/apheleia/issues/10
+[#12]: https://github.com/raxod502/apheleia/pull/12
+[#19]: https://github.com/raxod502/apheleia/pull/19
 
 ## 1.1 (released 2020-04-02)
 ### Enhancements
