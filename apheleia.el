@@ -293,7 +293,7 @@ provided that its exit status is 0."
                      (if (funcall
                           (or exit-status
                               (lambda (status)
-                                (= 0 (logand 255 status))))
+                                (= 0 status)))
                           (process-exit-status proc))
                          (when callback
                            (funcall callback stdout))
@@ -315,11 +315,7 @@ provided that its exit status is 0."
              (with-current-buffer stdin
                (buffer-string))))
           (process-send-eof apheleia--current-process))
-      (error
-       (unless (string-match-p
-                "process .+ no longer connected to pipe; closed it"
-                (error-message-string e))
-         (message "Failed to run %s: %s" name (error-message-string e)))))))
+      (error (message "Failed to run %s: %s" name (error-message-string e))))))
 
 (defun apheleia--write-region-silently
     (start end filename &optional

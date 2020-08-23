@@ -3,12 +3,6 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
-### Bugs fixed
-* Apheleia experiences difficulty formatting buffers longer than 2^16
-  characters. Previously, the formatting operation would fail entirely
-  in this case. Now it works, albeit with degraded performance.
-
 ## 1.1.1 (released 2020-07-16)
 ### Formatters
 * New: [OCamlFormat](https://github.com/ocaml-ppx/ocamlformat) for
