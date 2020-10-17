@@ -415,7 +415,7 @@ modified from what is written to disk, then don't do anything."
               (setcar command binary)))))
       (when (memq 'file command)
         (setq command (mapcar (lambda (arg)
-                                (if (eq arg 'file)
+                                (if (memq arg '(file filepath))
                                     (prog1 buffer-file-name
                                       (when (buffer-modified-p)
                                         (cl-return)))
@@ -453,7 +453,7 @@ modified from what is written to disk, then don't do anything."
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
     (brittany . ("brittany" file))
-    (prettier . (npx "prettier" file))
+    (prettier . (npx "prettier" "--stdin-filepath" filepath))
     (gofmt . ("gofmt"))
     (ocamlformat . ("ocamlformat" file))
     (terraform . ("terraform" "fmt" "-")))
@@ -568,17 +568,19 @@ In Lisp code, COMMAND is similar to what you pass to
 current buffer are passed to the command on stdin, and the output
 is read from stdout. However, if you use the symbol `file' as one
 of the elements of COMMAND, then the filename of the current
-buffer is substituted for it. If you instead use the symbol
-`input' as one of the elements of COMMAND, then the contents of
-the current buffer are written to a temporary file and its name
-is substituted for `input'. Also, if you use the symbol `output'
-as one of the elements of COMMAND, then it is substituted with
-the name of a temporary file. In that case, it is expected that
-the command writes to that file, and the file is then read into
-an Emacs buffer. Finally, if you use the symbol `npx' as one of
-the elements of COMMAND, then the first string element of COMMAND
-is resolved inside node_modules/.bin if such a directory exists
-anywhere above the current `default-directory'.
+buffer is substituted for it. (Use `filepath' instead of `file'
+if you need the filename of the current buffer, but you still
+want its contents to be passed on stdin.) If you instead use the
+symbol `input' as one of the elements of COMMAND, then the
+contents of the current buffer are written to a temporary file
+and its name is substituted for `input'. Also, if you use the
+symbol `output' as one of the elements of COMMAND, then it is
+substituted with the name of a temporary file. In that case, it
+is expected that the command writes to that file, and the file is
+then read into an Emacs buffer. Finally, if you use the symbol
+`npx' as one of the elements of COMMAND, then the first string
+element of COMMAND is resolved inside node_modules/.bin if such a
+directory exists anywhere above the current `default-directory'.
 
 In any case, after the formatter finishes running, the diff
 utility is invoked to determine what changes it made. That diff

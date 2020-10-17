@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Bugs fixed
+* Prettier now respects `.prettierignore` ([#21]).
+
+[#21]: https://github.com/raxod502/apheleia/issues/21
+
 ## 1.1.1 (released 2020-07-16)
 ### Formatters
 * New: [OCamlFormat](https://github.com/ocaml-ppx/ocamlformat) for
