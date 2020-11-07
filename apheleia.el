@@ -413,7 +413,7 @@ modified from what is written to disk, then don't do anything."
                     project-dir)))))
             (when (file-executable-p binary)
               (setcar command binary)))))
-      (when (memq 'file command)
+      (when (or (memq 'file command) (memq 'filepath command))
         (setq command (mapcar (lambda (arg)
                                 (if (memq arg '(file filepath))
                                     (prog1 buffer-file-name
