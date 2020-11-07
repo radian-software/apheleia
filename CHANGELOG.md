@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Enhancements
+* Prettier is now enabled in `json-mode`.
+
 ### Bugs fixed
 * Prettier now respects `.prettierignore` ([#21]).
 
