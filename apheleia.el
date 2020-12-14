@@ -393,10 +393,19 @@ modified from what is written to disk, then don't do anything."
   (cl-block nil
     (let ((input-fname nil)
           (output-fname nil)
-          (npx nil))
+          (npx nil)
+          (inplace nil))
       (when (memq 'npx command)
         (setq npx t)
         (setq command (remq 'npx command)))
+      (when (memq 'inplace command)
+        (setq inplace t)
+        (setq command (remq 'inplace command))
+        (when (or (memq 'file command)
+                  (memq 'output command))
+          (error "Command with `inplace' cannot include `file' or `output'"))
+        (unless (memq 'input command)
+          (error "Command with `inplace' must include `input'")))
       (unless (stringp (car command))
         (error "Command cannot start with %S" (car command)))
       (when npx
@@ -414,25 +423,22 @@ modified from what is written to disk, then don't do anything."
             (when (file-executable-p binary)
               (setcar command binary)))))
       (when (or (memq 'file command) (memq 'filepath command))
+        (setq input-fname buffer-file-name))
+      (when (memq 'input command)
+        (setq input-fname (make-temp-file
+                           "apheleia" nil
+                           (and buffer-file-name
+                                (file-name-extension
+                                 buffer-file-name 'period))))
+        (apheleia--write-region-silently nil nil input-fname))
+      (when input-fname
         (setq command (mapcar (lambda (arg)
-                                (if (memq arg '(file filepath))
+                                (if (memq arg '(file filepath input))
                                     (prog1 buffer-file-name
                                       (when (buffer-modified-p)
                                         (cl-return)))
                                   arg))
                               command)))
-      (when (memq 'input command)
-        (let ((input-fname (make-temp-file
-                            "apheleia" nil
-                            (and buffer-file-name
-                                 (file-name-extension
-                                  buffer-file-name 'period)))))
-          (apheleia--write-region-silently nil nil input-fname)
-          (setq command (mapcar (lambda (arg)
-                                  (if (eq arg 'input)
-                                      input-fname
-                                    arg))
-                                command))))
       (when (memq 'output command)
         (setq output-fname (make-temp-file "apheleia"))
         (setq command (mapcar (lambda (arg)
@@ -440,6 +446,9 @@ modified from what is written to disk, then don't do anything."
                                     output-fname
                                   arg))
                               command)))
+      (when (memq 'inplace command)
+        (setq output-fname input-fname))
+      (message "input-fname: %S, output-fname: %S" input-fname output-fname)
       (apheleia--make-process
        :command command
        :stdin (unless input-fname
@@ -567,21 +576,33 @@ buffer. With a prefix argument, prompt always.
 In Lisp code, COMMAND is similar to what you pass to
 `make-process', except as follows. Normally, the contents of the
 current buffer are passed to the command on stdin, and the output
-is read from stdout. However, if you use the symbol `file' as one
-of the elements of COMMAND, then the filename of the current
-buffer is substituted for it. (Use `filepath' instead of `file'
-if you need the filename of the current buffer, but you still
-want its contents to be passed on stdin.) If you instead use the
-symbol `input' as one of the elements of COMMAND, then the
-contents of the current buffer are written to a temporary file
-and its name is substituted for `input'. Also, if you use the
-symbol `output' as one of the elements of COMMAND, then it is
-substituted with the name of a temporary file. In that case, it
-is expected that the command writes to that file, and the file is
-then read into an Emacs buffer. Finally, if you use the symbol
-`npx' as one of the elements of COMMAND, then the first string
-element of COMMAND is resolved inside node_modules/.bin if such a
-directory exists anywhere above the current `default-directory'.
+is read from stdout.
+
+If you use the symbol `file' as one of the elements of COMMAND,
+then the filename of the current buffer is substituted for
+it. (Use `filepath' instead of `file' if you need the filename of
+the current buffer, but you still want its contents to be passed
+on stdin.)
+
+If you use the symbol `input' as one of the elements of COMMAND,
+then the contents of the current buffer are written to a
+temporary file and its name is substituted for `input'. Also, if
+you use the symbol `output' as one of the elements of COMMAND,
+then it is substituted with the name of a temporary file. In that
+case, it is expected that the command writes to that file, and
+the file is then read into an Emacs buffer.
+
+If you use the symbol `inplace' as one of the elements of
+COMMAND (this is only allowed if you've also used `file' or
+`input', i.e. the buffer contents are not being passed on stdin),
+then it's assumed that the formatter will write directly to the
+input file, and the resulting formatted code will be read back
+out from the file after the formatter has run.
+
+If you use the symbol `npx' as one of the elements of COMMAND,
+then the first string element of COMMAND is resolved (when
+possible) inside node_modules/.bin if such a directory exists
+anywhere above the current `default-directory'.
 
 In any case, after the formatter finishes running, the diff
 utility is invoked to determine what changes it made. That diff
