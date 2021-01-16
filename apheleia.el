@@ -488,7 +488,11 @@ commands, lists of strings and symbols, in the format of
     (tuareg-mode . ocamlformat)
     (haskell-mode . brittany)
     (rust-mode . rustfmt)
-    (rustic-mode . rustfmt))
+    (rustic-mode . rustfmt)
+    (TeX-latex-mode . latexindent)
+    (TeX-mode . latexindent)
+    (LaTeX-mode . latexindent)
+    (latex-mode . latexindent))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode
