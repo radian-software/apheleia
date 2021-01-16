@@ -456,7 +456,9 @@ modified from what is written to disk, then don't do anything."
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
     (gofmt . ("gofmt"))
     (ocamlformat . ("ocamlformat" file))
-    (terraform . ("terraform" "fmt" "-")))
+    (terraform . ("terraform" "fmt" "-"))
+    (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout" file))
+    (latexindent . ("latexindent" file)))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
 commands, lists of strings and symbols, in the format of
@@ -484,7 +486,9 @@ commands, lists of strings and symbols, in the format of
     (yaml-mode . prettier)
     (terraform-mode . terraform)
     (tuareg-mode . ocamlformat)
-    (haskell-mode . brittany))
+    (haskell-mode . brittany)
+    (rust-mode . rustfmt)
+    (rustic-mode . rustfmt))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode
