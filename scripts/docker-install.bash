@@ -12,8 +12,8 @@ uid="$1"
 
 # Hashicorp repo for Terraform
 curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor | \
-    sudo tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null
-sudo apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+    tee /usr/share/keyrings/docker-ce-archive-keyring.gpg > /dev/null
+apt-add-repository -y "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 
 apt_packages="
 # needed to run build system
