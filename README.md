@@ -111,6 +111,38 @@ The following user options are also available:
   programming algorithm for point alignment. This cannot be too big or
   Emacs will hang noticeably on large reformatting operations, since
   the DP algorithm is quadratic-time.
+  
+## Supported Modes and Formatters
+
+A mode with no link means it is built in to Emacs by default.
+| Mode                                                                 |
+|:---------------------------------------------------------------------|
+| css-mode                                                             |
+| [go-mode](https://github.com/dominikh/go-mode.el)                    |
+| js-mode                                                              |
+| [js3-mode](https://github.com/tamzinblake/js3-mode)                  |
+| [json-mode](https://github.com/joshwnj/json-mode)                    |
+| html-mode                                                            |
+| python-mode                                                          |
+| [sass-mode](https://github.com/nex3/sass-mode)                       |
+| [typescript-mode](https://github.com/emacs-typescript/typescript.el) |
+| [web-mode](https://github.com/fxbois/web-mode)                       |
+| [yaml-mode](https://github.com/yoshiki/yaml-mode)                    |
+| [terraform-mode](https://github.com/emacsorphanage/terraform-mode)   |
+| [tuareg-mode](https://github.com/ocaml/tuareg)                       |
+| [haskell-mode](https://github.com/haskell/haskell-mode)              |
+
+
+| Formatter                                                    | Notes                 |
+|:-------------------------------------------------------------|:----------------------|
+| [black](https://github.com/psf/black)                        |                       |
+| [brittany](https://github.com/lspitzner/brittany)            |                       |
+| [prettier](https://prettier.io/)                             |                       |
+| [prettier-babel](https://prettier.io/)                       | ensure --parser babel |
+| [gofmt](https://golang.org/cmd/gofmt/)                       |                       |
+| [ocamlformat](https://github.com/ocaml-ppx/ocamlformat)      |                       |
+| [terraform](https://www.terraform.io/docs/commands/fmt.html) |                       |
+
 
 ## Contributing
 
