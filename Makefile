@@ -1,6 +1,9 @@
 VERSION ?=
 CMD ?=
 
+SCRIPTDIR=scripts
+TESTDIR=test
+
 EMACS ?= emacs
 
 # The order is important for compilation.
@@ -60,4 +63,19 @@ clean: ## Remove build artifacts
 
 .PHONY: docker
 docker: ## Start a Docker shell; e.g. make docker VERSION=25.3
-	@scripts/docker.bash "$(VERSION)" "$(CMD)"
+	@"$(SCRIPTDIR)"/docker.bash "$(VERSION)" "$(CMD)"
+
+.PHONY: test
+test: ## Run formatter test suite
+	@cd "$(TESTDIR)" && find formatters -type f,l ! -name "*.formatted" | \
+						xargs -n1 ./test-formatter.bash
+
+$(TESTDIR)/%: ## Run test for specified formatter with make test/mode/formatter
+	@FILE=$$(cd "$(TESTDIR)" && \
+			 find formatters/ -type f,l -path *$*.* ! -name "*.formatted"); \
+	if [ "$$FILE" != "" ]; then \
+		cd "$(TESTDIR)" && ./test-formatter.bash "$$FILE"; \
+	else \
+		echo >&2 "Mode/formatter pair not found: $*"; \
+		exit 1; \
+	fi
