@@ -60,19 +60,16 @@ pip_packages="
 black
 "
 
-stack_packages="
-brittany
-"
-
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y $(grep -v "^#" <<< "$apt_packages")
 opam install $(grep -v "^#" <<< "$opam_packages")
 npm install --global $(grep -v "^#" <<< "$npm_packages")
 pip install $(grep -v "^#" <<< "$pip_packages")
-# Stack
-curl -sSL https://get.haskellstack.org/ | sh
-stack install $(grep -v "^#" <<< "$stack_packages")
+curl -L --output /usr/bin/brittany "$(curl -s \
+    https://api.github.com/repos/lspitzner/brittany/releases/latest | \
+    grep 'browser_' | cut -d\" -f4 | grep linux)"
+
 
 
 rm -rf /var/lib/apt/lists/*
