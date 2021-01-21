@@ -69,6 +69,7 @@ pip install $(grep -v "^#" <<< "$pip_packages")
 curl -L --output /usr/bin/brittany "$(curl -s \
     https://api.github.com/repos/lspitzner/brittany/releases/latest | \
     grep 'browser_' | cut -d\" -f4 | grep linux)"
+chmod +x /usr/bin/brittany
 
 
 
