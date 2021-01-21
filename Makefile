@@ -9,7 +9,7 @@ EMACS ?= emacs
 # The order is important for compilation.
 for_compile := *.el
 for_checkdoc := *.el
-for_longlines := $(wildcard *.el *.md *.yml) Makefile
+for_longlines := $(wildcard *.el *.md *.yml. *.bash) Makefile
 
 .PHONY: help
 help: ## Show this message
@@ -21,7 +21,7 @@ help: ## Show this message
 		column -t -s'|' >&2
 
 .PHONY: lint
-lint: compile checkdoc longlines ## Build project and run all linters
+lint: compile checkdoc longlines package-lint ## Build project and run linters
 
 .PHONY: compile
 compile: ## Check for byte-compiler errors
@@ -56,6 +56,12 @@ longlines: ## Check for lines longer than 79 characters
 	        | grep . && exit 1 || true ;\
 	done
 
+.PHONY: package-lint
+package-lint: ## Check for common package errors
+	@"$(EMACS)" -Q -batch -l "$(TESTDIR)"/elpa.el --eval \
+		"(setq package-lint-batch-fail-on-warnings nil)" \
+		-f package-lint-batch-and-exit apheleia.el
+
 .PHONY: clean
 clean: ## Remove build artifacts
 	@echo "[clean]" *.elc
@@ -64,6 +70,10 @@ clean: ## Remove build artifacts
 .PHONY: docker
 docker: ## Start a Docker shell; e.g. make docker VERSION=25.3
 	@"$(SCRIPTDIR)"/docker.bash "$(VERSION)" "$(CMD)"
+
+.PHONY: update
+update: ## Install and update development dependencies
+	@"$(EMACS)" -batch -l "$(SCRIPTDIR)"/update-pkgs.el
 
 .PHONY: test
 test: ## Run formatter test suite
