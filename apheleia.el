@@ -78,8 +78,7 @@ text of S1 surrounding P1."
             (cl-decf i1))
            ((= cost sub)
             (cl-decf i1)
-            (cl-decf i2))))
-        ))
+            (cl-decf i2))))))
     i2))
 
 (defun apheleia--map-rcs-patch (func)
@@ -454,8 +453,10 @@ modified from what is written to disk, then don't do anything."
   '((black . ("black" "-"))
     (brittany . ("brittany" file))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
+    (prettier-babel . (npx "prettier" "--parser" "babel"
+                           "--stdin-filepath" filepath))
     (gofmt . ("gofmt"))
-    (ocamlformat . ("ocamlformat" file))
+    (ocamlformat . ("ocamlformat" "--enable-outside-detected-project" file))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
@@ -480,7 +481,7 @@ commands, lists of strings and symbols, in the format of
     (python-mode . black)
     (sass-mode . prettier)
     (typescript-mode . prettier)
-    (web-mode . prettier)
+    (web-mode . prettier-babel)
     (yaml-mode . prettier)
     (terraform-mode . terraform)
     (tuareg-mode . ocamlformat)
