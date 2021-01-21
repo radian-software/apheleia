@@ -76,7 +76,7 @@ update: ## Install and update development dependencies
 	@"$(EMACS)" -batch -l "$(SCRIPTDIR)"/update-pkgs.el
 
 .PHONY: test
-test: ## Run formatter test suite
+test: $(TESTDIR)/readme ## Run formatter test suite
 	@cd "$(TESTDIR)" && find formatters -type f,l ! -name "*.formatted" | \
 						xargs -n1 ./test-formatter.bash
 
@@ -89,3 +89,6 @@ $(TESTDIR)/%: ## Run test for specified formatter with make test/mode/formatter
 		echo >&2 "Mode/formatter pair not found: $*"; \
 		exit 1; \
 	fi
+
+$(TESTDIR)/readme: ## Run test for README
+	@cd "$(TESTDIR)" && ./test-readme.el
