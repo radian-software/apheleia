@@ -626,9 +626,11 @@ changes), CALLBACK, if provided, is invoked with no arguments."
 ;; Handle recursive references.
 (defvar apheleia-mode)
 
-;; Prevent infinite loop by not allowing apheleia--format-after-save
-;; to execute while it hasn't yet finished.
-(defvar apheleia--format-after-save-in-progress nil)
+;; Prevent infinite loop.
+(defvar apheleia--format-after-save-in-progress nil
+  "Prevent apheleia--format-after-save from being called recursively.
+This will be locally bound to t while apheleia--format-after-save is
+operating, to prevent an infinite loop.")
 
 ;; Autoload because the user may enable `apheleia-mode' without
 ;; loading Apheleia; thus this function may be invoked as an autoload.
