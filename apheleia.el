@@ -626,12 +626,16 @@ changes), CALLBACK, if provided, is invoked with no arguments."
 ;; Handle recursive references.
 (defvar apheleia-mode)
 
+;; Prevent infinite loop by not allowing apheleia--format-after-save
+;; to execute while it hasn't yet finished.
+(defvar apheleia--format-after-save-in-progress nil)
+
 ;; Autoload because the user may enable `apheleia-mode' without
 ;; loading Apheleia; thus this function may be invoked as an autoload.
 ;;;###autoload
 (defun apheleia--format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
-  (when (not (boundp 'apheleia--format-after-save-in-progress))
+  (when (not apheleia--format-after-save-in-progress)
     (let ((apheleia--format-after-save-in-progress t))
       (when apheleia-mode
         (when-let ((command (apheleia--get-formatter-command)))
