@@ -348,10 +348,7 @@ mark the buffer as visiting FILENAME."
               (lambda (format &rest args)
                 (unless (equal format "Saving file %s...")
                   (apply message format args)))))
-    ;; Avoid infinite loop.
-    (let ((after-save-hook
-           (remq #'apheleia--format-after-save after-save-hook)))
-      (write-file (or filename buffer-file-name)))))
+    (write-file (or filename buffer-file-name))))
 
 (defun apheleia--create-rcs-patch (old-buffer new-buffer callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
@@ -634,14 +631,16 @@ changes), CALLBACK, if provided, is invoked with no arguments."
 ;;;###autoload
 (defun apheleia--format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
-  (when apheleia-mode
-    (when-let ((command (apheleia--get-formatter-command)))
-      (apheleia-format-buffer
-       command
-       (lambda ()
-         (with-demoted-errors "Apheleia: %s"
-           (apheleia--write-file-silently buffer-file-name)
-           (run-hooks 'apheleia-post-format-hook)))))))
+  (when (not (boundp 'apheleia--format-after-save-in-progress))
+    (let ((apheleia--format-after-save-in-progress t))
+      (when apheleia-mode
+        (when-let ((command (apheleia--get-formatter-command)))
+          (apheleia-format-buffer
+           command
+           (lambda ()
+             (with-demoted-errors "Apheleia: %s"
+               (apheleia--write-file-silently buffer-file-name)
+               (run-hooks 'apheleia-post-format-hook)))))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied
 ;; into the autoloads file, so that the minor mode can be enabled
