@@ -638,15 +638,15 @@ operating, to prevent an infinite loop.")
 (defun apheleia--format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
   (when (not apheleia--format-after-save-in-progress)
-    (let ((apheleia--format-after-save-in-progress t))
-      (when apheleia-mode
-        (when-let ((command (apheleia--get-formatter-command)))
-          (apheleia-format-buffer
-           command
-           (lambda ()
-             (with-demoted-errors "Apheleia: %s"
-               (apheleia--write-file-silently buffer-file-name)
-               (run-hooks 'apheleia-post-format-hook)))))))))
+    (when apheleia-mode
+      (when-let ((command (apheleia--get-formatter-command)))
+        (apheleia-format-buffer
+         command
+         (lambda ()
+           (with-demoted-errors "Apheleia: %s"
+             (let ((apheleia--format-after-save-in-progress t))
+               (apheleia--write-file-silently buffer-file-name))
+             (run-hooks 'apheleia-post-format-hook))))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied
 ;; into the autoloads file, so that the minor mode can be enabled
