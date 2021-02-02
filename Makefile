@@ -58,7 +58,7 @@ longlines: ## Check for lines longer than 79 characters
 
 .PHONY: package-lint
 package-lint: ## Check for common package errors
-	@"$(EMACS)" -Q -batch -l "$(TESTDIR)"/elpa.el --eval \
+	@"$(EMACS)" -Q -batch -l "$(SCRIPTDIR)"/elpa.el --eval \
 		"(setq package-lint-batch-fail-on-warnings nil)" \
 		-f package-lint-batch-and-exit apheleia.el
 
@@ -80,7 +80,7 @@ test: $(TESTDIR)/readme ## Run formatter test suite
 	@cd "$(TESTDIR)" && find formatters -type f,l ! -name "*.formatted" | \
 						xargs -n1 ./test-formatter.bash
 
-$(TESTDIR)/%: ## Run test for specified formatter with make test/mode/formatter
+$(TESTDIR)/%: ## Run test for specified formatter e.g. make test/mode/formatter
 	@FILE=$$(cd "$(TESTDIR)" && \
 			 find formatters/ -type f,l -path *$*.* ! -name "*.formatted"); \
 	if [ "$$FILE" != "" ]; then \
