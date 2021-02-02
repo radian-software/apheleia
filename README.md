@@ -61,7 +61,7 @@ To your init-file, add the following form:
 
     (apheleia-global-mode +1)
 
-The autoloading has been configured so that this will *not* cause
+The autoloading has been configured so that this will _not_ cause
 Apheleia to be loaded until you save a file.
 
 By default, Apheleia is configured to format with
@@ -71,23 +71,24 @@ By default, Apheleia is configured to format with
 modes. To configure this, you can adjust the values of the following
 variables:
 
-* `apheleia-formatters`: Alist mapping names of formatters (symbols
+- `apheleia-formatters`: Alist mapping names of formatters (symbols
   like `black` and `prettier`) to commands used to run those
   formatters (such as `("black" "-")` and `(npx "prettier" input)`).
   See the docstring for more information.
-    * You can manipulate this alist using standard Emacs functions.
-      For example, to add some command-line options to Black, you
-      could use:
 
-      ```elisp
-      (setf (alist-get 'black apheleia-formatters)
-            '("black" "--option" "..." "-"))
-      ```
+  - You can manipulate this alist using standard Emacs functions.
+    For example, to add some command-line options to Black, you
+    could use:
 
-* `apheleia-mode-alist`: Alist mapping major modes and filename
+    ```elisp
+    (setf (alist-get 'black apheleia-formatters)
+          '("black" "--option" "..." "-"))
+    ```
+
+- `apheleia-mode-alist`: Alist mapping major modes and filename
   regexps to names of formatters to use in those modes and files. See
   the docstring for more information.
-* `apheleia-formatter`: Optional buffer-local variable specifying the
+- `apheleia-formatter`: Optional buffer-local variable specifying the
   formatter to use in this buffer. Overrides `apheleia-mode-alist`.
 
 You can run `M-x apheleia-mode` to toggle automatic formatting on save
@@ -103,20 +104,25 @@ automatically disabled for remote files.
 
 The following user options are also available:
 
-* `apheleia-post-format-hook`: Normal hook run after Apheleia formats
+- `apheleia-post-format-hook`: Normal hook run after Apheleia formats
   a buffer. Run if the formatting is successful, even when no changes
   are made to the buffer.
-* `apheleia-max-alignment-size`: The maximum number of characters that
+- `apheleia-max-alignment-size`: The maximum number of characters that
   a diff region can have to be processed using Apheleia's dynamic
   programming algorithm for point alignment. This cannot be too big or
   Emacs will hang noticeably on large reformatting operations, since
   the DP algorithm is quadratic-time.
-  
+
 ## Supported Modes and Formatters
 
 A mode with no link means it is built in to Emacs by default.
+
+<!---
+longlines-start
+<!---->
+
 | Mode                                                                 |
-|:---------------------------------------------------------------------|
+| :------------------------------------------------------------------- |
 | css-mode                                                             |
 | [go-mode](https://github.com/dominikh/go-mode.el)                    |
 | js-mode                                                              |
@@ -132,9 +138,16 @@ A mode with no link means it is built in to Emacs by default.
 | [tuareg-mode](https://github.com/ocaml/tuareg)                       |
 | [haskell-mode](https://github.com/haskell/haskell-mode)              |
 
+<!---
+longlines-end
+-->
+
+<!---
+longlines-start
+-->
 
 | Formatter                                                    | Notes                 |
-|:-------------------------------------------------------------|:----------------------|
+| :----------------------------------------------------------- | :-------------------- |
 | [black](https://github.com/psf/black)                        |                       |
 | [brittany](https://github.com/lspitzner/brittany)            |                       |
 | [prettier](https://prettier.io/)                             |                       |
@@ -143,6 +156,9 @@ A mode with no link means it is built in to Emacs by default.
 | [ocamlformat](https://github.com/ocaml-ppx/ocamlformat)      |                       |
 | [terraform](https://www.terraform.io/docs/commands/fmt.html) |                       |
 
+<!---
+longlines-end
+-->
 
 ## Contributing
 
