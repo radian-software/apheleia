@@ -348,10 +348,7 @@ mark the buffer as visiting FILENAME."
               (lambda (format &rest args)
                 (unless (equal format "Saving file %s...")
                   (apply message format args)))))
-    ;; Avoid infinite loop.
-    (let ((after-save-hook
-           (remq #'apheleia--format-after-save after-save-hook)))
-      (write-file (or filename buffer-file-name)))))
+    (write-file (or filename buffer-file-name))))
 
 (defun apheleia--create-rcs-patch (old-buffer new-buffer callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
@@ -629,19 +626,27 @@ changes), CALLBACK, if provided, is invoked with no arguments."
 ;; Handle recursive references.
 (defvar apheleia-mode)
 
+;; Prevent infinite loop.
+(defvar apheleia--format-after-save-in-progress nil
+  "Prevent apheleia--format-after-save from being called recursively.
+This will be locally bound to t while apheleia--format-after-save is
+operating, to prevent an infinite loop.")
+
 ;; Autoload because the user may enable `apheleia-mode' without
 ;; loading Apheleia; thus this function may be invoked as an autoload.
 ;;;###autoload
 (defun apheleia--format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
-  (when apheleia-mode
-    (when-let ((command (apheleia--get-formatter-command)))
-      (apheleia-format-buffer
-       command
-       (lambda ()
-         (with-demoted-errors "Apheleia: %s"
-           (apheleia--write-file-silently buffer-file-name)
-           (run-hooks 'apheleia-post-format-hook)))))))
+  (unless apheleia--format-after-save-in-progress
+    (when apheleia-mode
+      (when-let ((command (apheleia--get-formatter-command)))
+        (apheleia-format-buffer
+         command
+         (lambda ()
+           (with-demoted-errors "Apheleia: %s"
+             (let ((apheleia--format-after-save-in-progress t))
+               (apheleia--write-file-silently buffer-file-name))
+             (run-hooks 'apheleia-post-format-hook))))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied
 ;; into the autoloads file, so that the minor mode can be enabled
