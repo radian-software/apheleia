@@ -637,7 +637,7 @@ operating, to prevent an infinite loop.")
 ;;;###autoload
 (defun apheleia--format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
-  (when (not apheleia--format-after-save-in-progress)
+  (unless apheleia--format-after-save-in-progress
     (when apheleia-mode
       (when-let ((command (apheleia--get-formatter-command)))
         (apheleia-format-buffer
