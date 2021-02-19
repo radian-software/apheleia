@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Enhancements
 * Prettier is now enabled in `json-mode`.
+* Formatters are now run by default in the root directory of your
+  project (as defined by `project.el` or Projectile, defaulting to the
+  working directory). See [#30].
 
 ### Bugs fixed
 * Prettier now respects `.prettierignore` ([#21]).
@@ -14,6 +17,7 @@ The format is based on [Keep a Changelog].
 
 [#21]: https://github.com/raxod502/apheleia/issues/21
 [#27]: https://github.com/raxod502/apheleia/issues/27
+[#30]: https://github.com/raxod502/apheleia/issues/30
 
 ## 1.1.1 (released 2020-07-16)
 ### Formatters

@@ -25,13 +25,28 @@
 
 (require 'cl-lib)
 (require 'map)
+(require 'project)
 (require 'subr-x)
+
+(declare-function projectile-project-root "ext:projectile")
 
 (defgroup apheleia nil
   "Reformat buffer without moving point."
   :group 'external
   :link '(url-link :tag "GitHub" "https://github.com/raxod502/apheleia")
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
+
+(defun apheleia--project-root ()
+  "Return the directory containing the current project.
+This is an absolute path ending in a slash. It uses `project' and
+then `projectile' (if the latter is installed), before falling
+back to `default-directory'."
+  (expand-file-name
+   (if-let ((project (project-current)))
+       (car (project-roots project))
+     (or (and (require 'projectile nil 'noerror)
+              (projectile-project-root))
+         default-directory))))
 
 (cl-defun apheleia--edit-distance-table (s1 s2)
   "Align strings S1 and S2 for minimum edit distance.
@@ -437,15 +452,16 @@ modified from what is written to disk, then don't do anything."
                                     output-fname
                                   arg))
                               command)))
-      (apheleia--make-process
-       :command command
-       :stdin (unless input-fname
-                (current-buffer))
-       :callback (lambda (stdout)
-                   (when output-fname
-                     (erase-buffer)
-                     (insert-file-contents-literally output-fname))
-                   (funcall callback stdout))))))
+      (let ((default-directory (apheleia--project-root)))
+        (apheleia--make-process
+         :command command
+         :stdin (unless input-fname
+                  (current-buffer))
+         :callback (lambda (stdout)
+                     (when output-fname
+                       (erase-buffer)
+                       (insert-file-contents-literally output-fname))
+                     (funcall callback stdout)))))))
 
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
