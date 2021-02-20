@@ -294,7 +294,7 @@ provided that its exit status is 0."
         (progn
           (setq apheleia--current-process
                 (make-process
-                 :name (format "aphelieia-%s" name)
+                 :name (format "apheleia-%s" name)
                  :buffer stdout
                  :stderr stderr
                  :command command
