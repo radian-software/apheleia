@@ -14,10 +14,12 @@ The format is based on [Keep a Changelog].
 * Prettier now respects `.prettierignore` ([#21]).
 * Apheleia's global mode should no longer trigger warnings about a locally
   let-bound `after-save-hook` ([#27]).
+* Fix spelling error in generated process names ([#32]).
 
 [#21]: https://github.com/raxod502/apheleia/issues/21
 [#27]: https://github.com/raxod502/apheleia/issues/27
 [#30]: https://github.com/raxod502/apheleia/issues/30
+[#32]: https://github.com/raxod502/apheleia/pull/32
 
 ## 1.1.1 (released 2020-07-16)
 ### Formatters
