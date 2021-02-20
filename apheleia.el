@@ -43,7 +43,13 @@ then `projectile' (if the latter is installed), before falling
 back to `default-directory'."
   (expand-file-name
    (if-let ((project (project-current)))
-       (car (project-roots project))
+       ;; `project-roots' was replaced with `project-root' in Emacs
+       ;; 28, and the former function deprecated. Use whichever one is
+       ;; available and non-deprecated.
+       (with-no-warnings
+         (if (fboundp 'project-root)
+             (project-root project)
+           (car (project-roots project))))
      (or (and (require 'projectile nil 'noerror)
               (projectile-project-root))
          default-directory))))
