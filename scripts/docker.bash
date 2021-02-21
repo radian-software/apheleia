@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
-set -o pipefail
+set -euo pipefail
 
 if [[ -n "$1" && "$1" != master && ! "$1" =~ [0-9]+\.[0-9]+ ]]; then
     echo "docker.bash: malformed tag: $1" >&2
@@ -23,8 +22,8 @@ docker() {
     fi
 }
 
-docker build . -t "apheleia:$tag" \
-       --build-arg "UID=$UID"     \
+docker build . -t "apheleia:$tag"     \
+       --build-arg "SHARED_UID=$UID"  \
        --build-arg "VERSION=$tag"
 
 docker run -it --rm -v "$PWD:/home/docker/src" "apheleia:$tag" "${args[@]}"

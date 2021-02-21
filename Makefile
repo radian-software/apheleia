@@ -1,15 +1,14 @@
+SHELL := bash
+
 VERSION ?=
 CMD ?=
-
-SCRIPTDIR=scripts
-TESTDIR=test
 
 EMACS ?= emacs
 
 # The order is important for compilation.
 for_compile := *.el
 for_checkdoc := *.el
-for_longlines := $(wildcard *.el *.md *.yml. *.bash) Makefile
+for_longlines := $(wildcard *.bash *.el *.md *.yml) Makefile
 
 .PHONY: help
 help: ## Show this message
@@ -57,8 +56,10 @@ longlines: ## Check for lines longer than 79 characters
 	done
 
 .PHONY: package-lint
-package-lint: ## Check for common package errors
-	@"$(EMACS)" -Q -batch -l "$(SCRIPTDIR)"/elpa.el --eval \
+package-lint: ## Check for common packaging errors
+	@echo "[package-lint] apheleia.el"
+	@"$(EMACS)" -Q -batch -l scripts/elpa.el \
+		-l scripts/hack-package-lint.el --eval \
 		"(setq package-lint-batch-fail-on-warnings nil)" \
 		-f package-lint-batch-and-exit apheleia.el
 
@@ -69,26 +70,26 @@ clean: ## Remove build artifacts
 
 .PHONY: docker
 docker: ## Start a Docker shell; e.g. make docker VERSION=25.3
-	@"$(SCRIPTDIR)"/docker.bash "$(VERSION)" "$(CMD)"
+	@scripts/docker.bash "$(VERSION)" "$(CMD)"
 
 .PHONY: update
 update: ## Install and update development dependencies
-	@"$(EMACS)" -batch -l "$(SCRIPTDIR)"/update-pkgs.el
+	@"$(EMACS)" --batch -l scripts/update-pkgs.el
 
 .PHONY: test
-test: $(TESTDIR)/readme ## Run formatter test suite
-	@cd "$(TESTDIR)" && find formatters -type f,l ! -name "*.formatted" | \
-						xargs -n1 ./test-formatter.bash
+test: test/readme ## Run formatter test suite
+	@cd test && find formatters -type f,l ! -name "*.formatted" | \
+		xargs -n1 ./test-formatter.bash
 
-$(TESTDIR)/%: ## Run test for specified formatter e.g. make test/mode/formatter
-	@FILE=$$(cd "$(TESTDIR)" && \
-			 find formatters/ -type f,l -path *$*.* ! -name "*.formatted"); \
-	if [ "$$FILE" != "" ]; then \
-		cd "$(TESTDIR)" && ./test-formatter.bash "$$FILE"; \
+test/%: ## Run test for specified formatter e.g. make test/mode/formatter
+	@FILE=$$(cd test && \
+		find formatters/ -type f,l -path *$*.* ! -name "*.formatted"); \
+	if [[ -n "$${FILE}" ]]; then \
+		cd test && ./test-formatter.bash "$${FILE}"; \
 	else \
 		echo >&2 "Mode/formatter pair not found: $*"; \
 		exit 1; \
 	fi
 
-$(TESTDIR)/readme: ## Run test for README
-	@cd "$(TESTDIR)" && ./test-readme.el
+test/readme: ## Run test for README
+	@cd test && ./test-readme.el

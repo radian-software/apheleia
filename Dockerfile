@@ -1,12 +1,12 @@
 ARG VERSION
 FROM silex/emacs:$VERSION
 
-ARG UID
+ARG SHARED_UID
 
 COPY scripts/docker-install.bash /tmp/
-RUN /tmp/docker-install.bash "$UID"
+RUN /tmp/docker-install.bash
 
-USER $UID
+USER $SHARED_UID
 WORKDIR /home/docker/src
 
 CMD bash

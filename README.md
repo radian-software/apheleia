@@ -113,13 +113,11 @@ The following user options are also available:
   Emacs will hang noticeably on large reformatting operations, since
   the DP algorithm is quadratic-time.
 
-## Supported Modes and Formatters
+## Supported modes and formatters
 
 A mode with no link means it is built in to Emacs by default.
 
-<!---
-longlines-start
-<!---->
+<!-- longlines-start -->
 
 | Mode                                                                 |
 | :------------------------------------------------------------------- |
@@ -138,14 +136,6 @@ longlines-start
 | [tuareg-mode](https://github.com/ocaml/tuareg)                       |
 | [haskell-mode](https://github.com/haskell/haskell-mode)              |
 
-<!---
-longlines-end
--->
-
-<!---
-longlines-start
--->
-
 | Formatter                                                    | Notes                 |
 | :----------------------------------------------------------- | :-------------------- |
 | [black](https://github.com/psf/black)                        |                       |
@@ -156,9 +146,7 @@ longlines-start
 | [ocamlformat](https://github.com/ocaml-ppx/ocamlformat)      |                       |
 | [terraform](https://www.terraform.io/docs/commands/fmt.html) |                       |
 
-<!---
-longlines-end
--->
+<!-- longlines-end -->
 
 ## Contributing
 
