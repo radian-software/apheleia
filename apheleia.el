@@ -692,8 +692,4 @@ and `apheleia-formatters'."
 
 (provide 'apheleia)
 
-;; Local Variables:
-;; outline-regexp: ";;;;* "
-;; End:
-
 ;;; apheleia.el ends here
