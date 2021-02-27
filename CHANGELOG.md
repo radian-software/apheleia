@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 1.1.2 (released 2021-02-26)
 ### Enhancements
 * Prettier is now enabled in `json-mode`.
 
