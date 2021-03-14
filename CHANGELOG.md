@@ -4,11 +4,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
-### Enhancements
-* Formatters are now run by default in the root directory of your
-  project (as defined by `project.el` or Projectile, defaulting to the
-  working directory). See [#30].
-
 ### Bugs fixed
 * Fix spelling error in generated process names ([#32]).
 
