@@ -340,9 +340,10 @@ mark the buffer as visiting FILENAME."
   (cl-letf* ((write-region (symbol-function #'write-region))
              ((symbol-function #'write-region)
               (lambda (start end filename &optional
-                             append _visit lockname mustbenew)
+                             append visit lockname mustbenew)
                 (apheleia--write-region-silently
-                 start end filename append t lockname mustbenew write-region)))
+                 start end filename append visit
+                 lockname mustbenew write-region)))
              (message (symbol-function #'message))
              ((symbol-function #'message)
               (lambda (format &rest args)

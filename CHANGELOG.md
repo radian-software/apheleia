@@ -6,9 +6,11 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Bugs fixed
 * Fix spelling error in generated process names ([#32]).
+* Apheleia no longer conflicts with undo-fu (#[39]).
 
 [#30]: https://github.com/raxod502/apheleia/issues/30
 [#32]: https://github.com/raxod502/apheleia/pull/32
+[#39]: https://github.com/raxod502/apheleia/issues/39
 
 ## 1.1.2 (released 2021-02-26)
 ### Enhancements
