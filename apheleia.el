@@ -348,7 +348,17 @@ mark the buffer as visiting FILENAME."
              ((symbol-function #'message)
               (lambda (format &rest args)
                 (unless (equal format "Saving file %s...")
-                  (apply message format args)))))
+                  (apply message format args))))
+             ;; Avoid triggering `after-set-visited-file-name-hook',
+             ;; which can have various undesired effects in particular
+             ;; major modes. Unfortunately, `write-file' triggers this
+             ;; hook unconditionally even if the filename was not
+             ;; changed, hence this hack :/
+             (run-hooks (symbol-function #'run-hooks))
+             ((symbol-function #'run-hooks)
+              (lambda (&rest args)
+                (unless (equal args '(after-set-visited-file-name-hook))
+                  (apply run-hooks args)))))
     (write-file (or filename buffer-file-name))))
 
 (defun apheleia--create-rcs-patch (old-buffer new-buffer callback)
