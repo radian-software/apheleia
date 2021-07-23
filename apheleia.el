@@ -475,6 +475,9 @@ commands, lists of strings and symbols, in the format of
           (repeat
            (choice
             (string :tag "Argument")
+            (const :tag "Look for command in node_modules/.bin" npx)
+            (const :tag "Name of file being formatted" filepath)
+            (const :tag "Name of real file used for input" file)
             (const :tag "Name of temporary file used for input" input)
             (const :tag "Name of temporary file used for output" output)))))
 
