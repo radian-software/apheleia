@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog].
 * Apheleia no longer triggers `after-set-visited-file-name-hook`,
   which reduces conflicts with various modes. For example, `lsp-mode`
   will no longer trigger a reconnect every time you save.
-* Fix inconsistent :type spec preventing use of `customize-variable`
+* Fix inconsistent `:type` spec preventing use of `customize-variable`
   on `apheleia-formatters`.
 
 [#30]: https://github.com/raxod502/apheleia/issues/30
