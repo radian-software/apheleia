@@ -461,9 +461,13 @@ modified from what is written to disk, then don't do anything."
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
     (brittany . ("brittany" file))
-    (prettier . (npx "prettier" "--stdin-filepath" filepath))
+    (clang-format . ("clang-format" file))
     (gofmt . ("gofmt"))
+    (google-java-format . ("google-java-format" file))
+    (latexindent . ("latexindent" file))
     (ocamlformat . ("ocamlformat" file))
+    (prettier . (npx "prettier" "--stdin-filepath" filepath))
+    (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout" file))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
@@ -482,20 +486,29 @@ commands, lists of strings and symbols, in the format of
             (const :tag "Name of temporary file used for output" output)))))
 
 (defcustom apheleia-mode-alist
-  '((css-mode . prettier)
+  '((cc-mode . clang-format)
+    (c-mode . clang-format)
+    (css-mode . prettier)
     (go-mode . gofmt)
-    (js-mode . prettier)
-    (js3-mode . prettier)
-    (json-mode . prettier)
+    (haskell-mode . brittany)
     (html-mode . prettier)
+    (java-mode . google-java-format)
+    (js3-mode . prettier)
+    (js-mode . prettier)
+    (json-mode . prettier)
+    (latex-mode . latexindent)
+    (LaTeX-mode . latexindent)
     (python-mode . black)
+    (rustic-mode . rustfmt)
+    (rust-mode . rustfmt)
     (sass-mode . prettier)
+    (terraform-mode . terraform)
+    (TeX-latex-mode . latexindent)
+    (TeX-mode . latexindent)
+    (tuareg-mode . ocamlformat)
     (typescript-mode . prettier)
     (web-mode . prettier)
-    (yaml-mode . prettier)
-    (terraform-mode . terraform)
-    (tuareg-mode . ocamlformat)
-    (haskell-mode . brittany))
+    (yaml-mode . prettier))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode

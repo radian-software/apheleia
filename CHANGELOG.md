@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Formatters
+* [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
+  C/C++,
+  [`google-java-format`](https://github.com/google/google-java-format)
+  for Java, [latexindent](https://ctan.org/pkg/latexindent?lang=en)
+  for [LaTeX](https://www.latex-project.org/), and
+  [rustfmt](https://github.com/rust-lang/rustfmt) for
+  [Rust](https://www.rust-lang.org/) ([#24]).
+
 ### Bugs fixed
 * Fix spelling error in generated process names ([#32]).
 * Apheleia no longer conflicts with undo-fu (#[39]).
@@ -13,6 +22,7 @@ The format is based on [Keep a Changelog].
 * Fix inconsistent `:type` spec preventing use of `customize-variable`
   on `apheleia-formatters`.
 
+[#24]: https://github.com/raxod502/apheleia/pull/24
 [#30]: https://github.com/raxod502/apheleia/issues/30
 [#32]: https://github.com/raxod502/apheleia/pull/32
 [#39]: https://github.com/raxod502/apheleia/issues/39
