@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Formatters
+* [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
+  C/C++,
+  [`google-java-format`](https://github.com/google/google-java-format)
+  for Java, [latexindent](https://ctan.org/pkg/latexindent?lang=en)
+  for [LaTeX](https://www.latex-project.org/), and
+  [rustfmt](https://github.com/rust-lang/rustfmt) for
+  [Rust](https://www.rust-lang.org/) ([#24]).
+
 ### Enhancements
 * Prettier is now enabled in `json-mode`.
 
@@ -33,6 +42,7 @@ The format is based on [Keep a Changelog].
 [#10]: https://github.com/raxod502/apheleia/issues/10
 [#12]: https://github.com/raxod502/apheleia/pull/12
 [#19]: https://github.com/raxod502/apheleia/pull/19
+[#24]: https://github.com/raxod502/apheleia/pull/24
 
 ## 1.1 (released 2020-04-02)
 ### Enhancements
