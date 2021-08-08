@@ -8,7 +8,7 @@
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "25.2"))
 ;; SPDX-License-Identifier: MIT
-;; Version: 1.1.1
+;; Version: 1.1.2
 
 ;;; Commentary:
 
@@ -279,7 +279,7 @@ provided that its exit status is 0."
         (progn
           (setq apheleia--current-process
                 (make-process
-                 :name (format "aphelieia-%s" name)
+                 :name (format "apheleia-%s" name)
                  :buffer stdout
                  :stderr stderr
                  :command command
@@ -340,18 +340,26 @@ mark the buffer as visiting FILENAME."
   (cl-letf* ((write-region (symbol-function #'write-region))
              ((symbol-function #'write-region)
               (lambda (start end filename &optional
-                             append _visit lockname mustbenew)
+                             append visit lockname mustbenew)
                 (apheleia--write-region-silently
-                 start end filename append t lockname mustbenew write-region)))
+                 start end filename append visit
+                 lockname mustbenew write-region)))
              (message (symbol-function #'message))
              ((symbol-function #'message)
               (lambda (format &rest args)
                 (unless (equal format "Saving file %s...")
-                  (apply message format args)))))
-    ;; Avoid infinite loop.
-    (let ((after-save-hook
-           (remq #'apheleia--format-after-save after-save-hook)))
-      (write-file (or filename buffer-file-name)))))
+                  (apply message format args))))
+             ;; Avoid triggering `after-set-visited-file-name-hook',
+             ;; which can have various undesired effects in particular
+             ;; major modes. Unfortunately, `write-file' triggers this
+             ;; hook unconditionally even if the filename was not
+             ;; changed, hence this hack :/
+             (run-hooks (symbol-function #'run-hooks))
+             ((symbol-function #'run-hooks)
+              (lambda (&rest args)
+                (unless (equal args '(after-set-visited-file-name-hook))
+                  (apply run-hooks args)))))
+    (write-file (or filename buffer-file-name))))
 
 (defun apheleia--create-rcs-patch (old-buffer new-buffer callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
@@ -642,19 +650,27 @@ changes), CALLBACK, if provided, is invoked with no arguments."
 ;; Handle recursive references.
 (defvar apheleia-mode)
 
+;; Prevent infinite loop.
+(defvar apheleia--format-after-save-in-progress nil
+  "Prevent apheleia--format-after-save from being called recursively.
+This will be locally bound to t while apheleia--format-after-save is
+operating, to prevent an infinite loop.")
+
 ;; Autoload because the user may enable `apheleia-mode' without
 ;; loading Apheleia; thus this function may be invoked as an autoload.
 ;;;###autoload
 (defun apheleia--format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
-  (when apheleia-mode
-    (when-let ((command (apheleia--get-formatter-command)))
-      (apheleia-format-buffer
-       command
-       (lambda ()
-         (with-demoted-errors "Apheleia: %s"
-           (apheleia--write-file-silently buffer-file-name)
-           (run-hooks 'apheleia-post-format-hook)))))))
+  (unless apheleia--format-after-save-in-progress
+    (when apheleia-mode
+      (when-let ((command (apheleia--get-formatter-command)))
+        (apheleia-format-buffer
+         command
+         (lambda ()
+           (with-demoted-errors "Apheleia: %s"
+             (let ((apheleia--format-after-save-in-progress t))
+               (apheleia--write-file-silently buffer-file-name))
+             (run-hooks 'apheleia-post-format-hook))))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied
 ;; into the autoloads file, so that the minor mode can be enabled
@@ -677,9 +693,5 @@ and `apheleia-formatters'."
   (put 'apheleia-mode 'safe-local-variable #'booleanp))
 
 (provide 'apheleia)
-
-;; Local Variables:
-;; outline-regexp: ";;;;* "
-;; End:
 
 ;;; apheleia.el ends here

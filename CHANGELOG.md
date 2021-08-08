@@ -13,13 +13,29 @@ The format is based on [Keep a Changelog].
   [rustfmt](https://github.com/rust-lang/rustfmt) for
   [Rust](https://www.rust-lang.org/) ([#24]).
 
+### Bugs fixed
+* Fix spelling error in generated process names ([#32]).
+* Apheleia no longer conflicts with undo-fu (#[39]).
+* Apheleia no longer triggers `after-set-visited-file-name-hook`,
+  which reduces conflicts with various modes. For example, `lsp-mode`
+  will no longer trigger a reconnect every time you save.
+
+[#24]: https://github.com/raxod502/apheleia/pull/24
+[#30]: https://github.com/raxod502/apheleia/issues/30
+[#32]: https://github.com/raxod502/apheleia/pull/32
+[#39]: https://github.com/raxod502/apheleia/issues/39
+
+## 1.1.2 (released 2021-02-26)
 ### Enhancements
 * Prettier is now enabled in `json-mode`.
 
 ### Bugs fixed
 * Prettier now respects `.prettierignore` ([#21]).
+* Apheleia's global mode should no longer trigger warnings about a locally
+  let-bound `after-save-hook` ([#27]).
 
 [#21]: https://github.com/raxod502/apheleia/issues/21
+[#27]: https://github.com/raxod502/apheleia/issues/27
 
 ## 1.1.1 (released 2020-07-16)
 ### Formatters
@@ -42,7 +58,6 @@ The format is based on [Keep a Changelog].
 [#10]: https://github.com/raxod502/apheleia/issues/10
 [#12]: https://github.com/raxod502/apheleia/pull/12
 [#19]: https://github.com/raxod502/apheleia/pull/19
-[#24]: https://github.com/raxod502/apheleia/pull/24
 
 ## 1.1 (released 2020-04-02)
 ### Enhancements
