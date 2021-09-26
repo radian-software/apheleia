@@ -78,8 +78,7 @@ text of S1 surrounding P1."
             (cl-decf i1))
            ((= cost sub)
             (cl-decf i1)
-            (cl-decf i2))))
-        ))
+            (cl-decf i2))))))
     i2))
 
 (defun apheleia--map-rcs-patch (func)
