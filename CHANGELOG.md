@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog].
   for [LaTeX](https://www.latex-project.org/), and
   [rustfmt](https://github.com/rust-lang/rustfmt) for
   [Rust](https://www.rust-lang.org/) ([#24]).
+* [Prettier Ruby](https://github.com/prettier/plugin-ruby) for Ruby
 
 ### Bugs fixed
 * Fix spelling error in generated process names ([#32]).

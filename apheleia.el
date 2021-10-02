@@ -498,6 +498,7 @@ commands, lists of strings and symbols, in the format of
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
     (python-mode . black)
+    (ruby-mode . prettier)
     (rustic-mode . rustfmt)
     (rust-mode . rustfmt)
     (sass-mode . prettier)
