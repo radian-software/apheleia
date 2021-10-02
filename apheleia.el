@@ -461,7 +461,7 @@ modified from what is written to disk, then don't do anything."
   '((black . ("black" "-"))
     (brittany . ("brittany" file))
     (clang-format . ("clang-format" file))
-    (mix-format . ("mix format" file))
+    (mix-format . ("mix" "format" "-"))
     (gofmt . ("gofmt"))
     (google-java-format . ("google-java-format" file))
     (latexindent . ("latexindent" file))
