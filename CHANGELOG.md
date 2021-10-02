@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog].
   for [LaTeX](https://www.latex-project.org/), and
   [rustfmt](https://github.com/rust-lang/rustfmt) for
   [Rust](https://www.rust-lang.org/) ([#24]).
+* [Mix format](https://hexdocs.pm/mix/1.12/Mix.Tasks.Format.html) for Elixir
 
 ### Bugs fixed
 * Fix spelling error in generated process names ([#32]).
