@@ -461,12 +461,14 @@ modified from what is written to disk, then don't do anything."
   '((black . ("black" "-"))
     (brittany . ("brittany" file))
     (clang-format . ("clang-format" file))
+    (mix-format . ("mix" "format" "-"))
     (gofmt . ("gofmt"))
     (google-java-format . ("google-java-format" file))
     (latexindent . ("latexindent" file))
     (ocamlformat . ("ocamlformat" file))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
-    (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout" file))
+    (rustfmt . ("rustfmt" "--unstable-features" "--skip-children"
+                "--quiet" "--emit" "stdout" file))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
@@ -488,6 +490,7 @@ commands, lists of strings and symbols, in the format of
   '((cc-mode . clang-format)
     (c-mode . clang-format)
     (css-mode . prettier)
+    (elixir-mode . mix-format)
     (go-mode . gofmt)
     (haskell-mode . brittany)
     (html-mode . prettier)

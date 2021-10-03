@@ -6,13 +6,17 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Formatters
 * [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
-  C/C++,
-  [`google-java-format`](https://github.com/google/google-java-format)
-  for Java, [latexindent](https://ctan.org/pkg/latexindent?lang=en)
-  for [LaTeX](https://www.latex-project.org/), and
-  [rustfmt](https://github.com/rust-lang/rustfmt) for
-  [Rust](https://www.rust-lang.org/) ([#24]).
-* [Prettier Ruby](https://github.com/prettier/plugin-ruby) for Ruby
+  C/C++
+* [`google-java-format`](https://github.com/google/google-java-format)
+  for Java
+* [latexindent](https://ctan.org/pkg/latexindent?lang=en) for
+  [LaTeX](https://www.latex-project.org/)
+* [rustfmt](https://github.com/rust-lang/rustfmt) for
+  [Rust](https://www.rust-lang.org/) ([#24])
+* [`mix format`](https://hexdocs.pm/mix/1.12/Mix.Tasks.Format.html)
+  for Elixir ([#48])
+* [`@prettier/plugin-ruby`](https://github.com/prettier/plugin-ruby)
+  for Ruby ([#49])
 
 ### Bugs fixed
 * Fix spelling error in generated process names ([#32]).
@@ -27,6 +31,8 @@ The format is based on [Keep a Changelog].
 [#30]: https://github.com/raxod502/apheleia/issues/30
 [#32]: https://github.com/raxod502/apheleia/pull/32
 [#39]: https://github.com/raxod502/apheleia/issues/39
+[#48]: https://github.com/raxod502/apheleia/pull/48
+[#49]: https://github.com/raxod502/apheleia/pull/49
 
 ## 1.1.2 (released 2021-02-26)
 ### Enhancements
