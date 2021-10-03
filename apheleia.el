@@ -466,7 +466,8 @@ modified from what is written to disk, then don't do anything."
     (latexindent . ("latexindent" file))
     (ocamlformat . ("ocamlformat" file))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
-    (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout" file))
+    (rustfmt . ("rustfmt" "--unstable-features" "--skip-children"
+                "--quiet" "--emit" "stdout" file))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
