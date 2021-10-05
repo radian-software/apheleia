@@ -448,7 +448,11 @@ modified from what is written to disk, then don't do anything."
                                   arg))
                               command)))
       (apheleia--make-process
-       :command command
+       :command (mapcar (lambda (arg)
+                          (if (stringp arg)
+                              arg
+                            (eval arg)))
+                        command)
        :stdin (unless input-fname
                 (current-buffer))
        :callback (lambda (stdout)
