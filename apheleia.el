@@ -431,6 +431,9 @@ cmd is to be run."
             (when (file-executable-p binary)
               (setcar command binary)))))
       (when (or (memq 'file command) (memq 'filepath command))
+        (when stdin ; Not first formatter in this sequence.
+          (error "Cannot run formatter using `file' in a sequence unless it's \
+first in the sequence."))
         (setq command (mapcar (lambda (arg)
                                 (if (memq arg '(file filepath))
                                     (prog1 buffer-file-name
