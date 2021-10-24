@@ -395,7 +395,7 @@ as its sole argument."
                       (memq status '(0 1)))))))
 
 (defun apheleia--format-command (command &optional stdin)
-  "Format COMMAND into a shell-ccmd and list of file paths.
+  "Format COMMAND into a shell command and list of file paths.
 Returns a list with the car being the optional input file-name the
 cadr being the optional output file-name and the cddr being the cmd to
 run.
@@ -406,16 +406,11 @@ the formatters standard input.
 If COMMAND uses the symbol `file' and the current buffer is modified
 from what is written to disk, then return nil meaning meaning no
 cmd is to be run."
-  ;; WARN: The condition with regards to `file' only checks the original
-  ;; file so it doesn't apply the formats from multiple formatters being
-  ;; run. For example if formatter 1 produces some output and formatter
-  ;; 2 modifies file in place then the changes from formatter 1 may not
-  ;; apply at all.
   (cl-block nil
     (let ((input-fname nil)
           (output-fname nil)
           (npx nil))
-      ;; TODO: Support arbitrary package managers, not just npx.
+      ;; TODO: Support arbitrary package managers, not just NPM.
       (when (memq 'npx command)
         (setq npx t)
         (setq command (remq 'npx command)))
@@ -508,16 +503,16 @@ next formatter."
 
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
-    (brittany . ("brittany" file))
-    (clang-format . ("clang-format" file))
+    (brittany . ("brittany"))
+    (clang-format . ("clang-format"))
     (mix-format . ("mix" "format" "-"))
     (gofmt . ("gofmt"))
-    (google-java-format . ("google-java-format" file))
-    (latexindent . ("latexindent" file))
-    (ocamlformat . ("ocamlformat" file))
+    (google-java-format . ("google-java-format" "-"))
+    (latexindent . ("latexindent"))
+    (ocamlformat . ("ocamlformat" "-" "--name" filepath))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
     (rustfmt . ("rustfmt" "--unstable-features" "--skip-children"
-                "--quiet" "--emit" "stdout" file))
+                "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
