@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog].
   C/C++
 * [`google-java-format`](https://github.com/google/google-java-format)
   for Java
+* [isort](https://github.com/PyCQA/isort) for
+  [Python](https://www.python.org/) ([#51])
 * [latexindent](https://ctan.org/pkg/latexindent?lang=en) for
   [LaTeX](https://www.latex-project.org/)
 * [rustfmt](https://github.com/rust-lang/rustfmt) for
