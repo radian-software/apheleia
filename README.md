@@ -102,11 +102,18 @@ variables:
       `black` on the result of `isort` and then use the final output to
       format the current buffer.
 
-      **Warn**: At the moment there's no smart or configurable error
-      handling in place. This means if one of the configured
+      **Warning**: At the moment there's no smart or configurable
+      error handling in place. This means if one of the configured
       formatters fail (for example if `isort` isn't installed) then
       apheleia just doesn't format the buffer at all, even if `black`
       is installed.
+
+      **Warning:** If a formatter uses `file` (rather than `filepath`
+      or `input` or none of these keywords), it can't be chained after
+      another formatter, because `file` implies that the formatter
+      must read from the *original* file, not an intermediate
+      temporary file. For this reason it's suggested to avoid the use
+      of `file` in general.
 * `apheleia-formatter`: Optional buffer-local variable specifying the
   formatter to use in this buffer. Overrides `apheleia-mode-alist`.
 
