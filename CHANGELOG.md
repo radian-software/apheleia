@@ -4,11 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Enhancements
+* Support multiple formatters ([#31]). You can now configure a list of
+  formatters for a major-mode in `apheleia-mode-alist` and they will
+  be run in sequence.
+
 ### Formatters
 * [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
   C/C++
 * [`google-java-format`](https://github.com/google/google-java-format)
   for Java
+* [isort](https://github.com/PyCQA/isort) for
+  [Python](https://www.python.org/) ([#51])
 * [latexindent](https://ctan.org/pkg/latexindent?lang=en) for
   [LaTeX](https://www.latex-project.org/)
 * [rustfmt](https://github.com/rust-lang/rustfmt) for
@@ -29,6 +36,7 @@ The format is based on [Keep a Changelog].
 
 [#24]: https://github.com/raxod502/apheleia/pull/24
 [#30]: https://github.com/raxod502/apheleia/issues/30
+[#31]: https://github.com/raxod502/apheleia/issues/31
 [#32]: https://github.com/raxod502/apheleia/pull/32
 [#39]: https://github.com/raxod502/apheleia/issues/39
 [#48]: https://github.com/raxod502/apheleia/pull/48

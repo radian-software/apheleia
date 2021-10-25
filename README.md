@@ -83,10 +83,37 @@ variables:
       (setf (alist-get 'black apheleia-formatters)
             '("black" "--option" "..." "-"))
       ```
-
 * `apheleia-mode-alist`: Alist mapping major modes and filename
   regexps to names of formatters to use in those modes and files. See
   the docstring for more information.
+    * You can use this variable to configure multiple formatters for
+      the same buffer by setting the `cdr` of an entry to a list of
+      formatters to run instead of a single formatter. For example you
+      may want to run `isort` and `black` one after the other.
+
+      ```elisp
+      (setf (alist-get 'isort apheleia-formatters)
+            '("isort" "--stdout" "-"))
+      (setf (alist-get 'python-mode apheleia-mode-alist)
+            '(isort black))
+      ```
+
+      This will make apheleia run `isort` on the current buffer and then
+      `black` on the result of `isort` and then use the final output to
+      format the current buffer.
+
+      **Warning**: At the moment there's no smart or configurable
+      error handling in place. This means if one of the configured
+      formatters fail (for example if `isort` isn't installed) then
+      apheleia just doesn't format the buffer at all, even if `black`
+      is installed.
+
+      **Warning:** If a formatter uses `file` (rather than `filepath`
+      or `input` or none of these keywords), it can't be chained after
+      another formatter, because `file` implies that the formatter
+      must read from the *original* file, not an intermediate
+      temporary file. For this reason it's suggested to avoid the use
+      of `file` in general.
 * `apheleia-formatter`: Optional buffer-local variable specifying the
   formatter to use in this buffer. Overrides `apheleia-mode-alist`.
 
