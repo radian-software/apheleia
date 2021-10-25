@@ -394,14 +394,15 @@ as its sole argument."
                       ;; changes, and 2 if error.
                       (memq status '(0 1)))))))
 
-(defun apheleia--format-command (command &optional stdin)
+(defun apheleia--format-command (command &optional stdin-buffer)
   "Format COMMAND into a shell command and list of file paths.
-Returns a list with the car being the optional input file-name the
-cadr being the optional output file-name and the cddr being the cmd to
-run.
+Returns a list with the car being the optional input file-name, the
+cadr being the optional output file-name, the caddr is the buffer to
+send as stdin to the formatter (when the input-fname is not used),
+and the cdddr being the cmd to run.
 
-STDIN is the optional buffer to use when creating a temporary file for
-the formatters standard input.
+STDIN-BUFFER is the optional buffer to use when creating a temporary
+file for the formatters standard input.
 
 If COMMAND uses the symbol `file' and the current buffer is modified
 from what is written to disk, then return nil meaning meaning no
@@ -409,6 +410,7 @@ cmd is to be run."
   (cl-block nil
     (let ((input-fname nil)
           (output-fname nil)
+          (stdin (or stdin-buffer (current-buffer)))
           (npx nil))
       ;; TODO: Support arbitrary package managers, not just NPM.
       (when (memq 'npx command)
@@ -430,24 +432,13 @@ cmd is to be run."
                     project-dir)))))
             (when (file-executable-p binary)
               (setcar command binary)))))
-      (when (or (memq 'file command) (memq 'filepath command))
-        (when stdin ; Not first formatter in this sequence.
-          (error "Cannot run formatter using `file' in a sequence unless it's \
-first in the sequence."))
-        (setq command (mapcar (lambda (arg)
-                                (if (memq arg '(file filepath))
-                                    (prog1 buffer-file-name
-                                      (when (buffer-modified-p)
-                                        (cl-return)))
-                                  arg))
-                              command)))
       (when (memq 'input command)
         (let ((input-fname (make-temp-file
                             "apheleia" nil
                             (and buffer-file-name
                                  (file-name-extension
                                   buffer-file-name 'period)))))
-          (with-current-buffer (or stdin (current-buffer))
+          (with-current-buffer stdin
             (apheleia--write-region-silently nil nil input-fname))
           (setq command (mapcar (lambda (arg)
                                   (if (eq arg 'input)
@@ -461,7 +452,22 @@ first in the sequence."))
                                     output-fname
                                   arg))
                               command)))
-      `(,input-fname ,output-fname ,@command))))
+      (when (or (memq 'file command) (memq 'filepath command))
+        ;; Fail when using file but not as the first formatter in this
+        ;; sequence.
+        (when stdin-buffer
+          (error "Cannot run formatter using `file' or `filepath' in a \
+sequence unless it's first in the sequence"))
+        (setq command (mapcar (lambda (arg)
+                                (when (eq arg 'file)
+                                  (setq stdin nil))
+                                (if (memq arg '(file filepath))
+                                    (prog1 buffer-file-name
+                                      (when (buffer-modified-p)
+                                        (cl-return)))
+                                  arg))
+                              command)))
+      `(,input-fname ,output-fname ,stdin ,@command))))
 
 (defun apheleia--run-formatters (commands buffer callback &optional stdin)
   "Run one or more code formatters on the current buffer.
@@ -479,11 +485,11 @@ The stdout of the previous formatter becomes the stdin of the
 next formatter."
   (when-let ((ret (with-current-buffer buffer
                     (apheleia--format-command (car commands) stdin))))
-    (cl-destructuring-bind (input-fname output-fname &rest command) ret
+    (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
       (apheleia--make-process
        :command command
        :stdin (unless input-fname
-                (or stdin buffer))
+                stdin)
        :callback
        (lambda (stdout)
          (when output-fname
