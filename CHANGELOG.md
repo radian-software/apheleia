@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog].
 * Support multiple formatters ([#31]). You can now configure a list of
   formatters for a major-mode in `apheleia-mode-alist` and they will
   be run in sequence.
+* Support evaluating items in `apheleia-formatters` to make formatter
+  commands more dynamic ([#50], [#55]).
 
 ### Formatters
 * [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
@@ -41,6 +43,8 @@ The format is based on [Keep a Changelog].
 [#39]: https://github.com/raxod502/apheleia/issues/39
 [#48]: https://github.com/raxod502/apheleia/pull/48
 [#49]: https://github.com/raxod502/apheleia/pull/49
+[#50]: https://github.com/raxod502/apheleia/pull/50
+[#55]: https://github.com/raxod502/apheleia/issues/55
 
 ## 1.1.2 (released 2021-02-26)
 ### Enhancements
