@@ -486,7 +486,7 @@ sequence unless it's first in the sequence"))
                else if (stringp val)
                  collect val
                else do (error "Result of command evaluation must be a string \
-or list of strings: %s" arg)))
+or list of strings: %S" arg)))
       `(,input-fname ,output-fname ,stdin ,@command))))
 
 (defun apheleia--run-formatters (commands buffer callback &optional stdin)
