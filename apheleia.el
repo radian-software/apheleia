@@ -467,6 +467,26 @@ sequence unless it's first in the sequence"))
                                         (cl-return)))
                                   arg))
                               command)))
+      ;; Evaluate each element of arg that isn't a string and replace
+      ;; it with the evaluated value. The result of an evaluation should
+      ;; be a string or a list of strings. If the former its replaced as
+      ;; is. If the latter the contents of the list is substituted in
+      ;; place.
+      (setq command
+            (cl-loop
+             for arg in command
+             with val = nil
+             do (setq val (if (stringp arg)
+                              arg
+                            (eval arg)))
+             if val
+               if (and (consp val)
+                       (cl-every #'stringp val))
+                 append val
+               else if (stringp val)
+                 collect val
+               else do (error "Result of command evaluation must be a string \
+or list of strings: %S" arg)))
       `(,input-fname ,output-fname ,stdin ,@command))))
 
 (defun apheleia--run-formatters (commands buffer callback &optional stdin)

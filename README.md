@@ -83,6 +83,31 @@ variables:
       (setf (alist-get 'black apheleia-formatters)
             '("black" "--option" "..." "-"))
       ```
+    * There are a list of symbols that are interpreted by apheleia
+      specially when formatting a command (example: `npx`). Any
+      non-string entries in a formatter that doesn't equal one of
+      these symbols is evaluated and replaced in place. This can be
+      used to pass certain flags to the formatter process depending on
+      the state of the current buffer. For example:
+
+      ```elisp
+      (push '(shfmt . ("beautysh"
+                       "-filename" filepath
+                       (when-let ((indent (bound-and-true-p sh-basic-offset)))
+                         (list "--indent-size" (number-to-string indent)))
+                       (when indent-tabs-mode "--tab")
+                       "-"))
+            apheleia-formatters)
+      ```
+
+      This adds an entry to `apheleia-formatters` for the `beautysh`
+      formatter. The evaluated entries makes it so that the `--tab`
+      flag is only passed to `beautysh` when the value of
+      `indent-tabs-mode` is true. Similarly the indent-size flag is
+      passed the exact value of the `sh-basic-offset` variable
+      only when it is bound. Observe that one of these evaluations
+      returns a list of flags whereas the other returns a single
+      string. These are substituted into the command as you'd expect.
 * `apheleia-mode-alist`: Alist mapping major modes and filename
   regexps to names of formatters to use in those modes and files. See
   the docstring for more information.
