@@ -384,7 +384,7 @@ as its sole argument."
     (with-current-buffer (get-buffer-create " *apheleia-patch*")
       (erase-buffer)
       (apheleia--make-process
-       :command `("diff" "--rcs" "--"
+       :command `("diff" "--rcs" "--strip-trailing-cr" "--"
                   ,(or old-fname "-")
                   ,(or new-fname "-"))
        :stdin (if new-fname old-buffer new-buffer)
