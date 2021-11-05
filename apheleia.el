@@ -583,6 +583,7 @@ such a directory exists anywhere above the current
 (defcustom apheleia-mode-alist
   '((cc-mode . clang-format)
     (c-mode . clang-format)
+    (c++-mode . clang-format)
     (css-mode . prettier)
     (elixir-mode . mix-format)
     (go-mode . gofmt)
