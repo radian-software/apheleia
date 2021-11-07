@@ -43,19 +43,18 @@ The approach is as follows:
    quadratic time, which is why it is only applied if necessary and to
    a single patch region.
 
+## Installation
+
+`el-patch` is available on [MELPA](https://melpa.org/). It is easiest
+to install it using
+[`straight.el`](https://github.com/raxod502/straight.el):
+
+    (straight-use-package 'apheleia)
+
+However, you may install using any other package manager if you
+prefer.
+
 ## User guide
-
-To get started with Apheleia, install it with
-[`straight.el`](https://github.com/raxod502/straight.el) as follows:
-
-    (straight-use-package '(apheleia :host github :repo "raxod502/apheleia"))
-
-Alternatively, you can use another source-based package manager such
-as [Quelpa](https://framagit.org/steckerhalter/quelpa),
-[El-Get](https://github.com/dimitri/el-get), or
-[Borg](https://github.com/emacscollective/borg). Apheleia is not
-currently listed on [MELPA](https://melpa.org/) or [GNU
-ELPA](https://elpa.gnu.org/).
 
 To your init-file, add the following form:
 
