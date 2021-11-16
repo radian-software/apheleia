@@ -27,6 +27,9 @@
 (require 'map)
 (require 'subr-x)
 
+(eval-when-compile
+  (require 'rx))
+
 (defgroup apheleia nil
   "Reformat buffer without moving point."
   :group 'external
@@ -394,6 +397,14 @@ as its sole argument."
                       ;; changes, and 2 if error.
                       (memq status '(0 1)))))))
 
+(defun apheleia--safe-buffer-name ()
+  "Current `buffer-name' without special file-system characters."
+  ;; See [[https://stackoverflow.com/questions/1976007/what-characters-are-forbidden-in-windows-and-linux-directory-names][here]] for a list of supported characters on all systems.
+  (replace-regexp-in-string
+   (rx (or "/" "<" ">" ":" "\"" "\\" "|" "?" "*"))
+   ""
+   (buffer-name)))
+
 (defun apheleia--format-command (command &optional stdin-buffer)
   "Format COMMAND into a shell command and list of file paths.
 Returns a list with the car being the optional input file-name, the
@@ -435,9 +446,10 @@ cmd is to be run."
       (when (memq 'input command)
         (let ((input-fname (make-temp-file
                             "apheleia" nil
-                            (and buffer-file-name
-                                 (file-name-extension
-                                  buffer-file-name 'period)))))
+                            (when-let ((file-name
+                                        (or buffer-file-name
+                                            (apheleia--safe-buffer-name))))
+                              (file-name-extension file-name 'period)))))
           (with-current-buffer stdin
             (apheleia--write-region-silently nil nil input-fname))
           (setq command (mapcar (lambda (arg)
@@ -458,15 +470,18 @@ cmd is to be run."
         (when stdin-buffer
           (error "Cannot run formatter using `file' or `filepath' in a \
 sequence unless it's first in the sequence"))
-        (setq command (mapcar (lambda (arg)
-                                (when (eq arg 'file)
-                                  (setq stdin nil))
-                                (if (memq arg '(file filepath))
-                                    (prog1 buffer-file-name
-                                      (when (buffer-modified-p)
-                                        (cl-return)))
-                                  arg))
-                              command)))
+        (let ((file-name (or buffer-file-name
+                             (concat default-directory
+                                     (apheleia--safe-buffer-name)))))
+          (setq command (mapcar (lambda (arg)
+                                  (when (eq arg 'file)
+                                    (setq stdin nil))
+                                  (if (memq arg '(file filepath))
+                                      (prog1 file-name
+                                        (when (buffer-modified-p)
+                                          (cl-return)))
+                                    arg))
+                                command))))
       ;; Evaluate each element of arg that isn't a string and replace
       ;; it with the evaluated value. The result of an evaluation should
       ;; be a string or a list of strings. If the former its replaced as
@@ -772,8 +787,9 @@ operating, to prevent an infinite loop.")
          commands
          (lambda ()
            (with-demoted-errors "Apheleia: %s"
-             (let ((apheleia--format-after-save-in-progress t))
-               (apheleia--write-file-silently buffer-file-name))
+             (when buffer-file-name
+               (let ((apheleia--format-after-save-in-progress t))
+                 (apheleia--write-file-silently buffer-file-name)))
              (run-hooks 'apheleia-post-format-hook))))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied
