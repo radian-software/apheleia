@@ -595,6 +595,7 @@ such a directory exists anywhere above the current
     (json-mode . prettier)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
+    (php-mode . nil)
     (python-mode . black)
     (ruby-mode . prettier)
     (rustic-mode . rustfmt)
