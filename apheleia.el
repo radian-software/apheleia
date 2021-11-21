@@ -399,7 +399,7 @@ as its sole argument."
 
 (defun apheleia--safe-buffer-name ()
   "Return `buffer-name' without special file-system characters."
-  ;; See https://stackoverflow.com/q/1976007 for a list of supported 
+  ;; See https://stackoverflow.com/q/1976007 for a list of supported
   ;; characters on all systems.
   (replace-regexp-in-string
    (rx (or "/" "<" ">" ":" "\"" "\\" "|" "?" "*"))
