@@ -398,8 +398,9 @@ as its sole argument."
                       (memq status '(0 1)))))))
 
 (defun apheleia--safe-buffer-name ()
-  "Current `buffer-name' without special file-system characters."
-  ;; See [[https://stackoverflow.com/questions/1976007/what-characters-are-forbidden-in-windows-and-linux-directory-names][here]] for a list of supported characters on all systems.
+  "Return `buffer-name' without special file-system characters."
+  ;; See https://stackoverflow.com/q/1976007 for a list of supported 
+  ;; characters on all systems.
   (replace-regexp-in-string
    (rx (or "/" "<" ">" ":" "\"" "\\" "|" "?" "*"))
    ""
