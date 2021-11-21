@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog].
   be run in sequence.
 * Support evaluating items in `apheleia-formatters` to make formatter
   commands more dynamic ([#50], [#55]).
+* Allow apheleia to format buffers without an underlying file ([#52]).
 
 ### Formatters
 * [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
@@ -46,6 +47,7 @@ The format is based on [Keep a Changelog].
 [#48]: https://github.com/raxod502/apheleia/pull/48
 [#49]: https://github.com/raxod502/apheleia/pull/49
 [#50]: https://github.com/raxod502/apheleia/pull/50
+[#52]: https://github.com/raxod502/apheleia/issues/52
 [#54]: https://github.com/raxod502/apheleia/pull/54
 [#55]: https://github.com/raxod502/apheleia/issues/55
 

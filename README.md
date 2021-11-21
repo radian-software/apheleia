@@ -107,6 +107,18 @@ variables:
       only when it is bound. Observe that one of these evaluations
       returns a list of flags whereas the other returns a single
       string. These are substituted into the command as you'd expect.
+    * You can also use Apheleia to format buffers that have no underlying
+      files. In this case the value of `file` and `filepath` will be
+      the name of the current buffer with any special characters for
+      the file-system (such as `*` on windows) being stripped out.
+
+      This is also how the extension for any temporary files apheleia
+      might create will be determined. If you're using a formatter
+      that determines the file-type from the extension you should name
+      such buffers such that their suffixed with the extension. For
+      example a buffer called `*foo-bar.c*` that has no associated
+      file will have an implicit file-name of `foo-bar.c` and any
+      temporary files will be suffixed with a `.c` extension.
 * `apheleia-mode-alist`: Alist mapping major modes and filename
   regexps to names of formatters to use in those modes and files. See
   the docstring for more information.
