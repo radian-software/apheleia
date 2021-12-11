@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog].
 * Support evaluating items in `apheleia-formatters` to make formatter
   commands more dynamic ([#50], [#55]).
 * Allow apheleia to format buffers without an underlying file ([#52]).
+* Support functional formatters ([#62]). You can now use a lisp
+  function as a formatter allowing you to plug more powerful
+  formatters into apheleia such as language servers.
 
 ### Formatters
 * [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
@@ -54,6 +57,7 @@ The format is based on [Keep a Changelog].
 [#52]: https://github.com/raxod502/apheleia/issues/52
 [#54]: https://github.com/raxod502/apheleia/pull/54
 [#55]: https://github.com/raxod502/apheleia/issues/55
+[#62]: https://github.com/raxod502/apheleia/issues/62
 [#64]: https://github.com/raxod502/apheleia/issues/64
 [#65]: https://github.com/raxod502/apheleia/pull/65
 
