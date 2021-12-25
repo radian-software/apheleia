@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog].
 * Support evaluating items in `apheleia-formatters` to make formatter
   commands more dynamic ([#50], [#55]).
 * Allow apheleia to format buffers without an underlying file ([#52]).
+* Allow running the same formatter in multiple buffers in parallel
+  ([#64], [#65]).
 
 ### Formatters
 * [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
@@ -50,6 +52,8 @@ The format is based on [Keep a Changelog].
 [#52]: https://github.com/raxod502/apheleia/issues/52
 [#54]: https://github.com/raxod502/apheleia/pull/54
 [#55]: https://github.com/raxod502/apheleia/issues/55
+[#64]: https://github.com/raxod502/apheleia/issues/64
+[#65]: https://github.com/raxod502/apheleia/pull/65
 
 ## 1.1.2 (released 2021-02-26)
 ### Enhancements

@@ -249,10 +249,13 @@ contains the patch."
             (ignore-errors
               (scroll-down (- old-window-line new-window-line)))))))))
 
-(defvar apheleia--current-process nil
+(defvar-local apheleia--current-process nil
   "Current process that Apheleia is running, or nil.
 Keeping track of this helps avoid running more than one process
 at once.")
+
+(defvar apheleia-verbose nil
+  "When true `apheleia' produces richer log buffers.")
 
 (cl-defun apheleia--make-process
     (&key command stdin callback ensure exit-status)
@@ -267,15 +270,18 @@ status of the command; it should return non-nil to indicate that
 the command succeeded. If EXIT-STATUS is omitted, then the command
 succeeds provided that its exit status is 0."
   (when (process-live-p apheleia--current-process)
+    (message "Interrupting %s" apheleia--current-process)
     (interrupt-process apheleia--current-process)
     (accept-process-output apheleia--current-process 0.1 nil 'just-this-one)
     (when (process-live-p apheleia--current-process)
       (kill-process apheleia--current-process)))
   (let* ((name (file-name-nondirectory (car command)))
-         (stdout (get-buffer-create
+         (stdout (generate-new-buffer
                   (format " *apheleia-%s-stdout*" name)))
-         (stderr (get-buffer-create
-                  (format " *apheleia-%s-stderr*" name))))
+         (stderr (generate-new-buffer
+                  (format " *apheleia-%s-stderr*" name)))
+         (log (get-buffer-create
+               (format " *apheleia-%s-log*" name))))
     (dolist (buf (list stdout stderr))
       (with-current-buffer buf
         (erase-buffer)))
@@ -291,26 +297,38 @@ succeeds provided that its exit status is 0."
                  :sentinel
                  (lambda (proc _event)
                    (unless (process-live-p proc)
-                     (with-current-buffer stderr
-                       (when (= 0 (buffer-size))
-                         (insert "[No output received on stderr]\n")))
-                     (unwind-protect
-                         (if (funcall
-                              (or exit-status
-                                  (lambda (status)
-                                    (= 0 status)))
-                              (process-exit-status proc))
-                             (when callback
-                               (funcall callback stdout))
-                           (message
-                            (concat
-                             "Failed to run %s: exit status %s "
-                             "(see hidden buffer%s)")
-                            (car command)
-                            (process-exit-status proc)
-                            stderr))
-                       (when ensure
-                         (funcall ensure)))))))
+                     (let ((exit-ok (funcall
+                                     (or exit-status
+                                         (lambda (status)
+                                           (= 0 status)))
+                                     (process-exit-status proc))))
+                       ;; Append standard-error from current formatter
+                       ;; to log buffer when `apheleia-verbose' or the
+                       ;; formatter failed. Every process output is
+                       ;; delimeted by a line-feed character.
+                       (with-current-buffer log
+                         (when (or apheleia-verbose
+                                   (not exit-ok))
+                           (if (= 0 (buffer-size))
+                               (insert "[No output received on stderr]")
+                             (insert-buffer-substring stderr))
+                           (insert "\n\C-l\n")))
+
+                       (unwind-protect
+                           (if exit-ok
+                               (when callback
+                                 (funcall callback stdout))
+                             (message
+                              (concat
+                               "Failed to run %s: exit status %s "
+                               "(see hidden buffer%s)")
+                              (car command)
+                              (process-exit-status proc)
+                              log))
+                         (when ensure
+                           (funcall ensure))
+                         (kill-buffer stdout)
+                         (kill-buffer stderr)))))))
           (set-process-sentinel (get-buffer-process stderr) #'ignore)
           (set-process-coding-system
            apheleia--current-process
@@ -384,18 +402,16 @@ as its sole argument."
       (with-current-buffer new-buffer
         (setq new-fname (make-temp-file "apheleia"))
         (apheleia--write-region-silently (point-min) (point-max) new-fname)))
-    (with-current-buffer (get-buffer-create " *apheleia-patch*")
-      (erase-buffer)
-      (apheleia--make-process
-       :command `("diff" "--rcs" "--strip-trailing-cr" "--"
-                  ,(or old-fname "-")
-                  ,(or new-fname "-"))
-       :stdin (if new-fname old-buffer new-buffer)
-       :callback callback
-       :exit-status (lambda (status)
-                      ;; Exit status is 0 if no changes, 1 if some
-                      ;; changes, and 2 if error.
-                      (memq status '(0 1)))))))
+    (apheleia--make-process
+     :command `("diff" "--rcs" "--strip-trailing-cr" "--"
+                ,(or old-fname "-")
+                ,(or new-fname "-"))
+     :stdin (if new-fname old-buffer new-buffer)
+     :callback callback
+     :exit-status (lambda (status)
+                    ;; Exit status is 0 if no changes, 1 if some
+                    ;; changes, and 2 if error.
+                    (memq status '(0 1))))))
 
 (defun apheleia--safe-buffer-name ()
   "Return `buffer-name' without special file-system characters."
@@ -519,33 +535,37 @@ formatter in COMMANDS. This should not be supplied by the caller
 and instead is supplied by this command when invoked recursively.
 The stdout of the previous formatter becomes the stdin of the
 next formatter."
-  (when-let ((ret (with-current-buffer buffer
-                    (apheleia--format-command (car commands) stdin))))
-    (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
-      (apheleia--make-process
-       :command command
-       :stdin (unless input-fname
-                stdin)
-       :callback
-       (lambda (stdout)
-         (when output-fname
-           ;; Load output-fname contents into the stdout buffer.
-           (erase-buffer)
-           (insert-file-contents-literally output-fname))
-
-         (if (cdr commands)
-             ;; Forward current stdout to remaining formatters, passing along
-             ;; the current callback and using the current formatters output
-             ;; as stdin.
-             (apheleia--run-formatters (cdr commands) buffer callback stdout)
-           (funcall callback stdout)))
-       :ensure
-       (lambda ()
-         (ignore-errors
-           (when input-fname
-             (delete-file input-fname))
+  ;; NOTE: We switch to the original buffer both to format the command
+  ;; correctly and also to ensure any buffer local variables correctly
+  ;; resolve for the whole formatting process (for example
+  ;; `apheleia--current-process').
+  (with-current-buffer buffer
+    (when-let ((ret (apheleia--format-command (car commands) stdin)))
+      (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
+        (apheleia--make-process
+         :command command
+         :stdin (unless input-fname
+                  stdin)
+         :callback
+         (lambda (stdout)
            (when output-fname
-             (delete-file output-fname))))))))
+             ;; Load output-fname contents into the stdout buffer.
+             (erase-buffer)
+             (insert-file-contents-literally output-fname))
+
+           (if (cdr commands)
+               ;; Forward current stdout to remaining formatters, passing along
+               ;; the current callback and using the current formatters output
+               ;; as stdin.
+               (apheleia--run-formatters (cdr commands) buffer callback stdout)
+             (funcall callback stdout)))
+         :ensure
+         (lambda ()
+           (ignore-errors
+             (when input-fname
+               (delete-file input-fname))
+             (when output-fname
+               (delete-file output-fname)))))))))
 
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
@@ -772,8 +792,8 @@ changes), CALLBACK, if provided, is invoked with no arguments."
 
 ;; Prevent infinite loop.
 (defvar apheleia--format-after-save-in-progress nil
-  "Prevent apheleia--format-after-save from being called recursively.
-This will be locally bound to t while apheleia--format-after-save is
+  "Prevent `apheleia--format-after-save' from being called recursively.
+This will be locally bound to t while `apheleia--format-after-save' is
 operating, to prevent an infinite loop.")
 
 ;; Autoload because the user may enable `apheleia-mode' without
