@@ -304,7 +304,7 @@ command succeeds provided that its exit status is 0."
                        ;; Append standard-error from current formatter
                        ;; to log buffer when `apheleia-verbose' or the
                        ;; formatter failed. Every process output is
-                       ;; delimeted by a line-feed character.
+                       ;; delimited by a line-feed character.
                        (with-current-buffer log
                          (when (or apheleia-verbose
                                    (not exit-ok))
