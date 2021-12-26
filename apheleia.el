@@ -543,12 +543,7 @@ description of COMMAND, BUFFER, CALLBACK and STDIN."
              (erase-buffer)
              (insert-file-contents-literally output-fname))
 
-           (if (cdr commands)
-               ;; Forward current stdout to remaining formatters, passing along
-               ;; the current callback and using the current formatters output
-               ;; as stdin.
-               (apheleia--run-formatters (cdr commands) buffer callback stdout)
-             (funcall callback stdout)))
+           (funcall callback stdout))
          :ensure
          (lambda ()
            (ignore-errors
@@ -562,15 +557,27 @@ description of COMMAND, BUFFER, CALLBACK and STDIN."
 See `apheleia--run-formatters' for a description of BUFFER, CALLBACK
 and STDIN."
   ;; Will be an ugly name if you use a lambda for FUNC, instead of a symbol.
-  (let ((scratch (get-buffer-create (format " *apheleia-%s-scratch*" func))))
+  (let* ((formatter-name (if (symbolp func) (symbol-name func) "lambda"))
+         (scratch (generate-new-buffer
+                   (format " *apheleia-%s-scratch*" formatter-name))))
     (with-current-buffer scratch
       ;; We expect FUNC to modify scratch in place so we can't simply pass
       ;; STDIN to it. When STDIN isn't nil, it's the output of a previous
       ;; formatter and we want to keep it alive so we can debug any issues
       ;; with it.
-      (erase-buffer)
       (insert-buffer-substring (or stdin buffer))
-      (funcall func buffer scratch callback))))
+      (funcall func
+               ;; Original buffer being formatted.
+               buffer
+               ;; Buffer the formatter should modify.
+               scratch
+               ;; Callback after succesfully formatting.
+               (lambda ()
+                 (unwind-protect
+                     (funcall callback scratch)
+                   (kill-buffer scratch)))
+               ;; Callback when formatting scratch has failed.
+               (apply-partially #'kill-buffer scratch)))))
 
 (defun apheleia--run-formatters (commands buffer callback &optional stdin)
   "Run one or more code formatters on the current buffer.
@@ -589,8 +596,11 @@ next formatter."
   (let ((command (car commands)))
     (funcall
      (cond
-      ((consp command) #'apheleia--run-formatter-command)
-      ((functionp command) #'apheleia--run-formatter-function)
+      ((consp command)
+       #'apheleia--run-formatter-command)
+      ((or (functionp command)
+           (symbolp command))
+       #'apheleia--run-formatter-function)
       (t
        (error "Formatter must be a shell command or a Lisp \
 function: %s" command)))
@@ -624,13 +634,14 @@ The keys may be any symbols you want, and the values are
 shell commands, lists of strings and symbols, or a function
 symbol.
 
-If the value is a function, the function will be called with three
+If the value is a function, the function will be called with four
 arguments to format the current buffer. The original buffer that
 was being formatted, use this to access any relevent local variables
 or options that the formatter needs. A clone of the original buffer,
 that may have been modified by another formatter prior to being passed
 to the function. A callback that should be called with the formatted
-buffer when formatting is finished.
+buffer when formatting is finished. And another callback that should
+be called when an error was raised during formatting.
 
 Otherwise in Lisp code, the format of commands is similar to what
 you pass to `make-process', except as follows. Normally, the contents
