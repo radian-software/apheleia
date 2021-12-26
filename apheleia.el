@@ -284,9 +284,6 @@ succeeds provided that its exit status is 0."
                   (format " *apheleia-%s-stderr*" name)))
          (log (get-buffer-create
                (format " *apheleia-%s-log*" name))))
-    (dolist (buf (list stdout stderr))
-      (with-current-buffer buf
-        (erase-buffer)))
     (condition-case-unless-debug e
         (progn
           (setq apheleia--current-process
