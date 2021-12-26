@@ -639,9 +639,9 @@ arguments to format the current buffer. The original buffer that
 was being formatted, use this to access any relevent local variables
 or options that the formatter needs. A clone of the original buffer,
 that may have been modified by another formatter prior to being passed
-to the function. A callback that should be called with the formatted
-buffer when formatting is finished. And another callback that should
-be called when an error was raised during formatting.
+to the function. A callback that should be called when formatting is
+finished. And another callback that should be called when an error was
+raised during formatting.
 
 Otherwise in Lisp code, the format of commands is similar to what
 you pass to `make-process', except as follows. Normally, the contents
