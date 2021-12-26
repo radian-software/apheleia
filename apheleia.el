@@ -312,7 +312,6 @@ command succeeds provided that its exit status is 0."
                                (insert "[No output received on stderr]")
                              (insert-buffer-substring stderr))
                            (insert "\n\C-l\n")))
-
                        (unwind-protect
                            (if exit-ok
                                (when callback
