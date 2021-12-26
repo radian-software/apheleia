@@ -255,7 +255,9 @@ Keeping track of this helps avoid running more than one process
 at once.")
 
 (defvar apheleia-verbose nil
-  "When true `apheleia' produces richer log buffers.")
+  "When true `apheleia' produces richer log buffers.
+Specifically, formatter stderr is appended to the log buffer even
+if there is no error.")
 
 (cl-defun apheleia--make-process
     (&key command stdin callback ensure exit-status)
