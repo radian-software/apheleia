@@ -265,12 +265,12 @@ if there is no error.")
 COMMAND is as in `make-process'. STDIN, if given, is a buffer
 whose contents are fed to the process on stdin. CALLBACK is
 invoked with one argument, the buffer containing the text from
-stdout, when the process terminates (if it succeeds). ENSURE
-is a callback that's invoked whether the process exited sucessfully
-or not. EXIT-STATUS is a function which is called with the exit
+stdout, when the process terminates (if it succeeds). ENSURE is a
+callback that's invoked whether the process exited sucessfully or
+not. EXIT-STATUS is a function which is called with the exit
 status of the command; it should return non-nil to indicate that
-the command succeeded. If EXIT-STATUS is omitted, then the command
-succeeds provided that its exit status is 0."
+the command succeeded. If EXIT-STATUS is omitted, then the
+command succeeds provided that its exit status is 0."
   (when (process-live-p apheleia--current-process)
     (message "Interrupting %s" apheleia--current-process)
     (interrupt-process apheleia--current-process)
