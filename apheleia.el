@@ -308,7 +308,8 @@ command succeeds provided that its exit status is 0."
                        (with-current-buffer log
                          (when (or apheleia-verbose
                                    (not exit-ok))
-                           (if (= 0 (buffer-size))
+                           (if (= 0 (with-current-buffer stderr
+                                      (buffer-size)))
                                (insert "[No output received on stderr]")
                              (insert-buffer-substring stderr))
                            (insert "\n\C-l\n")))
