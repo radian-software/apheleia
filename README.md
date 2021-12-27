@@ -119,6 +119,11 @@ variables:
       example a buffer called `*foo-bar.c*` that has no associated
       file will have an implicit file-name of `foo-bar.c` and any
       temporary files will be suffixed with a `.c` extension.
+    * You can implement formatters as arbitrary Elisp functions which
+      operate directly on a buffer, without needing to invoke an
+      external command. This can be useful to integrate with e.g.
+      language servers. See the docstring for more information on the
+      expected interface for Elisp formatters.
 * `apheleia-mode-alist`: Alist mapping major modes and filename
   regexps to names of formatters to use in those modes and files. See
   the docstring for more information.
