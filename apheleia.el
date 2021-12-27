@@ -329,11 +329,11 @@ command succeeds provided that its exit status is 0."
                          (kill-buffer stdout)
                          (kill-buffer stderr)))))))
           (set-process-sentinel (get-buffer-process stderr) #'ignore)
-          (set-process-coding-system
-           apheleia--current-process
-           nil
-           (buffer-local-value 'buffer-file-coding-system stdin))
           (when stdin
+            (set-process-coding-system
+             apheleia--current-process
+             nil
+             (buffer-local-value 'buffer-file-coding-system stdin))
             (process-send-string
              apheleia--current-process
              (with-current-buffer stdin

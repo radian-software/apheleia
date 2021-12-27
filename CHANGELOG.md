@@ -45,6 +45,9 @@ The format is based on [Keep a Changelog].
   ([#64], [#65]). Previously, when saving a number of files at the
   same time, the contents of those buffers could be corrupted by a
   race condition.
+* In some circumstances the error `wrong-type-argument bufferp nil`
+  could be reported when running certain formatters under Apheleia.
+  This has been fixed.
 
 [#24]: https://github.com/raxod502/apheleia/pull/24
 [#30]: https://github.com/raxod502/apheleia/issues/30
@@ -57,6 +60,7 @@ The format is based on [Keep a Changelog].
 [#52]: https://github.com/raxod502/apheleia/issues/52
 [#54]: https://github.com/raxod502/apheleia/pull/54
 [#55]: https://github.com/raxod502/apheleia/issues/55
+[#60]: https://github.com/raxod502/apheleia/issues/60
 [#62]: https://github.com/raxod502/apheleia/issues/62
 [#64]: https://github.com/raxod502/apheleia/issues/64
 [#65]: https://github.com/raxod502/apheleia/pull/65
