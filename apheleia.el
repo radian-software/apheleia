@@ -520,26 +520,17 @@ sequence unless it's first in the sequence"))
 or list of strings: %S" arg)))
       `(,input-fname ,output-fname ,stdin ,@command))))
 
-(defun apheleia--run-formatters (commands buffer callback &optional stdin)
-  "Run one or more code formatters on the current buffer.
-The formatter is specified by the COMMANDS list. Each entry in
-COMMANDS should be a list of strings or symbols (see
-`apheleia-format-buffer'). BUFFER is the `current-buffer' when
-this function was first called. Once all the formatters in
-COMMANDS finish succesfully then invoke CALLBACK with one argument,
-a buffer containing the output of all the formatters.
-
-STDIN is a buffer containing the standard input for the first
-formatter in COMMANDS. This should not be supplied by the caller
-and instead is supplied by this command when invoked recursively.
-The stdout of the previous formatter becomes the stdin of the
-next formatter."
+(defun apheleia--run-formatter-command (command buffer callback stdin)
+  "Run a formatter using a shell command.
+COMMAND should be a list of string or symbols for the formatter that
+will format the current buffer. See `apheleia--run-formatters' for a
+description of COMMAND, BUFFER, CALLBACK and STDIN."
   ;; NOTE: We switch to the original buffer both to format the command
   ;; correctly and also to ensure any buffer local variables correctly
   ;; resolve for the whole formatting process (for example
   ;; `apheleia--current-process').
   (with-current-buffer buffer
-    (when-let ((ret (apheleia--format-command (car commands) stdin)))
+    (when-let ((ret (apheleia--format-command command stdin)))
       (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
         (apheleia--make-process
          :command command
@@ -552,12 +543,7 @@ next formatter."
              (erase-buffer)
              (insert-file-contents-literally output-fname))
 
-           (if (cdr commands)
-               ;; Forward current stdout to remaining formatters, passing along
-               ;; the current callback and using the current formatters output
-               ;; as stdin.
-               (apheleia--run-formatters (cdr commands) buffer callback stdout)
-             (funcall callback stdout)))
+           (funcall callback stdout))
          :ensure
          (lambda ()
            (ignore-errors
@@ -565,6 +551,69 @@ next formatter."
                (delete-file input-fname))
              (when output-fname
                (delete-file output-fname)))))))))
+
+(defun apheleia--run-formatter-function (func buffer callback stdin)
+  "Run a formatter using a Lisp function FUNC.
+See `apheleia--run-formatters' for a description of BUFFER, CALLBACK
+and STDIN."
+  ;; Will be an ugly name if you use a lambda for FUNC, instead of a symbol.
+  (let* ((formatter-name (if (symbolp func) (symbol-name func) "lambda"))
+         (scratch (generate-new-buffer
+                   (format " *apheleia-%s-scratch*" formatter-name))))
+    (with-current-buffer scratch
+      ;; We expect FUNC to modify scratch in place so we can't simply pass
+      ;; STDIN to it. When STDIN isn't nil, it's the output of a previous
+      ;; formatter and we want to keep it alive so we can debug any issues
+      ;; with it.
+      (insert-buffer-substring (or stdin buffer))
+      (funcall func
+               ;; Original buffer being formatted.
+               buffer
+               ;; Buffer the formatter should modify.
+               scratch
+               ;; Callback after succesfully formatting.
+               (lambda ()
+                 (unwind-protect
+                     (funcall callback scratch)
+                   (kill-buffer scratch)))
+               ;; Callback when formatting scratch has failed.
+               (apply-partially #'kill-buffer scratch)))))
+
+(defun apheleia--run-formatters (commands buffer callback &optional stdin)
+  "Run one or more code formatters on the current buffer.
+The formatter is specified by the COMMANDS list. Each entry in
+COMMANDS should be a list of strings or symbols or a function
+\(see `apheleia-format-buffer'). BUFFER is the `current-buffer' when
+this function was first called. Once all the formatters in COMMANDS
+finish succesfully then invoke CALLBACK with one argument, a buffer
+containing the output of all the formatters.
+
+STDIN is a buffer containing the standard input for the first
+formatter in COMMANDS. This should not be supplied by the caller
+and instead is supplied by this command when invoked recursively.
+The stdout of the previous formatter becomes the stdin of the
+next formatter."
+  (let ((command (car commands)))
+    (funcall
+     (cond
+      ((consp command)
+       #'apheleia--run-formatter-command)
+      ((or (functionp command)
+           (symbolp command))
+       #'apheleia--run-formatter-function)
+      (t
+       (error "Formatter must be a shell command or a Lisp \
+function: %s" command)))
+     command
+     buffer
+     (lambda (stdout)
+       (if (cdr commands)
+           ;; Forward current stdout to remaining formatters, passing along
+           ;; the current callback and using the current formatters output
+           ;; as stdin.
+           (apheleia--run-formatters (cdr commands) buffer callback stdout)
+         (funcall callback stdout)))
+     stdin)))
 
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
@@ -582,38 +631,49 @@ next formatter."
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
-commands, lists of strings and symbols.
+shell commands, lists of strings and symbols, or a function
+symbol.
 
-In Lisp code, the format of commands is similar to what you pass to
-`make-process', except as follows. Normally, the contents of the
-current buffer are passed to the command on stdin, and the output
-is read from stdout. However, if you use the symbol `file' as one
-of the elements of commands, then the filename of the current
-buffer is substituted for it. (Use `filepath' instead of `file'
-if you need the filename of the current buffer, but you still
-want its contents to be passed on stdin.) If you instead use the
-symbol `input' as one of the elements of commands, then the
-contents of the current buffer are written to a temporary file
-and its name is substituted for `input'. Also, if you use the
-symbol `output' as one of the elements of commands, then it is
-substituted with the name of a temporary file. In that case, it
-is expected that the command writes to that file, and the file is
-then read into an Emacs buffer. Finally, if you use the symbol
-`npx' as one of the elements of commands, then the first string
+If the value is a function, the function will be called with four
+arguments to format the current buffer: the original buffer that
+was being formatted (use this to access any relevent local
+variables or options that the formatter needs); a clone of the
+original buffer (that may have been modified by another formatter
+prior to being passed to the function); a callback that should be
+called when formatting is finished; and another callback that
+should be called when an error was raised during formatting.
+
+Otherwise in Lisp code, the format of commands is similar to what
+you pass to `make-process', except as follows. Normally, the contents
+of the current buffer are passed to the command on stdin, and the
+output is read from stdout. However, if you use the symbol `file' as
+one of the elements of commands, then the filename of the current
+buffer is substituted for it. (Use `filepath' instead of `file' if you
+need the filename of the current buffer, but you still want its
+contents to be passed on stdin.) If you instead use the symbol `input'
+as one of the elements of commands, then the contents of the current
+buffer are written to a temporary file and its name is substituted for
+`input'. Also, if you use the symbol `output' as one of the elements
+of commands, then it is substituted with the name of a temporary file.
+In that case, it is expected that the command writes to that file, and
+the file is then read into an Emacs buffer. Finally, if you use the
+symbol `npx' as one of the elements of commands, then the first string
 element of the command list is resolved inside node_modules/.bin if
 such a directory exists anywhere above the current
 `default-directory'."
   :type '(alist
           :key-type symbol
           :value-type
-          (repeat
-           (choice
-            (string :tag "Argument")
-            (const :tag "Look for command in node_modules/.bin" npx)
-            (const :tag "Name of file being formatted" filepath)
-            (const :tag "Name of real file used for input" file)
-            (const :tag "Name of temporary file used for input" input)
-            (const :tag "Name of temporary file used for output" output)))))
+          (choice
+           (repeat
+            (choice
+             (string :tag "Argument")
+             (const :tag "Look for command in node_modules/.bin" npx)
+             (const :tag "Name of file being formatted" filepath)
+             (const :tag "Name of real file used for input" file)
+             (const :tag "Name of temporary file used for input" input)
+             (const :tag "Name of temporary file used for output" output)))
+           (function :tag "Formatter function"))))
 
 (defcustom apheleia-mode-alist
   '((cc-mode . clang-format)
