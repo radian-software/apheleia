@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 1.2 (released 2021-12-27)
 ### Enhancements
 * Support multiple formatters ([#31]). You can now configure a list of
   formatters for a major-mode in `apheleia-mode-alist` and they will
