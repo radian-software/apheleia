@@ -52,7 +52,7 @@ The format is based on [Keep a Changelog].
 
 ### Bugs fixed
 * Fix spelling error in generated process names ([#32]).
-* Apheleia no longer conflicts with undo-fu (#[39]).
+* Apheleia no longer conflicts with undo-fu ([#39]).
 * Apheleia no longer triggers `after-set-visited-file-name-hook`,
   which reduces conflicts with various modes. For example, `lsp-mode`
   will no longer trigger a reconnect every time you save.
