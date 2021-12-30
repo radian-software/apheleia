@@ -69,6 +69,8 @@ The format is based on [Keep a Changelog].
 [#48]: https://github.com/raxod502/apheleia/pull/48
 [#49]: https://github.com/raxod502/apheleia/pull/49
 [#50]: https://github.com/raxod502/apheleia/pull/50
+[#51]: https://github.com/raxod502/apheleia/pull/51
+[#52]: https://github.com/raxod502/apheleia/issues/52
 [#54]: https://github.com/raxod502/apheleia/pull/54
 [#55]: https://github.com/raxod502/apheleia/issues/55
 [#64]: https://github.com/raxod502/apheleia/issues/64
