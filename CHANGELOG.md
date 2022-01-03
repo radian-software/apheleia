@@ -18,6 +18,10 @@ The format is based on [Keep a Changelog].
   [#65]. The log buffer is not hidden by default, and this can be
   changed via the new user option `apheleia-hide-log-buffer` ([#69]).
 
+## Formatters
+* [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
+  for [Fish](https://fishshell.com/) ([#68]).
+
 ## Bugs fixed
 * Allow running the same formatter in multiple buffers in parallel
   ([#64], [#65]). Previously, when saving a number of files at the
@@ -35,6 +39,7 @@ The format is based on [Keep a Changelog].
 [#62]: https://github.com/raxod502/apheleia/issues/62
 [#64]: https://github.com/raxod502/apheleia/issues/64
 [#65]: https://github.com/raxod502/apheleia/pull/65
+[#68]: https://github.com/raxod502/apheleia/issues/68
 [#69]: https://github.com/raxod502/apheleia/issues/69
 
 ## 1.2 (released 2021-12-27)
