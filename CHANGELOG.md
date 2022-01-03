@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog].
   function as a formatter allowing you to plug more powerful
   formatters into apheleia such as language servers.
 
+## Changes
+* Stdout and stderr buffers are no longer retained after running a
+  formatter. Instead, the stderr is appended into an
+  `*apheleia-whatever-log*` buffer if it fails, or unconditionally if
+  the new user option `apheleia-verbose` is set to non-nil. See [#64],
+  [#65]. The log buffer is not hidden by default, and this can be
+  changed via the new user option `apheleia-hide-log-buffer` ([#69]).
+
 ## Bugs fixed
 * Allow running the same formatter in multiple buffers in parallel
   ([#64], [#65]). Previously, when saving a number of files at the
@@ -18,12 +26,16 @@ The format is based on [Keep a Changelog].
 * In some circumstances the error `wrong-type-argument bufferp nil`
   could be reported when running certain formatters under Apheleia.
   This has been fixed.
+* Rustfmt is no longer passed the `--unstable-features` and
+  `--skip-children` flags, since they are not available on all
+  versions of Rustfmt ([#69]).
 
 [#52]: https://github.com/raxod502/apheleia/issues/52
 [#60]: https://github.com/raxod502/apheleia/issues/60
 [#62]: https://github.com/raxod502/apheleia/issues/62
 [#64]: https://github.com/raxod502/apheleia/issues/64
 [#65]: https://github.com/raxod502/apheleia/pull/65
+[#69]: https://github.com/raxod502/apheleia/issues/69
 
 ## 1.2 (released 2021-12-27)
 ### Enhancements

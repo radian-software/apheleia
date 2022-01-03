@@ -36,6 +36,13 @@
   :link '(url-link :tag "GitHub" "https://github.com/raxod502/apheleia")
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
 
+(defcustom apheleia-hide-log-buffer nil
+  "Non-nil means log buffers will be hidden.
+Hidden buffers have names that begin with a space, and do not
+appear in `switch-to-buffer' unless you type in a space
+manually."
+  :type 'boolean)
+
 (cl-defun apheleia--edit-distance-table (s1 s2)
   "Align strings S1 and S2 for minimum edit distance.
 Return the dynamic programming table as has table which maps cons
@@ -283,7 +290,11 @@ command succeeds provided that its exit status is 0."
          (stderr (generate-new-buffer
                   (format " *apheleia-%s-stderr*" name)))
          (log (get-buffer-create
-               (format " *apheleia-%s-log*" name))))
+               (format "%s*apheleia-%s-log*"
+                       (if apheleia-hide-log-buffer
+                           " "
+                         "")
+                       name))))
     (condition-case-unless-debug e
         (progn
           (setq apheleia--current-process
@@ -320,10 +331,13 @@ command succeeds provided that its exit status is 0."
                              (message
                               (concat
                                "Failed to run %s: exit status %s "
-                               "(see hidden buffer%s)")
+                               "(see %s %s)")
                               (car command)
                               (process-exit-status proc)
-                              log))
+                              (if (string-prefix-p " " (buffer-name log))
+                                  "hidden buffer"
+                                "buffer")
+                              (string-trim (buffer-name log))))
                          (when ensure
                            (funcall ensure))
                          (kill-buffer stdout)
@@ -626,8 +640,7 @@ function: %s" command)))
     (latexindent . ("latexindent"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
-    (rustfmt . ("rustfmt" "--unstable-features" "--skip-children"
-                "--quiet" "--emit" "stdout"))
+    (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are
