@@ -13,10 +13,12 @@ The format is based on [Keep a Changelog].
 ## Changes
 * Stdout and stderr buffers are no longer retained after running a
   formatter. Instead, the stderr is appended into an
-  `*apheleia-whatever-log*` buffer if it fails, or unconditionally if
-  the new user option `apheleia-verbose` is set to non-nil. See [#64],
-  [#65]. The log buffer is not hidden by default, and this can be
-  changed via the new user option `apheleia-hide-log-buffer` ([#69]).
+  `*apheleia-cmdname-log*` buffer if it fails, or unconditionally if
+  the new user option `apheleia-log-only-errors` is set to nil. See
+  [#64], [#65]. The log buffer is not hidden by default, and shows all
+  command output rather than just the latest run. These behaviors can
+  be customized using the new user options `apheleia-hide-log-buffers`
+  and `apheleia-hide-old-log-entries` ([#69]).
 
 ## Formatters
 * [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)

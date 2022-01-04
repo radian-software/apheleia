@@ -36,11 +36,22 @@
   :link '(url-link :tag "GitHub" "https://github.com/raxod502/apheleia")
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
 
-(defcustom apheleia-hide-log-buffer nil
+(defcustom apheleia-hide-log-buffers nil
   "Non-nil means log buffers will be hidden.
 Hidden buffers have names that begin with a space, and do not
 appear in `switch-to-buffer' unless you type in a space
 manually."
+  :type 'boolean)
+
+(defcustom apheleia-log-only-errors t
+  "Non-nil means Apheleia will only log when an error occurs.
+Otherwise, Apheleia will log every time a formatter is run, even
+if it is successful."
+  :type 'boolean)
+
+(defcustom apheleia-hide-old-log-entries nil
+  "Non-nil means only the most recent log entry will be retained.
+This is on a per-formatter basis."
   :type 'boolean)
 
 (cl-defun apheleia--edit-distance-table (s1 s2)
@@ -261,11 +272,6 @@ contains the patch."
 Keeping track of this helps avoid running more than one process
 at once.")
 
-(defvar apheleia-verbose nil
-  "When true `apheleia' produces richer log buffers.
-Specifically, formatter stderr is appended to the log buffer even
-if there is no error.")
-
 (cl-defun apheleia--make-process
     (&key command stdin callback ensure exit-status)
   "Wrapper for `make-process' that behaves a bit more nicely.
@@ -289,12 +295,11 @@ command succeeds provided that its exit status is 0."
                   (format " *apheleia-%s-stdout*" name)))
          (stderr (generate-new-buffer
                   (format " *apheleia-%s-stderr*" name)))
-         (log (get-buffer-create
-               (format "%s*apheleia-%s-log*"
-                       (if apheleia-hide-log-buffer
-                           " "
-                         "")
-                       name))))
+         (log-name (format "%s*apheleia-%s-log*"
+                           (if apheleia-hide-log-buffers
+                               " "
+                             "")
+                           name)))
     (condition-case-unless-debug e
         (progn
           (setq apheleia--current-process
@@ -308,22 +313,60 @@ command succeeds provided that its exit status is 0."
                  (lambda (proc _event)
                    (unless (process-live-p proc)
                      (let ((exit-ok (funcall
-                                     (or exit-status
-                                         (lambda (status)
-                                           (= 0 status)))
+                                     (or exit-status #'zerop)
                                      (process-exit-status proc))))
                        ;; Append standard-error from current formatter
-                       ;; to log buffer when `apheleia-verbose' or the
+                       ;; to log buffer when
+                       ;; `apheleia-log-only-errors' is nil or the
                        ;; formatter failed. Every process output is
                        ;; delimited by a line-feed character.
-                       (with-current-buffer log
-                         (when (or apheleia-verbose
-                                   (not exit-ok))
-                           (if (= 0 (with-current-buffer stderr
-                                      (buffer-size)))
-                               (insert "[No output received on stderr]")
-                             (insert-buffer-substring stderr))
-                           (insert "\n\C-l\n")))
+                       (unless (and exit-ok apheleia-log-only-errors)
+                         (with-current-buffer (get-buffer-create log-name)
+                           (special-mode)
+                           (save-restriction
+                             (widen)
+                             (let ((inhibit-read-only t)
+                                   (orig-point (point))
+                                   (keep-at-end (eobp))
+                                   (stderr-string
+                                    (with-current-buffer stderr
+                                      (string-trim (buffer-string)))))
+                               (when apheleia-hide-old-log-entries
+                                 (erase-buffer))
+                               (goto-char (point-max))
+                               (skip-chars-backward "\n")
+                               (delete-region (point) (point-max))
+                               (unless (bobp)
+                                 (insert
+                                  "\n\n\C-l\n"))
+                               (insert
+                                (current-time-string)
+                                " :: "
+                                (buffer-local-value 'default-directory stdout)
+                                "\n$ "
+                                (mapconcat #'shell-quote-argument command " ")
+                                "\n\n"
+                                (if (string-empty-p stderr-string)
+                                    "(no output on stderr)"
+                                  stderr-string)
+                                "\n\n"
+                                "Command "
+                                (if exit-ok "succeeded" "failed")
+                                " with exit code "
+                                (number-to-string (process-exit-status proc))
+                                ".\n")
+                               ;; Known issue: this does not actually
+                               ;; work; point is left at the end of
+                               ;; the previous command output, instead
+                               ;; of being moved to the end of the
+                               ;; buffer for some reason.
+                               (goto-char
+                                (if keep-at-end
+                                    (point-max)
+                                  (min
+                                   (point-max)
+                                   orig-point)))
+                               (goto-char (point-max))))))
                        (unwind-protect
                            (if exit-ok
                                (when callback
@@ -334,10 +377,10 @@ command succeeds provided that its exit status is 0."
                                "(see %s %s)")
                               (car command)
                               (process-exit-status proc)
-                              (if (string-prefix-p " " (buffer-name log))
+                              (if (string-prefix-p " " log-name)
                                   "hidden buffer"
                                 "buffer")
-                              (string-trim (buffer-name log))))
+                              (string-trim log-name)))
                          (when ensure
                            (funcall ensure))
                          (kill-buffer stdout)

@@ -169,6 +169,23 @@ run.
 Apheleia does not currently support TRAMP, and is therefore
 automatically disabled for remote files.
 
+You can configure error reporting using the following user options:
+
+* `apheleia-hide-log-buffers`: By default, errors from formatters are
+  put in buffers named like `*apheleia-cmdname-log*`. If you customize
+  this user option to non-nil then a space is prepended to the names
+  of these buffers, hiding them by default in `switch-to-buffer` (you
+  must type a space to see them).
+* `apheleia-log-only-errors`: By default, only failed formatter runs
+  are logged. If you customize this user option to nil then all runs
+  are logged, along with whether or not they succeeded.
+* `apheleia-hide-old-log-entries`: By default, all failed formatter
+  runs are appended to the log. It is intended that point stay at the
+  end of the buffer by default, but due to an unknown bug this is not
+  currently the case. By customizing this user option to non-nil, you
+  can cause only the most recent failure for a formatter to be
+  retained in its log buffer.
+
 The following user options are also available:
 
 * `apheleia-post-format-hook`: Normal hook run after Apheleia formats
