@@ -284,6 +284,10 @@ contains the patch."
 Keeping track of this helps avoid running more than one process
 at once.")
 
+(defvar apheleia--last-error-marker nil
+  "Marker for the last error message for any formatter.
+This points into a log buffer.")
+
 (cl-defun apheleia--make-process
     (&key command stdin callback ensure exit-status formatter)
   "Wrapper for `make-process' that behaves a bit more nicely.
@@ -352,6 +356,12 @@ correspond to a formatter."
                                (unless (bobp)
                                  (insert
                                   "\n\n\C-l\n"))
+                               (unless exit-ok
+                                 (unless apheleia--last-error-marker
+                                   (setq apheleia--last-error-marker
+                                         (make-marker))
+                                   (move-marker
+                                    apheleia--last-error-marker (point))))
                                (insert
                                 (current-time-string)
                                 " :: "
@@ -416,6 +426,14 @@ correspond to a formatter."
                (buffer-string))))
           (process-send-eof apheleia--current-process))
       (error (message "Failed to run %s: %s" name (error-message-string e))))))
+
+(defun apheleia-goto-error ()
+  "Go to the most recently reported formatter error message."
+  (interactive)
+  (unless apheleia--last-error-marker
+    (user-error "No error has happened yet"))
+  (pop-to-buffer (marker-buffer apheleia--last-error-marker))
+  (goto-char apheleia--last-error-marker))
 
 (defun apheleia--write-region-silently
     (start end filename &optional

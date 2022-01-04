@@ -169,6 +169,11 @@ run.
 Apheleia does not currently support TRAMP, and is therefore
 automatically disabled for remote files.
 
+If an error occurs while formatting, a message is displayed in the
+echo area. You can jump to the error by invoking `M-x
+apheleia-goto-error`, or manually switch to the log buffer mentioned
+in the message.
+
 You can configure error reporting using the following user options:
 
 * `apheleia-hide-log-buffers`: By default, errors from formatters are
@@ -178,7 +183,8 @@ You can configure error reporting using the following user options:
   must type a space to see them).
 * `apheleia-log-only-errors`: By default, only failed formatter runs
   are logged. If you customize this user option to nil then all runs
-  are logged, along with whether or not they succeeded.
+  are logged, along with whether or not they succeeded. This could be
+  helpful in debugging.
 
 The following user options are also available:
 
