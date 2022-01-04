@@ -6,7 +6,6 @@ EMACS ?= emacs
 # The order is important for compilation.
 for_compile := *.el
 for_checkdoc := *.el
-for_longlines := $(wildcard *.el *.md *.yml) Makefile
 
 .PHONY: help
 help: ## Show this message
@@ -42,16 +41,8 @@ checkdoc: ## Check for missing or poorly formatted docstrings
 	done
 
 .PHONY: longlines
-longlines: ## Check for lines longer than 79 characters
-	@for file in $(for_longlines); do \
-	    echo "[longlines] $$file" ;\
-	    cat "$$file" \
-	        | sed '/[l]onglines-start/,/longlines-stop/d' \
-	        | grep -E '.{80}' \
-	        | grep -E -v 'https?://' \
-	        | sed "s/^/$$file:long line: /" \
-	        | grep . && exit 1 || true ;\
-	done
+longlines: ## Check for long lines
+	@scripts/check-line-length.bash
 
 .PHONY: clean
 clean: ## Remove build artifacts
