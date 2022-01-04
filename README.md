@@ -179,12 +179,6 @@ You can configure error reporting using the following user options:
 * `apheleia-log-only-errors`: By default, only failed formatter runs
   are logged. If you customize this user option to nil then all runs
   are logged, along with whether or not they succeeded.
-* `apheleia-hide-old-log-entries`: By default, all failed formatter
-  runs are appended to the log. It is intended that point stay at the
-  end of the buffer by default, but due to an unknown bug this is not
-  currently the case. By customizing this user option to non-nil, you
-  can cause only the most recent failure for a formatter to be
-  retained in its log buffer.
 
 The following user options are also available:
 
@@ -196,6 +190,15 @@ The following user options are also available:
   programming algorithm for point alignment. This cannot be too big or
   Emacs will hang noticeably on large reformatting operations, since
   the DP algorithm is quadratic-time.
+
+Apheleia exposes some hooks for advanced customization:
+
+* `apheleia-formatter-exited-hook`: Abnormal hook which is run after a
+  formatter has completely finished running for a buffer. Not run if
+  the formatting was interrupted and no action was taken. Receives two
+  arguments: the symbol for the formatter that was run (e.g. `black`,
+  or it could be a list if multiple formatters were run in a chain),
+  and a boolean for whether there was an error.
 
 ## Contributing
 

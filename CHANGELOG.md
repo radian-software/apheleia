@@ -4,21 +4,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
-## Features
-* Allow apheleia to format buffers without an underlying file ([#52]).
-* Support functional formatters ([#62]). You can now use a lisp
-  function as a formatter allowing you to plug more powerful
-  formatters into apheleia such as language servers.
-
-## Changes
+## Breaking changes
+* The interface to `apheleia-format-buffer` has changed. You now pass
+  in the symbol of a formatter from `apheleia-formatters` (or a list
+  of them) rather than the actual command. This change improves the
+  ability of Apheleia to report useful error messages and logging.
 * Stdout and stderr buffers are no longer retained after running a
   formatter. Instead, the stderr is appended into an
   `*apheleia-cmdname-log*` buffer if it fails, or unconditionally if
   the new user option `apheleia-log-only-errors` is set to nil. See
-  [#64], [#65]. The log buffer is not hidden by default, and shows all
-  command output rather than just the latest run. These behaviors can
-  be customized using the new user options `apheleia-hide-log-buffers`
-  and `apheleia-hide-old-log-entries` ([#69]).
+  [#64], [#65]. The log buffer is not hidden by default, unlike the
+  old stdout and stderr buffers, but this can be changed with the new
+  user option `apheleia-hide-log-buffers`. Also, the log shows all
+  command output rather than just the latest run. You can add further
+  customizations using the new hook `apheleia-formatter-exited-hook`
+  ([#69]).
+
+## Features
+* Apheleia can now format buffers that do not have an underlying file
+  ([#52]).
+* You can now use a Lisp function as a formatter, by providing a
+  symbol or lambda in `apheleia-formatters` rather than a list of
+  strings ([#62]).
 
 ## Formatters
 * [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
@@ -51,7 +58,6 @@ The format is based on [Keep a Changelog].
   be run in sequence.
 * Support evaluating items in `apheleia-formatters` to make formatter
   commands more dynamic ([#50], [#55]).
-* Allow apheleia to format buffers without an underlying file ([#52]).
 
 ### Formatters
 * [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
@@ -89,7 +95,6 @@ The format is based on [Keep a Changelog].
 [#49]: https://github.com/raxod502/apheleia/pull/49
 [#50]: https://github.com/raxod502/apheleia/pull/50
 [#51]: https://github.com/raxod502/apheleia/pull/51
-[#52]: https://github.com/raxod502/apheleia/issues/52
 [#54]: https://github.com/raxod502/apheleia/pull/54
 [#55]: https://github.com/raxod502/apheleia/issues/55
 [#64]: https://github.com/raxod502/apheleia/issues/64

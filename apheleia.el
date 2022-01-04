@@ -49,10 +49,22 @@ Otherwise, Apheleia will log every time a formatter is run, even
 if it is successful."
   :type 'boolean)
 
-(defcustom apheleia-hide-old-log-entries nil
-  "Non-nil means only the most recent log entry will be retained.
-This is on a per-formatter basis."
-  :type 'boolean)
+(defcustom apheleia-formatter-exited-hook nil
+  "Abnormal hook run after a formatter has finished running.
+Must accept arbitrary keyword arguments. The following arguments
+are defined at present:
+
+`:formatter' - The symbol for the formatter that was run.
+
+`:error' - Non-nil if the formatter failed, nil if it succeeded.
+
+`:log' - The log buffer for that formatter, or nil if there is
+none (e.g., because logging is not enabled).
+
+This hook is run before `apheleia-after-format-hook', and may be
+run multiple times if `apheleia-mode-alist' configures multiple
+formatters to run in a chain, with one run per formatter."
+  :type 'hook)
 
 (cl-defun apheleia--edit-distance-table (s1 s2)
   "Align strings S1 and S2 for minimum edit distance.
@@ -273,7 +285,7 @@ Keeping track of this helps avoid running more than one process
 at once.")
 
 (cl-defun apheleia--make-process
-    (&key command stdin callback ensure exit-status)
+    (&key command stdin callback ensure exit-status formatter)
   "Wrapper for `make-process' that behaves a bit more nicely.
 COMMAND is as in `make-process'. STDIN, if given, is a buffer
 whose contents are fed to the process on stdin. CALLBACK is
@@ -283,7 +295,10 @@ callback that's invoked whether the process exited sucessfully or
 not. EXIT-STATUS is a function which is called with the exit
 status of the command; it should return non-nil to indicate that
 the command succeeded. If EXIT-STATUS is omitted, then the
-command succeeds provided that its exit status is 0."
+command succeeds provided that its exit status is 0. FORMATTER is
+the symbol of the formatter that is being run, for diagnostic
+purposes. FORMATTER is nil if the command being run does not
+correspond to a formatter."
   (when (process-live-p apheleia--current-process)
     (message "Interrupting %s" apheleia--current-process)
     (interrupt-process apheleia--current-process)
@@ -331,8 +346,6 @@ command succeeds provided that its exit status is 0."
                                    (stderr-string
                                     (with-current-buffer stderr
                                       (string-trim (buffer-string)))))
-                               (when apheleia-hide-old-log-entries
-                                 (erase-buffer))
                                (goto-char (point-max))
                                (skip-chars-backward "\n")
                                (delete-region (point) (point-max))
@@ -367,6 +380,12 @@ command succeeds provided that its exit status is 0."
                                    (point-max)
                                    orig-point)))
                                (goto-char (point-max))))))
+                       (when formatter
+                         (run-hook-with-args
+                          'apheleia-formatter-exited-hook
+                          :formatter formatter
+                          :error (not exit-ok)
+                          :log (get-buffer log-name)))
                        (unwind-protect
                            (if exit-ok
                                (when callback
@@ -577,11 +596,14 @@ sequence unless it's first in the sequence"))
 or list of strings: %S" arg)))
       `(,input-fname ,output-fname ,stdin ,@command))))
 
-(defun apheleia--run-formatter-command (command buffer callback stdin)
+(defun apheleia--run-formatter-command
+    (command buffer callback stdin formatter)
   "Run a formatter using a shell command.
 COMMAND should be a list of string or symbols for the formatter that
 will format the current buffer. See `apheleia--run-formatters' for a
-description of COMMAND, BUFFER, CALLBACK and STDIN."
+description of COMMAND, BUFFER, CALLBACK and STDIN. FORMATTER is
+the symbol of the current formatter being run, for diagnostic
+purposes."
   ;; NOTE: We switch to the original buffer both to format the command
   ;; correctly and also to ensure any buffer local variables correctly
   ;; resolve for the whole formatting process (for example
@@ -607,12 +629,14 @@ description of COMMAND, BUFFER, CALLBACK and STDIN."
              (when input-fname
                (delete-file input-fname))
              (when output-fname
-               (delete-file output-fname)))))))))
+               (delete-file output-fname))))
+         :formatter formatter)))))
 
-(defun apheleia--run-formatter-function (func buffer callback stdin)
+(defun apheleia--run-formatter-function (func buffer callback stdin _formatter)
   "Run a formatter using a Lisp function FUNC.
-See `apheleia--run-formatters' for a description of BUFFER, CALLBACK
-and STDIN."
+See `apheleia--run-formatters' for a description of BUFFER,
+CALLBACK and STDIN. FORMATTER is the symbol of the current
+formatter being run, for diagnostic purposes."
   ;; Will be an ugly name if you use a lambda for FUNC, instead of a symbol.
   (let* ((formatter-name (if (symbolp func) (symbol-name func) "lambda"))
          (scratch (generate-new-buffer
@@ -635,42 +659,6 @@ and STDIN."
                    (kill-buffer scratch)))
                ;; Callback when formatting scratch has failed.
                (apply-partially #'kill-buffer scratch)))))
-
-(defun apheleia--run-formatters (commands buffer callback &optional stdin)
-  "Run one or more code formatters on the current buffer.
-The formatter is specified by the COMMANDS list. Each entry in
-COMMANDS should be a list of strings or symbols or a function
-\(see `apheleia-format-buffer'). BUFFER is the `current-buffer' when
-this function was first called. Once all the formatters in COMMANDS
-finish succesfully then invoke CALLBACK with one argument, a buffer
-containing the output of all the formatters.
-
-STDIN is a buffer containing the standard input for the first
-formatter in COMMANDS. This should not be supplied by the caller
-and instead is supplied by this command when invoked recursively.
-The stdout of the previous formatter becomes the stdin of the
-next formatter."
-  (let ((command (car commands)))
-    (funcall
-     (cond
-      ((consp command)
-       #'apheleia--run-formatter-command)
-      ((or (functionp command)
-           (symbolp command))
-       #'apheleia--run-formatter-function)
-      (t
-       (error "Formatter must be a shell command or a Lisp \
-function: %s" command)))
-     command
-     buffer
-     (lambda (stdout)
-       (if (cdr commands)
-           ;; Forward current stdout to remaining formatters, passing along
-           ;; the current callback and using the current formatters output
-           ;; as stdin.
-           (apheleia--run-formatters (cdr commands) buffer callback stdout)
-         (funcall callback stdout)))
-     stdin)))
 
 (defcustom apheleia-formatters
   '((black . ("black" "-"))
@@ -731,6 +719,43 @@ such a directory exists anywhere above the current
              (const :tag "Name of temporary file used for input" input)
              (const :tag "Name of temporary file used for output" output)))
            (function :tag "Formatter function"))))
+
+(defun apheleia--run-formatters
+    (formatters buffer callback &optional stdin)
+  "Run one or more code formatters on the current buffer.
+FORMATTERS is a list of symbols that appear as keys in
+`apheleia-formatters'. BUFFER is the `current-buffer' when this
+function was first called. Once all the formatters in COMMANDS
+finish succesfully then invoke CALLBACK with one argument, a
+buffer containing the output of all the formatters.
+
+STDIN is a buffer containing the standard input for the first
+formatter in COMMANDS. This should not be supplied by the caller
+and instead is supplied by this command when invoked recursively.
+The stdout of the previous formatter becomes the stdin of the
+next formatter."
+  (let ((command (alist-get (car formatters) apheleia-formatters)))
+    (funcall
+     (cond
+      ((consp command)
+       #'apheleia--run-formatter-command)
+      ((or (functionp command)
+           (symbolp command))
+       #'apheleia--run-formatter-function)
+      (t
+       (error "Formatter must be a shell command or a Lisp \
+function: %s" command)))
+     command
+     buffer
+     (lambda (stdout)
+       (if (cdr formatters)
+           ;; Forward current stdout to remaining formatters, passing along
+           ;; the current callback and using the current formatters output
+           ;; as stdin.
+           (apheleia--run-formatters (cdr formatters) buffer callback stdout)
+         (funcall callback stdout)))
+     stdin
+     (car formatters))))
 
 (defcustom apheleia-mode-alist
   '((cc-mode . clang-format)
@@ -793,48 +818,43 @@ entry. This overrides `apheleia-mode-alist'.")
 (defun apheleia--ensure-list (arg)
   "Ensure ARG is a list of length at least 1.
 When ARG is not a list its turned into a list."
-  (when arg
-    (if (listp arg)
-        arg
-      (list arg))))
+  (if (listp arg)
+      arg
+    (list arg)))
 
-(defun apheleia--get-formatter-commands (&optional interactive)
-  "Return the formatter commands to use for the current buffer.
-This is a value suitable for `apheleia--run-formatters', or nil if
-no formatter is configured for the current buffer. Consult the
-values of `apheleia-mode-alist' and `apheleia-formatter' to
-determine which formatter is configured.
+(defun apheleia--get-formatters (&optional interactive)
+  "Return the list of formatters to use for the current buffer.
+This is a list of symbols that may appear as cars in
+`apheleia-formatters', or nil if no formatter is configured for
+the current buffer.
+
+Consult the values of `apheleia-mode-alist' and
+`apheleia-formatter' to determine which formatter is configured.
 
 If INTERACTIVE is non-nil, then prompt the user for which
 formatter to run if none is configured, instead of returning nil.
 If INTERACTIVE is the special symbol `prompt', then prompt
 even if a formatter is configured."
-  (when-let ((formatters
-              (or (and (not (eq interactive 'prompt))
-                       (apheleia--ensure-list
-                        (or apheleia-formatter
-                            (cl-dolist (entry apheleia-mode-alist)
-                              (when (or (and (symbolp (car entry))
-                                             (derived-mode-p (car entry)))
-                                        (and (stringp (car entry))
-                                             buffer-file-name
-                                             (string-match-p
-                                              (car entry) buffer-file-name)))
-                                (cl-return (cdr entry)))))))
-                  (and interactive
-                       (list
-                        (intern
-                         (completing-read
-                          "Formatter: "
-                          (or (map-keys apheleia-formatters)
-                              (user-error
-                               "No formatters in `apheleia-formatters'"))
-                          nil 'require-match)))))))
-    (mapcar (lambda (formatter)
-              (or (alist-get formatter apheleia-formatters)
-                  (user-error "No configuration for formatter `%S'"
-                              formatter)))
-            formatters)))
+  (or (and (not (eq interactive 'prompt))
+           (apheleia--ensure-list
+            (or apheleia-formatter
+                (cl-dolist (entry apheleia-mode-alist)
+                  (when (or (and (symbolp (car entry))
+                                 (derived-mode-p (car entry)))
+                            (and (stringp (car entry))
+                                 buffer-file-name
+                                 (string-match-p
+                                  (car entry) buffer-file-name)))
+                    (cl-return (cdr entry)))))))
+      (and interactive
+           (list
+            (intern
+             (completing-read
+              "Formatter: "
+              (or (map-keys apheleia-formatters)
+                  (user-error
+                   "No formatters in `apheleia-formatters'"))
+              nil 'require-match))))))
 
 (defun apheleia--buffer-hash ()
   "Compute hash of current buffer."
@@ -851,14 +871,16 @@ even if a formatter is configured."
     "Apheleia does not support remote files"))
 
 ;;;###autoload
-(defun apheleia-format-buffer (commands &optional callback)
+(defun apheleia-format-buffer (formatter &optional callback)
   "Run code formatter asynchronously on current buffer, preserving point.
 
-COMMANDS is a list of values from `apheleia-formatters'. If
-called interactively, run the currently configured formatters (see
-`apheleia-formatter' and `apheleia-mode-alist'), or prompt from
-`apheleia-formatters' if there is none configured for the current
-buffer. With a prefix argument, prompt always.
+FORMATTER is a symbol appearing as a key in
+`apheleia-formatters', or a list of them to run multiple
+formatters in a chain. If called interactively, run the currently
+configured formatters (see `apheleia-formatter' and
+`apheleia-mode-alist'), or prompt from `apheleia-formatters' if
+there is none configured for the current buffer. With a prefix
+argument, prompt always.
 
 After the formatters finish running, the diff utility is invoked to
 determine what changes it made. That diff is then used to apply the
@@ -873,35 +895,43 @@ changes), CALLBACK, if provided, is invoked with no arguments."
   (interactive (progn
                  (when-let ((err (apheleia--disallowed-p)))
                    (user-error err))
-                 (list (apheleia--get-formatter-commands
+                 (list (apheleia--get-formatters
                         (if current-prefix-arg
                             'prompt
                           'interactive)))))
-  (setq commands (apheleia--ensure-list commands))
-  ;; Fail silently if disallowed, since we don't want to throw an
-  ;; error on `post-command-hook'.
-  (unless (apheleia--disallowed-p)
-    (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
-    (let ((cur-buffer (current-buffer)))
-      (apheleia--run-formatters
-       commands
-       cur-buffer
-       (lambda (formatted-buffer)
-         (with-current-buffer cur-buffer
-           ;; Short-circuit.
-           (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
-             (apheleia--create-rcs-patch
-              (current-buffer) formatted-buffer
-              (lambda (patch-buffer)
-                (with-current-buffer cur-buffer
-                  (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
-                    (apheleia--apply-rcs-patch
-                     (current-buffer) patch-buffer)
-                    (when callback
-                      (funcall callback)))))))))))))
+  (let ((formatters (apheleia--ensure-list formatter)))
+    ;; Check for this error ahead of time so we don't have to deal
+    ;; with it anywhere in the internal machinery of Apheleia.
+    (dolist (formatter formatters)
+      (unless (alist-get formatter apheleia-formatters)
+        (user-error
+         "No such formatter defined in `apheleia-formatters': %S"
+         formatter)))
+    ;; Fail silently if disallowed, since we don't want to throw an
+    ;; error on `post-command-hook'. We already took care of throwing
+    ;; `user-error' on interactive usage above.
+    (unless (apheleia--disallowed-p)
+      (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
+      (let ((cur-buffer (current-buffer)))
+        (apheleia--run-formatters
+         formatters
+         cur-buffer
+         (lambda (formatted-buffer)
+           (with-current-buffer cur-buffer
+             ;; Short-circuit.
+             (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
+               (apheleia--create-rcs-patch
+                (current-buffer) formatted-buffer
+                (lambda (patch-buffer)
+                  (with-current-buffer cur-buffer
+                    (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
+                      (apheleia--apply-rcs-patch
+                       (current-buffer) patch-buffer)
+                      (when callback
+                        (funcall callback))))))))))))))
 
 (defcustom apheleia-post-format-hook nil
-  "Normal hook run after Apheleia formats a buffer."
+  "Normal hook run after Apheleia formats a buffer successfully."
   :type 'hook)
 
 ;; Handle recursive references.
@@ -920,9 +950,9 @@ operating, to prevent an infinite loop.")
   "Run code formatter for current buffer if any configured, then save."
   (unless apheleia--format-after-save-in-progress
     (when apheleia-mode
-      (when-let ((commands (apheleia--get-formatter-commands)))
+      (when-let ((formatters (apheleia--get-formatters)))
         (apheleia-format-buffer
-         commands
+         formatters
          (lambda ()
            (with-demoted-errors "Apheleia: %s"
              (when buffer-file-name
