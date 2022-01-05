@@ -16,4 +16,8 @@ if (( "$#" == 0 )) || [[ -z "$1" ]]; then
     set -- bash
 fi
 
+if (( "$#" == 1 )) && [[ "$1" == *" "* ]]; then
+    set -- bash -c "$1"
+fi
+
 exec runuser -u apheleia -- "$@"
