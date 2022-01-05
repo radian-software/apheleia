@@ -7,7 +7,11 @@ jobs:
       - uses: actions/checkout@v2
       - name: Test changed formatters
         run: |
-          export FORMATTERS="$(make docker CMD="make fmt-changed")"
+          set -euo pipefail
+
+          mkdir -p .tmp
+          make docker CMD="make fmt-changed > .tmp/changed"
+          export FORMATTERS="$(< .tmp/changed)"
           if [[ -n "${FORMATTERS}" ]]; then
               make fmt-build fmt-docker CMD="make fmt-test"
           fi
