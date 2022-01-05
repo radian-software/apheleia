@@ -42,7 +42,10 @@ The format is based on [Keep a Changelog].
 * Rustfmt is no longer passed the `--unstable-features` and
   `--skip-children` flags, since they are not available on all
   versions of Rustfmt ([#69]).
+* When a formatter cannot be found, orphaned stderr processes are no
+  longer created and left around forever ([#47]).
 
+[#47]: https://github.com/raxod502/apheleia/issues/47
 [#52]: https://github.com/raxod502/apheleia/issues/52
 [#60]: https://github.com/raxod502/apheleia/issues/60
 [#62]: https://github.com/raxod502/apheleia/issues/62

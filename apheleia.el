@@ -412,8 +412,10 @@ correspond to a formatter."
                               (string-trim log-name)))
                          (when ensure
                            (funcall ensure))
-                         (kill-buffer stdout)
-                         (kill-buffer stderr)))))))
+                         (ignore-errors
+                           (kill-buffer stdout))
+                         (ignore-errors
+                           (kill-buffer stderr))))))))
           (set-process-sentinel (get-buffer-process stderr) #'ignore)
           (when stdin
             (set-process-coding-system
@@ -425,7 +427,12 @@ correspond to a formatter."
              (with-current-buffer stdin
                (buffer-string))))
           (process-send-eof apheleia--current-process))
-      (error (message "Failed to run %s: %s" name (error-message-string e))))))
+      (error
+       (ignore-errors
+         (kill-buffer stdout))
+       (ignore-errors
+         (kill-buffer stderr))
+       (message "Failed to run %s: %s" name (error-message-string e))))))
 
 (defun apheleia-goto-error ()
   "Go to the most recently reported formatter error message."
