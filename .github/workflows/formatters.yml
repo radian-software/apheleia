@@ -5,6 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Debugging
+        run: |
+          git rev-parse HEAD
+          git status
+          git branch -avv
+          git show master:apheleia.el
       - name: Test changed formatters
         run: |
           set -euo pipefail
