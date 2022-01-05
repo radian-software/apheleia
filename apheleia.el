@@ -598,7 +598,14 @@ sequence unless it's first in the sequence"))
                                     (setq stdin nil))
                                   (if (memq arg '(file filepath))
                                       (prog1 file-name
-                                        (when (buffer-modified-p)
+                                        ;; If `buffer-file-name' is
+                                        ;; nil then there is no
+                                        ;; backing file, so
+                                        ;; `buffer-modified-p' should
+                                        ;; be ignored (it always
+                                        ;; returns non-nil).
+                                        (when (and (buffer-modified-p)
+                                                   buffer-file-name)
                                           (cl-return)))
                                     arg))
                                 command))))
