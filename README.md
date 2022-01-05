@@ -218,7 +218,32 @@ Apheleia exposes some hooks for advanced customization:
 ## Contributing
 
 Please see [the contributor guide for my
-projects](https://github.com/raxod502/contributor-guide).
+projects](https://github.com/raxod502/contributor-guide) for general
+information, and the following sections for Apheleia-specific details.
+
+### Adding a formatter
+
+I have done my best to make it straightforward to add a formatter. You
+just follow these steps:
+
+1. Install your formatter on your machine so you can test.
+2. Create an entry in `apheleia-formatters` with how to run it. (See
+   the docstring of this variable for explanation about the available
+   keywords.)
+3. Add entries for the relevant major modes in `apheleia-mode-alist`.
+4. See if it works for you!
+5. Add a file at `test/formatters/installers/yourformatter.bash` which
+   explains how to install the formatter on Ubuntu. This will be used
+   by CI.
+6. Test with `make fmt-build FORMATTERS=yourformatter` to do the
+   installation, then `make fmt-docker` to start a shell with the
+   formatter available. Verify it runs in this environment.
+7. Add an example input (pre-formatting) and output (post-formatting)
+   file at `test/formatters/samplecode/yourformatter/in.whatever` and
+   `test/formatters/samplecode/yourformatter/out.whatever`.
+8. Verify that the tests are passing, using `make fmt-test
+   FORMATTERS=yourformatter` from inside the `fmt-docker` shell.
+9. Submit a pull request, CI should now be passing!
 
 ## Acknowledgements
 
