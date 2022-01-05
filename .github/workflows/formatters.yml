@@ -1,0 +1,23 @@
+name: Changed formatters
+on: [pull_request]
+jobs:
+  formatters:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout pull request
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Fetch master
+        run: |
+          git fetch
+      - name: Test changed formatters
+        run: |
+          set -euo pipefail
+
+          mkdir -p .tmp
+          make docker CMD="make fmt-changed > .tmp/changed"
+          export FORMATTERS="$(< .tmp/changed)"
+          if [[ -n "${FORMATTERS}" ]]; then
+              make fmt-build fmt-docker CMD="make fmt-test"
+          fi

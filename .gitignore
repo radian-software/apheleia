@@ -1,1 +1,4 @@
 *.elc
+.log
+.tmp
+auto
