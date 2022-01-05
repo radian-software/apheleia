@@ -206,6 +206,15 @@ Apheleia exposes some hooks for advanced customization:
   or it could be a list if multiple formatters were run in a chain),
   and a boolean for whether there was an error.
 
+## Known issues
+
+* `process aphelieia-whatever no longer connected to pipe; closed it`:
+  This happens on older Emacs versions when formatting a buffer with
+  size greater than 65,536 characters. There is no known workaround
+  besides disabling `apheleia-mode` for the affected buffer, or
+  upgrading to a more recent version of Emacs. See
+  [#20](https://github.com/raxod502/apheleia/issues/20).
+
 ## Contributing
 
 Please see [the contributor guide for my
