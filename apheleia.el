@@ -583,10 +583,11 @@ cmd is to be run."
                                     output-fname
                                   arg))
                               command)))
-      (when (memq 'file command)
+      (when (or (memq 'file command) (memq 'filepath command))
         ;; Fail when using file but not as the first formatter in this
-        ;; sequence.
-        (when stdin-buffer
+        ;; sequence. (But filepath is okay, since it indicates content
+        ;; is not actually being read from the named file.)
+        (when (and stdin-buffer (memq 'file command))
           (error "Cannot run formatter using `file' in a \
 sequence unless it's first in the sequence"))
         (let ((file-name (or buffer-file-name
