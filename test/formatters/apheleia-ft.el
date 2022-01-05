@@ -61,7 +61,7 @@ already in memory on the current branch."
 This means their commands in `apheleia-formatters' are different
 from how they appear on master, or they were added relative to
 master."
-  (let ((old-formatters (apheleia-ft--get-formatters-from-ref "master"))
+  (let ((old-formatters (apheleia-ft--get-formatters-from-ref "origin/master"))
         (new-formatters apheleia-formatters)
         (touched-formatters nil))
     (map-do
