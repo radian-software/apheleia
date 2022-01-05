@@ -1,7 +1,7 @@
 name: Changed formatters
 on: [pull_request]
 jobs:
-  lint:
+  formatters:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
