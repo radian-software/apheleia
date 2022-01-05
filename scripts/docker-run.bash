@@ -9,5 +9,11 @@ if [[ "$OSTYPE" != darwin* ]] && [[ "$EUID" != 0 ]]; then
     docker=(sudo -E "${docker[@]}")
 fi
 
-exec "${docker[@]}" run -it --rm -v "${repo}:/src"    \
+it=()
+
+if [[ -t 0 ]]; then
+    it+=(-it)
+fi
+
+exec "${docker[@]}" run "${it[@]}" --rm -v "${repo}:/src"  \
      --entrypoint=/src/scripts/docker-pid1.bash "$@"
