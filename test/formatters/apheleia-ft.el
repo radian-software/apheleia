@@ -67,8 +67,10 @@ master."
 
 (defun apheleia-ft-changed ()
   "Print to stdout a comma-delimited list of formatters changed in this PR."
-  (princ (string-join
-          (apheleia-ft--get-formatters-for-pull-request) ",")))
+  (princ (concat
+          (string-join
+           (apheleia-ft--get-formatters-for-pull-request) ",")
+          "\n")))
 
 (defun apheleia-ft--read-file (filename)
   "Return the contents of FILENAME as a string."
