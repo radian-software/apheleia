@@ -1,0 +1,16 @@
+name: Changed formatters
+on: [pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs_version: [25, 26, 27, "master"]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Test changed formatters
+        run: |
+          export FORMATTERS="$(make docker CMD="make fmt-changed")"
+          if [[ -n "${FORMATTERS}" ]]; then
+              make fmt-build fmt-docker CMD="make fmt-test"
+          fi
