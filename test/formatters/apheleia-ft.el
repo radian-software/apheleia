@@ -32,14 +32,20 @@ If ALL is non-nil, unconditionally return all formatters."
   "Check out given Git REF and return `apheleia-formatters' from there.
 Return an Elisp data structure, same as the `apheleia-formatters'
 already in memory on the current branch."
-  (let ((old-apheleia (make-temp-file "apheleia-" nil ".el")))
+  (let ((old-apheleia (make-temp-file "apheleia-" nil ".el"))
+        (stderr-file (make-temp-file "apheleia-ft-stderr-")))
     (with-temp-file old-apheleia
-      (unless (zerop
-               (call-process
-                "git"
-                nil (current-buffer) nil
-                "show" (format "%s:apheleia.el" ref)))
-        (error "Failed to 'git show %s:apheleia.el'" ref)))
+      (let ((exit-status
+             (call-process
+              "git"
+              nil (list (current-buffer) stderr-file) nil
+              "show" (format "%s:apheleia.el" ref))))
+        (unless (zerop exit-status)
+          (with-temp-buffer
+            (insert-file-contents stderr-file)
+            (princ (buffer-string)))
+          (error "Failed to 'git show %s:apheleia.el', got exit status %S"
+                 ref exit-status))))
     (with-temp-buffer
       (call-process
        (if invocation-directory
