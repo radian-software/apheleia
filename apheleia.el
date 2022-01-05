@@ -458,10 +458,8 @@ as in `write-region'. WRITE-REGION is used instead of the actual
     (set-visited-file-modtime)
     (set-buffer-modified-p nil)))
 
-(defun apheleia--write-file-silently (&optional filename)
-  "Write contents of current buffer into file FILENAME, silently.
-FILENAME defaults to value of variable `buffer-file-name'. Do not
-mark the buffer as visiting FILENAME."
+(defun apheleia--save-buffer-silently ()
+  "Save the current buffer to its backing file, silently."
   (cl-letf* ((write-region (symbol-function #'write-region))
              ((symbol-function #'write-region)
               (lambda (start end filename &optional
@@ -484,7 +482,7 @@ mark the buffer as visiting FILENAME."
               (lambda (&rest args)
                 (unless (equal args '(after-set-visited-file-name-hook))
                   (apply run-hooks args)))))
-    (write-file (or filename buffer-file-name))))
+    (save-buffer)))
 
 (defun apheleia--create-rcs-patch (old-buffer new-buffer callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
@@ -1004,7 +1002,7 @@ operating, to prevent an infinite loop.")
            (with-demoted-errors "Apheleia: %s"
              (when buffer-file-name
                (let ((apheleia--format-after-save-in-progress t))
-                 (apheleia--write-file-silently buffer-file-name)))
+                 (apheleia--save-buffer-silently)))
              (run-hooks 'apheleia-post-format-hook))))))))
 
 ;; Use `progn' to force the entire minor mode definition to be copied

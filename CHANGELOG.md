@@ -48,10 +48,14 @@ The format is based on [Keep a Changelog].
   versions of Rustfmt ([#69]).
 * When a formatter cannot be found, orphaned stderr processes are no
   longer created and left around forever ([#47]).
+* Apheleia no longer resets the major mode to its default value when
+  formatting a buffer. This was never intended and the bug has now
+  been fixed ([#58]).
 
 [#23]: https://github.com/raxod502/apheleia/issues/23
 [#47]: https://github.com/raxod502/apheleia/issues/47
 [#52]: https://github.com/raxod502/apheleia/issues/52
+[#58]: https://github.com/raxod502/apheleia/issues/58
 [#60]: https://github.com/raxod502/apheleia/issues/60
 [#62]: https://github.com/raxod502/apheleia/issues/62
 [#64]: https://github.com/raxod502/apheleia/issues/64
