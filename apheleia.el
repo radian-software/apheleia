@@ -560,7 +560,7 @@ cmd is to be run."
                     project-dir)))))
             (when (file-executable-p binary)
               (setcar command binary)))))
-      (when (memq 'input command)
+      (when (or (memq 'input command) (memq 'inplace command))
         (let ((input-fname (make-temp-file
                             "apheleia" nil
                             (when-let ((file-name
@@ -570,10 +570,12 @@ cmd is to be run."
           (with-current-buffer stdin
             (apheleia--write-region-silently nil nil input-fname))
           (setq command (mapcar (lambda (arg)
-                                  (if (eq arg 'input)
+                                  (if (memq arg '(input inplace))
                                       input-fname
                                     arg))
-                                command))))
+                                command))
+          (when (memq 'inplace command)
+            (setq output-fname input-fname))))
       (when (memq 'output command)
         (setq output-fname (make-temp-file "apheleia"))
         (setq command (mapcar (lambda (arg)
@@ -581,11 +583,11 @@ cmd is to be run."
                                     output-fname
                                   arg))
                               command)))
-      (when (or (memq 'file command) (memq 'filepath command))
+      (when (memq 'file command)
         ;; Fail when using file but not as the first formatter in this
         ;; sequence.
         (when stdin-buffer
-          (error "Cannot run formatter using `file' or `filepath' in a \
+          (error "Cannot run formatter using `file' in a \
 sequence unless it's first in the sequence"))
         (let ((file-name (or buffer-file-name
                              (concat default-directory
@@ -714,23 +716,35 @@ called when formatting is finished; and another callback that
 should be called when an error was raised during formatting.
 
 Otherwise in Lisp code, the format of commands is similar to what
-you pass to `make-process', except as follows. Normally, the contents
-of the current buffer are passed to the command on stdin, and the
-output is read from stdout. However, if you use the symbol `file' as
-one of the elements of commands, then the filename of the current
-buffer is substituted for it. (Use `filepath' instead of `file' if you
-need the filename of the current buffer, but you still want its
-contents to be passed on stdin.) If you instead use the symbol `input'
-as one of the elements of commands, then the contents of the current
-buffer are written to a temporary file and its name is substituted for
-`input'. Also, if you use the symbol `output' as one of the elements
-of commands, then it is substituted with the name of a temporary file.
-In that case, it is expected that the command writes to that file, and
-the file is then read into an Emacs buffer. Finally, if you use the
-symbol `npx' as one of the elements of commands, then the first string
-element of the command list is resolved inside node_modules/.bin if
-such a directory exists anywhere above the current
-`default-directory'."
+you pass to `make-process', except as follows.
+
+Normally, the contents of the current buffer are passed to the
+command on stdin, and the output is read from stdout. However, if
+you use the symbol `file' as one of the elements of commands,
+then the filename of the current buffer is substituted for
+it. (Use `filepath' instead of `file' if you need the filename of
+the current buffer, but you still want its contents to be passed
+on stdin.)
+
+If you instead use the symbol `input' as one of the elements of
+commands, then the contents of the current buffer are written to
+a temporary file and its name is substituted for `input'. Also,
+if you use the symbol `output' as one of the elements of
+commands, then it is substituted with the name of a temporary
+file. In that case, it is expected that the command writes to
+that file, and the file is then read into an Emacs buffer.
+
+If you use the symbol `inplace' as one of the elements of the
+list, then the contents of the current buffer are written to a
+temporary file and its name is substituted for `inplace'.
+However, unlike `input', it is expected that the formatter write
+the formatted file back to the same file in place. In other
+words, `inplace' is like `input' and `output' together.
+
+If you use the symbol `npx' as one of the elements of commands,
+then the first string element of the command list is resolved
+inside node_modules/.bin if such a directory exists anywhere
+above the current `default-directory'."
   :type '(alist
           :key-type symbol
           :value-type

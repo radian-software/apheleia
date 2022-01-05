@@ -26,6 +26,10 @@ The format is based on [Keep a Changelog].
 * You can now use a Lisp function as a formatter, by providing a
   symbol or lambda in `apheleia-formatters` rather than a list of
   strings ([#62]).
+* Formatters that operate on files in place are now supported, by
+  using the symbol `inplace` in an entry on `apheleia-formatters` to
+  stand in for the name of a temporary file that will be modified in
+  place by the formatter ([#23]).
 
 ## Formatters
 * [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
@@ -45,6 +49,7 @@ The format is based on [Keep a Changelog].
 * When a formatter cannot be found, orphaned stderr processes are no
   longer created and left around forever ([#47]).
 
+[#23]: https://github.com/raxod502/apheleia/issues/23
 [#47]: https://github.com/raxod502/apheleia/issues/47
 [#52]: https://github.com/raxod502/apheleia/issues/52
 [#60]: https://github.com/raxod502/apheleia/issues/60
