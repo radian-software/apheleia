@@ -7,8 +7,9 @@ jobs:
       matrix:
         emacs_version: [25, 26, 27, "master"]
     steps:
-      - uses: actions/checkout@v2
-      - name: Lint
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run linters
         env:
           VERSION: ${{ matrix.emacs_version }}
         run: >-

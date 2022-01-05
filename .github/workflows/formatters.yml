@@ -4,7 +4,13 @@ jobs:
   formatters:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout pull request
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Fetch master
+        run: |
+          git fetch
       - name: Test changed formatters
         run: |
           set -euo pipefail
