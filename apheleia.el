@@ -860,6 +860,7 @@ to match \".jsx\" files you might use \"\\.jsx\\'\"."
   "Name of formatter to use in current buffer, a symbol or nil.
 If non-nil, then `apheleia-formatters' should have a matching
 entry. This overrides `apheleia-mode-alist'.")
+(put 'apheleia-formatter 'safe-local-variable 'symbolp)
 
 (defun apheleia--ensure-list (arg)
   "Ensure ARG is a list of length at least 1.
