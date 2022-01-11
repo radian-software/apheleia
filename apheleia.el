@@ -511,7 +511,15 @@ as in `write-region'. WRITE-REGION is used instead of the actual
                   (apply run-hooks args)))))
     (save-buffer)))
 
-(defun apheleia--create-rcs-patch (old-buffer new-buffer callback)
+(defmacro apheleia--strip-remote (file-name &optional remote)
+  "Return FILE-NAME with REMOTE prefix removed.
+REMOTE should be a symbol pointing to the value of `file-remote-p'
+for FILE-NAME."
+  `(let ((file-name ,file-name))
+     (substring file-name
+                (length ,(or remote '(file-remote-p file-name))))))
+
+(defun apheleia--create-rcs-patch (old-buffer new-buffer remote callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
 Once finished, invoke CALLBACK with a buffer containing the patch
 as its sole argument."
@@ -519,10 +527,12 @@ as its sole argument."
   ;; other one we can feed on stdin.
   (let ((old-fname
          (with-current-buffer old-buffer
-           (and (not (buffer-modified-p)) buffer-file-name)))
+           (and (not (buffer-modified-p))
+                (apheleia--strip-remote buffer-file-name))))
         (new-fname
          (with-current-buffer new-buffer
-           (and (not (buffer-modified-p)) buffer-file-name))))
+           (and (not (buffer-modified-p))
+                (apheleia--strip-remote buffer-file-name)))))
     (unless (or old-fname new-fname)
       (with-current-buffer new-buffer
         (setq new-fname (make-temp-file "apheleia"))
@@ -533,6 +543,7 @@ as its sole argument."
                 ,(or new-fname "-"))
      :stdin (if new-fname old-buffer new-buffer)
      :callback callback
+     :remote remote
      :exit-status (lambda (status)
                     ;; Exit status is 0 if no changes, 1 if some
                     ;; changes, and 2 if error.
@@ -605,11 +616,10 @@ it's first in the sequence"))
             (error "Formatter uses `file' but process will run on different \
 machine from the machine file is available on")))
         ;; We always strip out the remote-path prefix for file/filepath.
-        (let ((file-name (substring
+        (let ((file-name (apheleia--strip-remote
                           (or buffer-file-name
                               (concat default-directory
-                                      (apheleia--safe-buffer-name)))
-                          (length (file-remote-p file-name)))))
+                                      (apheleia--safe-buffer-name))))))
           (setq command (mapcar (lambda (arg)
                                   (when (eq arg 'file)
                                     (setq stdin nil))
@@ -639,7 +649,7 @@ machine from the machine file is available on")))
                                (file-name-extension file-name 'period)))))
         (with-current-buffer stdin
           (apheleia--write-region-silently nil nil input-fname))
-        (let ((input-fname (substring input-fname (length remote))))
+        (let ((input-fname (apheleia--strip-remote input-fname remote)))
           (setq command (mapcar (lambda (arg)
                                   (if (memq arg '(input inplace))
                                       input-fname
@@ -653,7 +663,7 @@ machine from the machine file is available on")))
                    (concat remote apheleia-remote-temporary-file-directory)
                  temporary-file-directory)))
           (setq output-fname (make-temp-file "apheleia")))
-        (let ((output-fname (substring output-fname (length remote))))
+        (let ((output-fname (apheleia--strip-remote output-fname remote)))
           (setq command (mapcar (lambda (arg)
                                   (if (eq arg 'output)
                                       output-fname
@@ -858,8 +868,8 @@ function: %s" command)))
            (apheleia--run-formatters
             (cdr formatters) buffer callback remote stdout)
          (funcall callback stdout)))
-     remote
      stdin
+     remote
      (car formatters))))
 
 (defcustom apheleia-mode-alist
@@ -1020,7 +1030,10 @@ changes), CALLBACK, if provided, is invoked with no arguments."
     ;; `user-error' on interactive usage above.
     (unless (apheleia--disallowed-p)
       (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
-      (let ((cur-buffer (current-buffer)))
+      (let ((cur-buffer (current-buffer))
+            (remote (and (eq apheleia-remote-algorithm 'remote)
+                         (file-remote-p (or buffer-file-name
+                                            default-directory)))))
         (apheleia--run-formatters
          formatters
          cur-buffer
@@ -1029,7 +1042,7 @@ changes), CALLBACK, if provided, is invoked with no arguments."
              ;; Short-circuit.
              (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
                (apheleia--create-rcs-patch
-                (current-buffer) formatted-buffer
+                (current-buffer) formatted-buffer remote
                 (lambda (patch-buffer)
                   (with-current-buffer cur-buffer
                     (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
@@ -1037,9 +1050,7 @@ changes), CALLBACK, if provided, is invoked with no arguments."
                        (current-buffer) patch-buffer)
                       (when callback
                         (funcall callback)))))))))
-         (and (eq apheleia-remote-algorithm 'remote)
-              (file-remote-p (or buffer-file-name
-                                 default-directory))))))))
+         remote)))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."
