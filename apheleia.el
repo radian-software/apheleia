@@ -66,6 +66,30 @@ run multiple times if `apheleia-mode-alist' configures multiple
 formatters to run in a chain, with one run per formatter."
   :type 'hook)
 
+(defcustom apheleia-remote-algorithm 'cancel
+  "How `apheleia' should process remote files/buffers.
+Set to `cancel' to immediately fail whenever you try to format a remote
+buffer. Set to `remote' to make apheleia spawn the process and any other
+temporary files on the same remote machine the buffer is on. Note this
+may block while the process is being created, especially if the remote
+requires network communication. Set to `local' to make `apheleia' run
+the formatter on the current machine and then write the formatted output
+back to the remote machine. Note some features of apheleia (such as `file'
+in `apheleia-formatters') is not compatible with this option and formatters
+relying on them will crash."
+  :type '(choice (const :tag "Run the formatter on the local machine" local)
+                 (const :tag "Run the formatter on the remote machine" remote)
+                 (const :tag "Disable formatting for remote buffers" cancel)))
+
+(defcustom apheleia-remote-temporary-file-directory temporary-file-directory
+  "Value of the variable `temporary-file-directory' used for remote machines.
+There's no guarantee the files you open with `tramp' will use the same value
+of the variable `temporary-file-directory' as your local machine. Assign this
+variable to switch to a different directory specifically for use with apheleia.
+
+This variable is only used when apheleia starts a process on a remote machine."
+  :type 'string)
+
 (cl-defun apheleia--edit-distance-table (s1 s2)
   "Align strings S1 and S2 for minimum edit distance.
 Return the dynamic programming table as has table which maps cons
@@ -289,7 +313,7 @@ at once.")
 This points into a log buffer.")
 
 (cl-defun apheleia--make-process
-    (&key command stdin callback ensure exit-status formatter)
+    (&key command stdin callback ensure exit-status formatter remote)
   "Wrapper for `make-process' that behaves a bit more nicely.
 COMMAND is as in `make-process'. STDIN, if given, is a buffer
 whose contents are fed to the process on stdin. CALLBACK is
@@ -302,7 +326,9 @@ the command succeeded. If EXIT-STATUS is omitted, then the
 command succeeds provided that its exit status is 0. FORMATTER is
 the symbol of the formatter that is being run, for diagnostic
 purposes. FORMATTER is nil if the command being run does not
-correspond to a formatter."
+correspond to a formatter. REMOTE if true will use the formatter
+buffers file-handler, allowing the process to be spawned on
+remote machines."
   (when (process-live-p apheleia--current-process)
     (message "Interrupting %s" apheleia--current-process)
     (interrupt-process apheleia--current-process)
@@ -327,6 +353,7 @@ correspond to a formatter."
                  :buffer stdout
                  :stderr stderr
                  :command command
+                 :file-handler remote
                  :noquery t
                  :sentinel
                  (lambda (proc _event)
@@ -520,7 +547,7 @@ as its sole argument."
    ""
    (buffer-name)))
 
-(defun apheleia--format-command (command &optional stdin-buffer)
+(defun apheleia--format-command (command remote &optional stdin-buffer)
   "Format COMMAND into a shell command and list of file paths.
 Returns a list with the car being the optional input file-name, the
 cadr being the optional output file-name, the caddr is the buffer to
@@ -528,23 +555,31 @@ send as stdin to the formatter (when the input-fname is not used),
 and the cdddr being the cmd to run.
 
 STDIN-BUFFER is the optional buffer to use when creating a temporary
-file for the formatters standard input.
+file for the formatters standard input. REMOTE asserts whether the
+command is to be run a remote machine or the current one. See
+`apheleia--run-formatters' for more details on the usage of REMOTE.
 
 If COMMAND uses the symbol `file' and the current buffer is modified
 from what is written to disk, then return nil meaning meaning no
 cmd is to be run."
   (cl-block nil
-    (let ((input-fname nil)
-          (output-fname nil)
-          (stdin (or stdin-buffer (current-buffer)))
-          (npx nil))
+    (let* ((input-fname nil)
+           (output-fname nil)
+           (file-remote-p (file-remote-p (or buffer-file-name
+                                             default-directory)))
+           ;; Either we're running remotely and the buffer is
+           ;; remote, or we're not running remotely and the
+           ;; buffer isn't remote.
+           (remote-match (equal remote file-remote-p))
+           (stdin (or stdin-buffer (current-buffer)))
+           (npx nil))
       ;; TODO: Support arbitrary package managers, not just NPM.
       (when (memq 'npx command)
         (setq npx t)
         (setq command (remq 'npx command)))
       (unless (stringp (car command))
         (error "Command cannot start with %S" (car command)))
-      (when npx
+      (when (and npx remote-match)
         (when-let ((project-dir
                     (locate-dominating-file
                      default-directory "node_modules")))
@@ -558,39 +593,23 @@ cmd is to be run."
                     project-dir)))))
             (when (file-executable-p binary)
               (setcar command binary)))))
-      (when (or (memq 'input command) (memq 'inplace command))
-        (let ((input-fname (make-temp-file
-                            "apheleia" nil
-                            (when-let ((file-name
-                                        (or buffer-file-name
-                                            (apheleia--safe-buffer-name))))
-                              (file-name-extension file-name 'period)))))
-          (with-current-buffer stdin
-            (apheleia--write-region-silently nil nil input-fname))
-          (setq command (mapcar (lambda (arg)
-                                  (if (memq arg '(input inplace))
-                                      input-fname
-                                    arg))
-                                command))
-          (when (memq 'inplace command)
-            (setq output-fname input-fname))))
-      (when (memq 'output command)
-        (setq output-fname (make-temp-file "apheleia"))
-        (setq command (mapcar (lambda (arg)
-                                (if (eq arg 'output)
-                                    output-fname
-                                  arg))
-                              command)))
       (when (or (memq 'file command) (memq 'filepath command))
         ;; Fail when using file but not as the first formatter in this
         ;; sequence. (But filepath is okay, since it indicates content
         ;; is not actually being read from the named file.)
-        (when (and stdin-buffer (memq 'file command))
-          (error "Cannot run formatter using `file' in a \
-sequence unless it's first in the sequence"))
-        (let ((file-name (or buffer-file-name
-                             (concat default-directory
-                                     (apheleia--safe-buffer-name)))))
+        (when (memq 'file command)
+          (when stdin-buffer
+            (error "Cannot run formatter using `file' in a sequence unless \
+it's first in the sequence"))
+          (unless remote-match
+            (error "Formatter uses `file' but process will run on different \
+machine from the machine file is available on")))
+        ;; We always strip out the remote-path prefix for file/filepath.
+        (let ((file-name (substring
+                          (or buffer-file-name
+                              (concat default-directory
+                                      (apheleia--safe-buffer-name)))
+                          (length (file-remote-p file-name)))))
           (setq command (mapcar (lambda (arg)
                                   (when (eq arg 'file)
                                     (setq stdin nil))
@@ -605,6 +624,39 @@ sequence unless it's first in the sequence"))
                                         (when (and (buffer-modified-p)
                                                    buffer-file-name)
                                           (cl-return)))
+                                    arg))
+                                command))))
+      (when (or (memq 'input command) (memq 'inplace command))
+        (let ((temporary-file-directory
+               (if remote
+                   (concat remote apheleia-remote-temporary-file-directory)
+                 temporary-file-directory)))
+          (setq input-fname (make-temp-file
+                             "apheleia" nil
+                             (when-let ((file-name
+                                         (or buffer-file-name
+                                             (apheleia--safe-buffer-name))))
+                               (file-name-extension file-name 'period)))))
+        (with-current-buffer stdin
+          (apheleia--write-region-silently nil nil input-fname))
+        (let ((input-fname (substring input-fname (length remote))))
+          (setq command (mapcar (lambda (arg)
+                                  (if (memq arg '(input inplace))
+                                      input-fname
+                                    arg))
+                                command)))
+        (when (memq 'inplace command)
+          (setq output-fname input-fname)))
+      (when (memq 'output command)
+        (let ((temporary-file-directory
+               (if remote
+                   (concat remote apheleia-remote-temporary-file-directory)
+                 temporary-file-directory)))
+          (setq output-fname (make-temp-file "apheleia")))
+        (let ((output-fname (substring output-fname (length remote))))
+          (setq command (mapcar (lambda (arg)
+                                  (if (eq arg 'output)
+                                      output-fname
                                     arg))
                                 command))))
       ;; Evaluate each element of arg that isn't a string and replace
@@ -630,19 +682,17 @@ or list of strings: %S" arg)))
       `(,input-fname ,output-fname ,stdin ,@command))))
 
 (defun apheleia--run-formatter-command
-    (command buffer callback stdin formatter)
+    (command buffer callback stdin remote formatter)
   "Run a formatter using a shell command.
 COMMAND should be a list of string or symbols for the formatter that
 will format the current buffer. See `apheleia--run-formatters' for a
-description of COMMAND, BUFFER, CALLBACK and STDIN. FORMATTER is
-the symbol of the current formatter being run, for diagnostic
-purposes."
+description of COMMAND, BUFFER, CALLBACK, REMOTE, FORMATTER and STDIN."
   ;; NOTE: We switch to the original buffer both to format the command
   ;; correctly and also to ensure any buffer local variables correctly
   ;; resolve for the whole formatting process (for example
   ;; `apheleia--current-process').
   (with-current-buffer buffer
-    (when-let ((ret (apheleia--format-command command stdin)))
+    (when-let ((ret (apheleia--format-command command remote stdin)))
       (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
         (apheleia--make-process
          :command command
@@ -663,9 +713,11 @@ purposes."
                (delete-file input-fname))
              (when output-fname
                (delete-file output-fname))))
+         :remote remote
          :formatter formatter)))))
 
-(defun apheleia--run-formatter-function (func buffer callback stdin _formatter)
+(defun apheleia--run-formatter-function
+    (func buffer callback stdin _remote _formatter)
   "Run a formatter using a Lisp function FUNC.
 See `apheleia--run-formatters' for a description of BUFFER,
 CALLBACK and STDIN. FORMATTER is the symbol of the current
@@ -767,13 +819,18 @@ above the current `default-directory'."
            (function :tag "Formatter function"))))
 
 (defun apheleia--run-formatters
-    (formatters buffer callback &optional stdin)
+    (formatters buffer callback remote &optional stdin)
   "Run one or more code formatters on the current buffer.
 FORMATTERS is a list of symbols that appear as keys in
 `apheleia-formatters'. BUFFER is the `current-buffer' when this
 function was first called. Once all the formatters in COMMANDS
 finish succesfully then invoke CALLBACK with one argument, a
-buffer containing the output of all the formatters.
+buffer containing the output of all the formatters. REMOTE asserts
+whether the formatter is to be run a remote machine or the current
+machine. It should be the output of `file-remote-p' on the current
+variable `buffer-file-name'. Callers can optionally unset REMOTE
+to make the formatter process run on the local machine. This is
+configured using `apheleia-remote-algorithm'.
 
 STDIN is a buffer containing the standard input for the first
 formatter in COMMANDS. This should not be supplied by the caller
@@ -798,8 +855,10 @@ function: %s" command)))
            ;; Forward current stdout to remaining formatters, passing along
            ;; the current callback and using the current formatters output
            ;; as stdin.
-           (apheleia--run-formatters (cdr formatters) buffer callback stdout)
+           (apheleia--run-formatters
+            (cdr formatters) buffer callback remote stdout)
          (funcall callback stdout)))
+     remote
      stdin
      (car formatters))))
 
@@ -913,8 +972,11 @@ even if a formatter is configured."
 
 (defun apheleia--disallowed-p ()
   "Return an error message if Apheleia cannot be run, else nil."
-  (when (and buffer-file-name (file-remote-p buffer-file-name))
-    "Apheleia does not support remote files"))
+  (when (and buffer-file-name
+             (file-remote-p (or buffer-file-name
+                                default-directory))
+             (eq apheleia-remote-algorithm 'cancel))
+    "Apheleia refused to run formatter due to `apheleia-remote-algorithm'."))
 
 ;;;###autoload
 (defun apheleia-format-buffer (formatter &optional callback)
@@ -974,7 +1036,10 @@ changes), CALLBACK, if provided, is invoked with no arguments."
                       (apheleia--apply-rcs-patch
                        (current-buffer) patch-buffer)
                       (when callback
-                        (funcall callback))))))))))))))
+                        (funcall callback)))))))))
+         (and (eq apheleia-remote-algorithm 'remote)
+              (file-remote-p (or buffer-file-name
+                                 default-directory))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."

@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog].
   using the symbol `inplace` in an entry on `apheleia-formatters` to
   stand in for the name of a temporary file that will be modified in
   place by the formatter ([#23]).
+* Support remote files and buffers that were opened through TRAMP ([#33])
 
 ## Formatters
 * [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
@@ -53,6 +54,7 @@ The format is based on [Keep a Changelog].
   been fixed ([#58]).
 
 [#23]: https://github.com/raxod502/apheleia/issues/23
+[#33]: https://github.com/raxod502/apheleia/issues/33
 [#47]: https://github.com/raxod502/apheleia/issues/47
 [#52]: https://github.com/raxod502/apheleia/issues/52
 [#58]: https://github.com/raxod502/apheleia/issues/58
