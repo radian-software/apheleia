@@ -519,24 +519,58 @@ for FILE-NAME."
      (substring file-name
                 (length ,(or remote '(file-remote-p file-name))))))
 
+(defun apheleia--make-temp-file (remote prefix &optional dir-flag suffix text)
+  "Create a temporary file.
+This uses the value of REMOTE and `apheleia-remote-temporary-file-directory'
+when the temporary file is to be created on a remote directory.
+
+See `make-temp-file' for a description of PREFIX, DIR-FLAG, SUFFIX, and TEXT."
+  (let ((temporary-file-directory
+         (if remote
+             (concat remote apheleia-remote-temporary-file-directory)
+           temporary-file-directory)))
+    (make-temp-file prefix dir-flag suffix text)))
+
 (defun apheleia--create-rcs-patch (old-buffer new-buffer remote callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
 Once finished, invoke CALLBACK with a buffer containing the patch
-as its sole argument."
+as its sole argument.
+
+See `apheleia--run-formatters' for a description of REMOTE."
   ;; Make sure at least one of the two buffers is saved to a file. The
   ;; other one we can feed on stdin.
   (let ((old-fname
          (with-current-buffer old-buffer
-           (and (not (buffer-modified-p))
-                (apheleia--strip-remote buffer-file-name))))
+           (and (not (buffer-modified-p)) buffer-file-name)))
         (new-fname
          (with-current-buffer new-buffer
-           (and (not (buffer-modified-p))
-                (apheleia--strip-remote buffer-file-name)))))
-    (unless (or old-fname new-fname)
-      (with-current-buffer new-buffer
-        (setq new-fname (make-temp-file "apheleia"))
-        (apheleia--write-region-silently (point-min) (point-max) new-fname)))
+           (and (not (buffer-modified-p)) buffer-file-name)))
+        ;; Place any temporary files we must delete in here.
+        clear-files)
+    (cl-labels ((apheleia--make-temp-file-for-rcs-patch
+                 (buffer &optional fname)
+                 ;; Ensure there's a file with the contents of `buffer' on the
+                 ;; target machine. `fname', if given, refers to an existing
+                 ;; file that may not exist on the current machine and needs
+                 ;; to be copied over.
+                 (let ((fname-remote (and fname (file-remote-p fname))))
+                   (when (or (not fname)
+                             (not (equal remote fname-remote)))
+                     (setq fname (apheleia--make-temp-file remote "apheleia"))
+                     (push fname clear-files)
+                     (with-current-buffer buffer
+                       (apheleia--write-region-silently
+                        (point-min) (point-max) fname)))
+                   (apheleia--strip-remote fname remote))))
+      ;; Ensure file is on target right machine, or create a copy of it.
+      (setq old-fname
+            (apheleia--make-temp-file-for-rcs-patch old-buffer old-fname)
+            new-fname
+            (apheleia--make-temp-file-for-rcs-patch new-buffer new-fname))
+      ;; When neither files have an open file-handle, create one.
+      (unless (or old-fname new-fname)
+        (setq new-fname (apheleia--make-temp-file-for-rcs-patch "apheleia"))))
+
     (apheleia--make-process
      :command `("diff" "--rcs" "--strip-trailing-cr" "--"
                 ,(or old-fname "-")
@@ -544,6 +578,10 @@ as its sole argument."
      :stdin (if new-fname old-buffer new-buffer)
      :callback callback
      :remote remote
+     :ensure
+     (lambda ()
+       (ignore-errors
+         (mapcar #'delete-file clear-files)))
      :exit-status (lambda (status)
                     ;; Exit status is 0 if no changes, 1 if some
                     ;; changes, and 2 if error.
@@ -637,16 +675,12 @@ machine from the machine file is available on")))
                                     arg))
                                 command))))
       (when (or (memq 'input command) (memq 'inplace command))
-        (let ((temporary-file-directory
-               (if remote
-                   (concat remote apheleia-remote-temporary-file-directory)
-                 temporary-file-directory)))
-          (setq input-fname (make-temp-file
-                             "apheleia" nil
-                             (when-let ((file-name
-                                         (or buffer-file-name
-                                             (apheleia--safe-buffer-name))))
-                               (file-name-extension file-name 'period)))))
+        (setq input-fname (apheleia--make-temp-file
+                           remote "apheleia" nil
+                           (when-let ((file-name
+                                       (or buffer-file-name
+                                           (apheleia--safe-buffer-name))))
+                             (file-name-extension file-name 'period))))
         (with-current-buffer stdin
           (apheleia--write-region-silently nil nil input-fname))
         (let ((input-fname (apheleia--strip-remote input-fname remote)))
@@ -658,11 +692,7 @@ machine from the machine file is available on")))
         (when (memq 'inplace command)
           (setq output-fname input-fname)))
       (when (memq 'output command)
-        (let ((temporary-file-directory
-               (if remote
-                   (concat remote apheleia-remote-temporary-file-directory)
-                 temporary-file-directory)))
-          (setq output-fname (make-temp-file "apheleia")))
+        (setq output-fname (apheleia--make-temp-file remote "apheleia"))
         (let ((output-fname (apheleia--strip-remote output-fname remote)))
           (setq command (mapcar (lambda (arg)
                                   (if (eq arg 'output)
