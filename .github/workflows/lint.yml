@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        emacs_version: [25, 26, 27, "master"]
+        emacs_version: [26, 27, "master"]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
