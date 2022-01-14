@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog].
   command output rather than just the latest run. You can add further
   customizations using the new hook `apheleia-formatter-exited-hook`
   ([#69]).
+* Emacs 25 is no longer supported.
 
 ## Features
 * Apheleia can now format buffers that do not have an underlying file
