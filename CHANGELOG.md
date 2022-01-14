@@ -31,6 +31,13 @@ The format is based on [Keep a Changelog].
   stand in for the name of a temporary file that will be modified in
   place by the formatter ([#23]).
 
+## Enhancements
+* The buffer-local variable `apheleia-formatter` is now marked as safe
+  ([#74]). This allows you to configure the formatter that Apheleia
+  will use in a file-local variable. Note: only formatters already
+  declared in `apheleia-formatters` can be used; this does not allow
+  arbitrary shell commands to be specified in file-local variables.
+
 ## Bugs fixed
 * Allow running the same formatter in multiple buffers in parallel
   ([#64], [#65]). Previously, when saving a number of files at the
@@ -70,6 +77,7 @@ The format is based on [Keep a Changelog].
 [#65]: https://github.com/raxod502/apheleia/pull/65
 [#68]: https://github.com/raxod502/apheleia/issues/68
 [#69]: https://github.com/raxod502/apheleia/issues/69
+[#74]: https://github.com/raxod502/apheleia/pull/74
 
 ## 1.2 (released 2021-12-27)
 ### Enhancements
