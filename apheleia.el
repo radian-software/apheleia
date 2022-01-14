@@ -326,9 +326,9 @@ the command succeeded. If EXIT-STATUS is omitted, then the
 command succeeds provided that its exit status is 0. FORMATTER is
 the symbol of the formatter that is being run, for diagnostic
 purposes. FORMATTER is nil if the command being run does not
-correspond to a formatter. REMOTE if true will use the formatter
-buffers file-handler, allowing the process to be spawned on
-remote machines."
+correspond to a formatter. REMOTE if non-nil will use the
+formatter buffers file-handler, allowing the process to be
+spawned on remote machines."
   (when (process-live-p apheleia--current-process)
     (message "Interrupting %s" apheleia--current-process)
     (interrupt-process apheleia--current-process)
@@ -511,13 +511,12 @@ as in `write-region'. WRITE-REGION is used instead of the actual
                   (apply run-hooks args)))))
     (save-buffer)))
 
-(defmacro apheleia--strip-remote (file-name &optional remote)
-  "Return FILE-NAME with REMOTE prefix removed.
-REMOTE should be a symbol pointing to the value of `file-remote-p'
-for FILE-NAME."
-  `(let ((file-name ,file-name))
-     (substring file-name
-                (length ,(or remote '(file-remote-p file-name))))))
+(defun apheleia--strip-remote (file-name)
+  "Return FILE-NAME with any TRAMP prefix removed.
+If FILE-NAME is not remote, return it unchanged."
+  (if-let ((remote (file-remote-p file-name)))
+      (substring file-name (length remote))
+    file-name))
 
 (defun apheleia--make-temp-file (remote prefix &optional dir-flag suffix text)
   "Create a temporary file.
@@ -546,7 +545,7 @@ See `apheleia--run-formatters' for a description of REMOTE."
          (with-current-buffer new-buffer
            (and (not (buffer-modified-p)) buffer-file-name)))
         ;; Place any temporary files we must delete in here.
-        clear-files)
+        (clear-files nil))
     (cl-labels ((apheleia--make-temp-file-for-rcs-patch
                  (buffer &optional fname)
                  ;; Ensure there's a file with the contents of `buffer' on the
@@ -561,7 +560,7 @@ See `apheleia--run-formatters' for a description of REMOTE."
                      (with-current-buffer buffer
                        (apheleia--write-region-silently
                         (point-min) (point-max) fname)))
-                   (apheleia--strip-remote fname remote))))
+                   (apheleia--strip-remote fname))))
       ;; Ensure file is on target right machine, or create a copy of it.
       (setq old-fname
             (apheleia--make-temp-file-for-rcs-patch old-buffer old-fname)
@@ -580,8 +579,9 @@ See `apheleia--run-formatters' for a description of REMOTE."
      :remote remote
      :ensure
      (lambda ()
-       (ignore-errors
-         (mapcar #'delete-file clear-files)))
+       (dolist (file clear-files)
+         (ignore-errors
+           (delete-file file))))
      :exit-status (lambda (status)
                     ;; Exit status is 0 if no changes, 1 if some
                     ;; changes, and 2 if error.
@@ -683,7 +683,7 @@ machine from the machine file is available on")))
                              (file-name-extension file-name 'period))))
         (with-current-buffer stdin
           (apheleia--write-region-silently nil nil input-fname))
-        (let ((input-fname (apheleia--strip-remote input-fname remote)))
+        (let ((input-fname (apheleia--strip-remote input-fname)))
           (setq command (mapcar (lambda (arg)
                                   (if (memq arg '(input inplace))
                                       input-fname
@@ -693,7 +693,7 @@ machine from the machine file is available on")))
           (setq output-fname input-fname)))
       (when (memq 'output command)
         (setq output-fname (apheleia--make-temp-file remote "apheleia"))
-        (let ((output-fname (apheleia--strip-remote output-fname remote)))
+        (let ((output-fname (apheleia--strip-remote output-fname)))
           (setq command (mapcar (lambda (arg)
                                   (if (eq arg 'output)
                                       output-fname

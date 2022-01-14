@@ -30,7 +30,8 @@ The format is based on [Keep a Changelog].
   using the symbol `inplace` in an entry on `apheleia-formatters` to
   stand in for the name of a temporary file that will be modified in
   place by the formatter ([#23]).
-* Support remote files and buffers that were opened through TRAMP ([#33])
+* Support remote files and buffers that were opened through TRAMP
+  ([#33]).
 
 ## Formatters
 * [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
