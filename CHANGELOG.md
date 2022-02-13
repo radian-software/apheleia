@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog].
   will use in a file-local variable. Note: only formatters already
   declared in `apheleia-formatters` can be used; this does not allow
   arbitrary shell commands to be specified in file-local variables.
+* Prettier is now enabled in `markdown-mode`.
 
 ## Bugs fixed
 * Allow running the same formatter in multiple buffers in parallel
