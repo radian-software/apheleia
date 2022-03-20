@@ -368,55 +368,67 @@ NO-QUERY."
   (let* ((stderr-file (apheleia--make-temp-file nil "apheleia"))
          (args
           (list (car command)            ; argv[0]
-                (not stdin)              ; If stdin we don't delete the STDIN buffer text
-                                         ; with `call-process-region'. Otherwise we send
-                                         ; no INFILE argument to `call-process'.
-                `(,stdout ,stderr-file)  ; stdout buffer and stderr file. `call-process'
-                                         ; cannot capture stderr into a separate buffer,
-                                         ; the best we can do is save and read from a file.
-                nil                      ; Do not re/display stdout as output is recieved
+                (not stdin)              ; If stdin we don't delete the STDIN
+                                         ; buffer text with
+                                         ; `call-process-region'. Otherwise we
+                                         ; send no INFILE argument to
+                                         ; `call-process'.
+                `(,stdout ,stderr-file)  ; stdout buffer and stderr file.
+                                         ; `call-process' cannot capture stderr
+                                         ; into a separate buffer, the best we
+                                         ; can do is save and read from a file.
+                nil                      ; Do not re/display stdout as output
+                                         ; is recieved.
                 (cdr command)            ; argv[1:]
                 )))
     (unwind-protect
         (let ((exit-status
-               (cond
-                ((and remote stdin)
-                 ;; There's no call-process variant for this, we'll have to
-                 ;; copy STDIN to a remote temporary file, create a subshell
-                 ;; on the remote that runs the formatter and passes the temp
-                 ;; file as stdin and then deletes it.
-                 (let* ((remote-stdin
-                         (apheleia--make-temp-file remote "apheleia-stdin"))
-                        ;; WARN: This assumes a POSIX compatible shell.
-                        (shell (or (bound-and-true-p tramp-default-remote-shell)
-                                   "sh"))
-                        (shell-command
-                         (concat
-                          (mapconcat #'shell-quote-argument command " ")
-                          " < "
-                          (shell-quote-argument
-                           (apheleia--strip-remote remote-stdin)))))
-                   (unwind-protect
-                       (progn
-                         (with-current-buffer stdin
-                           (apheleia--write-region-silently nil nil
-                                                            remote-stdin))
+               (cl-letf* ((message (symbol-function #'message))
+                          ((symbol-function #'message)
+                           (lambda (format-string &rest args)
+                             (unless (string-prefix-p "Renaming" (car args))
+                               (apply message format-string args)))))
+                 (cond
+                  ((and remote stdin)
+                   ;; There's no call-process variant for this, we'll have to
+                   ;; copy STDIN to a remote temporary file, create a subshell
+                   ;; on the remote that runs the formatter and passes the temp
+                   ;; file as stdin and then deletes it.
+                   (let* ((remote-stdin
+                           (apheleia--make-temp-file remote "apheleia-stdin"))
+                          ;; WARN: This assumes a POSIX compatible shell.
+                          (shell
+                           (or (bound-and-true-p tramp-default-remote-shell)
+                               "sh"))
+                          (shell-command
+                           (concat
+                            (mapconcat #'shell-quote-argument command " ")
+                            " < "
+                            (shell-quote-argument
+                             (apheleia--strip-remote remote-stdin)))))
+                     (unwind-protect
+                         (progn
+                           (with-current-buffer stdin
+                             (apheleia--write-region-silently nil nil
+                                                              remote-stdin))
 
-                         (process-file
-                          shell nil (nth 2 args) nil "-c" shell-command))
-                     (delete-file remote-stdin))))
-                (stdin
-                 (with-current-buffer stdin
-                   (apply #'call-process-region (point-min) (point-max) args)))
-                (remote
-                 (apply #'process-file args))
-                (t
-                 (apply #'call-process args)))))
+                           (process-file
+                            shell nil (nth 2 args) nil "-c" shell-command))
+                       (delete-file remote-stdin))))
+                  (stdin
+                   (with-current-buffer stdin
+                     (apply #'call-process-region
+                            (point-min) (point-max) args)))
+                  (remote
+                   (apply #'process-file args))
+                  (t
+                   (apply #'call-process args))))))
           ;; Save stderr from STDERR-FILE back into the STDERR buffer.
           (with-current-buffer stderr
             (insert-file-contents stderr-file))
           (funcall callback exit-status)
-          ;; We return nil because there's no live process that can be returned.
+          ;; We return nil because there's no live process that can be
+          ;; returned.
           nil)
       (delete-file stderr-file))))
 
