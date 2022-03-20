@@ -366,21 +366,23 @@ for simplicity, however some may not be used. This includes: NAME, and
 NO-QUERY."
   (ignore name noquery)
   (let* ((stderr-file (apheleia--make-temp-file nil "apheleia"))
+         (run-on-remote (and (eq apheleia-remote-algorithm 'remote)
+                             remote))
          (args
-          (list (car command)            ; argv[0]
-                (not stdin)              ; If stdin we don't delete the STDIN
-                                         ; buffer text with
-                                         ; `call-process-region'. Otherwise we
-                                         ; send no INFILE argument to
-                                         ; `call-process'.
-                `(,stdout ,stderr-file)  ; stdout buffer and stderr file.
-                                         ; `call-process' cannot capture stderr
-                                         ; into a separate buffer, the best we
-                                         ; can do is save and read from a file.
-                nil                      ; Do not re/display stdout as output
-                                         ; is recieved.
-                (cdr command)            ; argv[1:]
-                )))
+          (append
+           (list (car command)            ; argv[0]
+                 (not stdin)              ; If stdin we don't delete the STDIN
+                                          ; buffer text with
+                                          ; `call-process-region'. Otherwise we
+                                          ; send no INFILE argument to
+                                          ; `call-process'.
+                 `(,stdout ,stderr-file)  ; stdout buffer and stderr file.
+                                          ; `call-process' cannot capture stderr
+                                          ; into a separate buffer, the best we
+                                          ; can do is save and read from a file.
+                 nil)                     ; Do not re/display stdout as output
+                                          ; is recieved.
+           (cdr command))))               ; argv[1:]
     (unwind-protect
         (let ((exit-status
                (cl-letf* ((message (symbol-function #'message))
@@ -389,7 +391,7 @@ NO-QUERY."
                              (unless (string-prefix-p "Renaming" (car args))
                                (apply message format-string args)))))
                  (cond
-                  ((and remote stdin)
+                  ((and run-on-remote stdin)
                    ;; There's no call-process variant for this, we'll have to
                    ;; copy STDIN to a remote temporary file, create a subshell
                    ;; on the remote that runs the formatter and passes the temp
@@ -409,8 +411,8 @@ NO-QUERY."
                      (unwind-protect
                          (progn
                            (with-current-buffer stdin
-                             (apheleia--write-region-silently nil nil
-                                                              remote-stdin))
+                             (apheleia--write-region-silently
+                              nil nil remote-stdin))
 
                            (process-file
                             shell nil (nth 2 args) nil "-c" shell-command))
@@ -419,7 +421,7 @@ NO-QUERY."
                    (with-current-buffer stdin
                      (apply #'call-process-region
                             (point-min) (point-max) args)))
-                  (remote
+                  (run-on-remote
                    (apply #'process-file args))
                   (t
                    (apply #'call-process args))))))
@@ -655,7 +657,9 @@ See `apheleia--run-formatters' for a description of REMOTE."
          (with-current-buffer new-buffer
            (and (not (buffer-modified-p)) buffer-file-name)))
         ;; Place any temporary files we must delete in here.
-        (clear-files nil))
+        (clear-files nil)
+        (run-on-remote (and (eq apheleia-remote-algorithm 'remote)
+                            remote)))
     (cl-labels ((apheleia--make-temp-file-for-rcs-patch
                  (buffer &optional fname)
                  ;; Ensure there's a file with the contents of `buffer' on the
@@ -664,8 +668,8 @@ See `apheleia--run-formatters' for a description of REMOTE."
                  ;; to be copied over.
                  (let ((fname-remote (and fname (file-remote-p fname))))
                    (when (or (not fname)
-                             (not (equal remote fname-remote)))
-                     (setq fname (apheleia--make-temp-file remote "apheleia"))
+                             (not (equal run-on-remote fname-remote)))
+                     (setq fname (apheleia--make-temp-file run-on-remote "apheleia"))
                      (push fname clear-files)
                      (with-current-buffer buffer
                        (apheleia--write-region-silently
@@ -715,8 +719,8 @@ and the cdddr being the cmd to run.
 
 STDIN-BUFFER is the optional buffer to use when creating a temporary
 file for the formatters standard input. REMOTE asserts whether the
-command is to be run a remote machine or the current one. See
-`apheleia--run-formatters' for more details on the usage of REMOTE.
+buffer being formatted is on a remote machine or the local machine.
+See `apheleia--run-formatters' for more details on the usage of REMOTE.
 
 If COMMAND uses the symbol `file' and the current buffer is modified
 from what is written to disk, then return nil meaning meaning no
@@ -724,12 +728,18 @@ cmd is to be run."
   (cl-block nil
     (let* ((input-fname nil)
            (output-fname nil)
-           (file-remote-p (file-remote-p (or buffer-file-name
-                                             default-directory)))
            ;; Either we're running remotely and the buffer is
            ;; remote, or we're not running remotely and the
            ;; buffer isn't remote.
-           (remote-match (equal remote file-remote-p))
+           (run-on-remote
+            (and (eq apheleia-remote-algorithm 'remote)
+                 remote))
+           ;; Whether the machine the process will run on matches
+           ;; the machine the buffer/file is currently on. Either
+           ;; we're running remotely and the buffer is remote or
+           ;; we're not running remotely and the buffer is not
+           ;; remote.
+           (remote-match (equal run-on-remote remote))
            (stdin (or stdin-buffer (current-buffer)))
            (npx nil))
       ;; TODO: Support arbitrary package managers, not just NPM.
@@ -786,7 +796,7 @@ machine from the machine file is available on")))
                                 command))))
       (when (or (memq 'input command) (memq 'inplace command))
         (setq input-fname (apheleia--make-temp-file
-                           remote "apheleia" nil
+                           run-on-remote "apheleia" nil
                            (when-let ((file-name
                                        (or buffer-file-name
                                            (apheleia--safe-buffer-name))))
@@ -802,7 +812,7 @@ machine from the machine file is available on")))
         (when (memq 'inplace command)
           (setq output-fname input-fname)))
       (when (memq 'output command)
-        (setq output-fname (apheleia--make-temp-file remote "apheleia"))
+        (setq output-fname (apheleia--make-temp-file run-on-remote "apheleia"))
         (let ((output-fname (apheleia--strip-remote output-fname)))
           (setq command (mapcar (lambda (arg)
                                   (if (eq arg 'output)
@@ -867,7 +877,7 @@ description of COMMAND, BUFFER, CALLBACK, REMOTE, FORMATTER and STDIN."
          :formatter formatter)))))
 
 (defun apheleia--run-formatter-function
-    (func buffer callback stdin _remote _formatter)
+    (func buffer callback stdin remote _formatter)
   "Run a formatter using a Lisp function FUNC.
 See `apheleia--run-formatters' for a description of BUFFER,
 CALLBACK and STDIN. FORMATTER is the symbol of the current
@@ -892,7 +902,7 @@ formatter being run, for diagnostic purposes."
                      (funcall callback scratch)
                    (kill-buffer scratch)))
                ;; A metadata field
-               `((remote . remote))
+               `((remote . ,remote))
                ;; Callback when formatting scratch has failed.
                (apply-partially #'kill-buffer scratch)))))
 
@@ -977,11 +987,11 @@ FORMATTERS is a list of symbols that appear as keys in
 function was first called. Once all the formatters in COMMANDS
 finish succesfully then invoke CALLBACK with one argument, a
 buffer containing the output of all the formatters. REMOTE asserts
-whether the formatter is to be run a remote machine or the current
-machine. It should be the output of `file-remote-p' on the current
-variable `buffer-file-name'. Callers can optionally unset REMOTE
-to make the formatter process run on the local machine. This is
-configured using `apheleia-remote-algorithm'.
+whether the buffer being formatted is on a remote machine or the
+current machine. It should be the output of `file-remote-p' on the
+current variable `buffer-file-name'. Whether the actual formatter
+process is run on the current machine or the remote is configured
+using REMOTE and `apheleia-remote-algorithm'.
 
 STDIN is a buffer containing the standard input for the first
 formatter in COMMANDS. This should not be supplied by the caller
@@ -1172,9 +1182,8 @@ changes), CALLBACK, if provided, is invoked with no arguments."
     (unless (apheleia--disallowed-p)
       (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
       (let ((cur-buffer (current-buffer))
-            (remote (and (eq apheleia-remote-algorithm 'remote)
-                         (file-remote-p (or buffer-file-name
-                                            default-directory)))))
+            (remote (file-remote-p (or buffer-file-name
+                                       default-directory))))
         (apheleia--run-formatters
          formatters
          cur-buffer
