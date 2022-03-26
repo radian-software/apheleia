@@ -1137,7 +1137,7 @@ even if a formatter is configured."
              (file-remote-p (or buffer-file-name
                                 default-directory))
              (eq apheleia-remote-algorithm 'cancel))
-    "Apheleia refused to run formatter due to `apheleia-remote-algorithm'."))
+    "Apheleia refused to run formatter due to `apheleia-remote-algorithm'"))
 
 ;;;###autoload
 (defun apheleia-format-buffer (formatter &optional callback)
