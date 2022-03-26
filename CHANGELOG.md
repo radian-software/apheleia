@@ -34,9 +34,12 @@ The format is based on [Keep a Changelog].
 * Support remote files and buffers that were opened through TRAMP
   ([#33]).
 
-## Formatters
-* [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
-  for [Fish](https://fishshell.com/) ([#68]).
+## Enhancements
+* The buffer-local variable `apheleia-formatter` is now marked as safe
+  ([#74]). This allows you to configure the formatter that Apheleia
+  will use in a file-local variable. Note: only formatters already
+  declared in `apheleia-formatters` can be used; this does not allow
+  arbitrary shell commands to be specified in file-local variables.
 
 ## Bugs fixed
 * Allow running the same formatter in multiple buffers in parallel
@@ -55,6 +58,18 @@ The format is based on [Keep a Changelog].
   formatting a buffer. This was never intended and the bug has now
   been fixed ([#58]).
 
+## Formatters added
+* [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
+  for [Fish](https://fishshell.com/) ([#68]).
+
+## Formatter bugs fixed
+* isort is passed different arguments so as not to trigger a crash
+  that appears to be related to the `--stdout` flag.
+* latexindent now has its log file disabled so as to avoid cluttering
+  the working directory.
+* ocamlformat is now configured to work even outside of detected
+  projects.
+
 [#23]: https://github.com/raxod502/apheleia/issues/23
 [#33]: https://github.com/raxod502/apheleia/issues/33
 [#47]: https://github.com/raxod502/apheleia/issues/47
@@ -66,6 +81,7 @@ The format is based on [Keep a Changelog].
 [#65]: https://github.com/raxod502/apheleia/pull/65
 [#68]: https://github.com/raxod502/apheleia/issues/68
 [#69]: https://github.com/raxod502/apheleia/issues/69
+[#74]: https://github.com/raxod502/apheleia/pull/74
 
 ## 1.2 (released 2021-12-27)
 ### Enhancements

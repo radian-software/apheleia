@@ -45,7 +45,7 @@ The approach is as follows:
 
 ## Installation
 
-`el-patch` is available on [MELPA](https://melpa.org/). It is easiest
+Apheleia is available on [MELPA](https://melpa.org/). It is easiest
 to install it using
 [`straight.el`](https://github.com/raxod502/straight.el):
 
