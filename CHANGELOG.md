@@ -26,7 +26,11 @@ The format is based on [Keep a Changelog].
   ([#52]).
 * You can now use a Lisp function as a formatter, by providing a
   symbol or lambda in `apheleia-formatters` rather than a list of
-  strings ([#62]).
+  strings ([#62]). The function should be a `cl-defun` taking key-value
+  arguments with support for more keys being provided on a later
+  apheleia release (by including `&allow-other-keys` in the parameter
+  list). For a list of provided arguments see
+  `apheleia--run-formatter-function`.
 * Formatters that operate on files in place are now supported, by
   using the symbol `inplace` in an entry on `apheleia-formatters` to
   stand in for the name of a temporary file that will be modified in
