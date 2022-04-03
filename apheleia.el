@@ -367,9 +367,10 @@ NO-QUERY."
                                           ; send no INFILE argument to
                                           ; `call-process'.
                  `(,stdout ,stderr-file)  ; stdout buffer and stderr file.
-                                          ; `call-process' cannot capture stderr
-                                          ; into a separate buffer, the best we
-                                          ; can do is save and read from a file.
+                                          ; `call-process' cannot capture
+                                          ; stderr into a separate buffer, the
+                                          ; best we can do is save and read
+                                          ; from a file.
                  nil)                     ; Do not re/display stdout as output
                                           ; is recieved.
            (cdr command))))               ; argv[1:]
@@ -387,7 +388,7 @@ NO-QUERY."
                    ;; on the remote that runs the formatter and passes the temp
                    ;; file as stdin and then deletes it.
                    (let* ((remote-stdin
-                           (apheleia--make-temp-file remote "apheleia-stdin"))
+                           (make-nearby-temp-file "apheleia-stdin"))
                           ;; WARN: This assumes a POSIX compatible shell.
                           (shell
                            (or (bound-and-true-p tramp-default-remote-shell)
@@ -424,8 +425,8 @@ NO-QUERY."
           nil)
       (delete-file stderr-file))))
 
-(cl-defun apheleia--start-formatter-process
-    (&key command stdin callback ensure exit-status formatter remote)
+(cl-defun apheleia--execute-formatter-process
+    (&key command stdin remote callback ensure exit-status formatter)
   "Wrapper for `make-process' that behaves a bit more nicely.
 COMMAND is as in `make-process'. STDIN, if given, is a buffer
 whose contents are fed to the process on stdin. CALLBACK is
@@ -642,7 +643,7 @@ See `apheleia--run-formatters' for a description of REMOTE."
                  (buffer &optional fname)
                  ;; Ensure there's a file with the contents of `buffer' on the
                  ;; target machine. `fname', if given, refers to an existing
-                 ;; file that may not exist on the current machine and needs
+                 ;; file that may not exist on the target machine and needs
                  ;; to be copied over.
                  (let ((fname-remote (and fname (file-remote-p fname))))
                    (when (or (not fname)
@@ -662,7 +663,7 @@ See `apheleia--run-formatters' for a description of REMOTE."
       (unless (or old-fname new-fname)
         (setq new-fname (apheleia--make-temp-file-for-rcs-patch "apheleia"))))
 
-    (apheleia--start-formatter-process
+    (apheleia--execute-formatter-process
      :command `("diff" "--rcs" "--strip-trailing-cr" "--"
                 ,(or old-fname "-")
                 ,(or new-fname "-"))
@@ -819,12 +820,14 @@ machine from the machine file is available on")))
 or list of strings: %S" arg)))
       `(,input-fname ,output-fname ,stdin ,@command))))
 
-(defun apheleia--run-formatter-command
-    (command buffer callback stdin remote formatter)
+(defun apheleia--run-formatter-process
+    (command buffer remote callback stdin formatter)
   "Run a formatter using a shell command.
 COMMAND should be a list of string or symbols for the formatter that
 will format the current buffer. See `apheleia--run-formatters' for a
-description of COMMAND, BUFFER, CALLBACK, REMOTE, FORMATTER and STDIN."
+description of COMMAND, BUFFER, CALLBACK, REMOTE, and STDIN. FORMATTER
+is the symbol of the current formatter being run, for diagnostic
+purposes."
   ;; NOTE: We switch to the original buffer both to format the command
   ;; correctly and also to ensure any buffer local variables correctly
   ;; resolve for the whole formatting process (for example
@@ -832,7 +835,7 @@ description of COMMAND, BUFFER, CALLBACK, REMOTE, FORMATTER and STDIN."
   (with-current-buffer buffer
     (when-let ((ret (apheleia--format-command command remote stdin)))
       (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
-        (apheleia--start-formatter-process
+        (apheleia--execute-formatter-process
          :command command
          :stdin (unless input-fname
                   stdin)
@@ -855,11 +858,11 @@ description of COMMAND, BUFFER, CALLBACK, REMOTE, FORMATTER and STDIN."
          :formatter formatter)))))
 
 (defun apheleia--run-formatter-function
-    (func buffer callback stdin remote _formatter)
+    (func buffer remote callback stdin formatter)
   "Run a formatter using a Lisp function FUNC.
-See `apheleia--run-formatters' for a description of BUFFER,
-CALLBACK and STDIN. FORMATTER is the symbol of the current
-formatter being run, for diagnostic purposes."
+See `apheleia--run-formatters' for a description of BUFFER, REMOTE,
+CALLBACK and STDIN. FORMATTER is the symbol of the current formatter
+being run, for diagnostic purposes."
   (let* ((formatter-name (if (symbolp func) (symbol-name func) "lambda"))
          (scratch (generate-new-buffer
                    (format " *apheleia-%s-scratch*" formatter-name))))
@@ -874,13 +877,18 @@ formatter being run, for diagnostic purposes."
                :buffer buffer
                ;; Buffer the formatter should modify.
                :scratch scratch
+               ;; Name of the current formatter symbol.
+               :formatter formatter
                ;; Callback after succesfully formatting.
                :callback
                (lambda ()
                  (unwind-protect
                      (funcall callback scratch)
                    (kill-buffer scratch)))
+               ;; The remote part of the buffers file-name or directory.
                :remote remote
+               ;; Whether the formatter should be run async or not.
+               :async (not remote)
                ;; Callback when formatting scratch has failed.
                :callback
                (apply-partially #'kill-buffer scratch)))))
@@ -959,7 +967,7 @@ above the current `default-directory'."
            (function :tag "Formatter function"))))
 
 (defun apheleia--run-formatters
-    (formatters buffer callback remote &optional stdin)
+    (formatters buffer remote callback &optional stdin)
   "Run one or more code formatters on the current buffer.
 FORMATTERS is a list of symbols that appear as keys in
 `apheleia-formatters'. BUFFER is the `current-buffer' when this
@@ -968,9 +976,10 @@ finish succesfully then invoke CALLBACK with one argument, a
 buffer containing the output of all the formatters. REMOTE asserts
 whether the buffer being formatted is on a remote machine or the
 current machine. It should be the output of `file-remote-p' on the
-current variable `buffer-file-name'. Whether the actual formatter
-process is run on the current machine or the remote is configured
-using REMOTE and `apheleia-remote-algorithm'.
+current variable `buffer-file-name'. REMOTE is the remote part of the
+original buffers file-name or directory'. It's used alongside
+`apheleia-remote-algorithm' to determine where the formatter process
+and any temporary files it may need should be placed.
 
 STDIN is a buffer containing the standard input for the first
 formatter in COMMANDS. This should not be supplied by the caller
@@ -981,7 +990,7 @@ next formatter."
     (funcall
      (cond
       ((consp command)
-       #'apheleia--run-formatter-command)
+       #'apheleia--run-formatter-process)
       ((or (functionp command)
            (symbolp command))
        #'apheleia--run-formatter-function)
@@ -990,16 +999,16 @@ next formatter."
 function: %s" command)))
      command
      buffer
+     remote
      (lambda (stdout)
        (if (cdr formatters)
            ;; Forward current stdout to remaining formatters, passing along
            ;; the current callback and using the current formatters output
            ;; as stdin.
            (apheleia--run-formatters
-            (cdr formatters) buffer callback remote stdout)
+            (cdr formatters) buffer remote callback stdout)
          (funcall callback stdout)))
      stdin
-     remote
      (car formatters))))
 
 (defcustom apheleia-mode-alist
@@ -1167,20 +1176,20 @@ changes), CALLBACK, if provided, is invoked with no arguments."
         (apheleia--run-formatters
          formatters
          cur-buffer
+         remote
          (lambda (formatted-buffer)
            (with-current-buffer cur-buffer
              ;; Short-circuit.
              (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
                (apheleia--create-rcs-patch
-                (current-buffer) formatted-buffer remote
+                cur-buffer formatted-buffer remote
                 (lambda (patch-buffer)
                   (with-current-buffer cur-buffer
                     (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
                       (apheleia--apply-rcs-patch
                        (current-buffer) patch-buffer)
                       (when callback
-                        (funcall callback)))))))))
-         remote)))))
+                        (funcall callback))))))))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."
