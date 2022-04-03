@@ -86,16 +86,6 @@ compatible with this option and formatters relying on them will crash."
                  (const :tag "Run the formatter on the remote machine" remote)
                  (const :tag "Disable formatting for remote buffers" cancel)))
 
-(defcustom apheleia-remote-temporary-file-directory temporary-file-directory
-  "Value of the variable `temporary-file-directory' used for remote machines.
-There's no guarantee the files you open with `tramp' will use the same value
-of the variable `temporary-file-directory' as your local machine. Assign this
-variable to switch to a different directory specifically for use with
-`apheleia'.
-
-This variable is only used when apheleia starts a process on a remote machine."
-  :type 'string)
-
 (cl-defun apheleia--edit-distance-table (s1 s2)
   "Align strings S1 and S2 for minimum edit distance.
 Return the dynamic programming table as has table which maps cons
@@ -365,7 +355,7 @@ This function accepts all the same arguments as `apheleia--make-process'
 for simplicity, however some may not be used. This includes: NAME, and
 NO-QUERY."
   (ignore name noquery)
-  (let* ((stderr-file (apheleia--make-temp-file nil "apheleia"))
+  (let* ((stderr-file (make-nearby-temp-file "apheleia"))
          (args
           (list (car command)            ; argv[0]
                 (not stdin)              ; If stdin we don't delete the STDIN buffer text
@@ -386,7 +376,7 @@ NO-QUERY."
                  ;; on the remote that runs the formatter and passes the temp
                  ;; file as stdin and then deletes it.
                  (let* ((remote-stdin
-                         (apheleia--make-temp-file remote "apheleia-stdin"))
+                         (make-nearby-temp-file "apheleia-stdin"))
                         ;; WARN: This assumes a POSIX compatible shell.
                         (shell (or (bound-and-true-p tramp-default-remote-shell)
                                    "sh"))
@@ -616,18 +606,6 @@ If FILE-NAME is not remote, return it unchanged."
       (substring file-name (length remote))
     file-name))
 
-(defun apheleia--make-temp-file (remote prefix &optional dir-flag suffix text)
-  "Create a temporary file.
-This uses the value of REMOTE and `apheleia-remote-temporary-file-directory'
-when the temporary file is to be created on a remote machine.
-
-See `make-temp-file' for a description of PREFIX, DIR-FLAG, SUFFIX, and TEXT."
-  (let ((temporary-file-directory
-         (if remote
-             (concat remote apheleia-remote-temporary-file-directory)
-           temporary-file-directory)))
-    (make-temp-file prefix dir-flag suffix text)))
-
 (defun apheleia--create-rcs-patch (old-buffer new-buffer remote callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
 Once finished, invoke CALLBACK with a buffer containing the patch
@@ -653,7 +631,7 @@ See `apheleia--run-formatters' for a description of REMOTE."
                  (let ((fname-remote (and fname (file-remote-p fname))))
                    (when (or (not fname)
                              (not (equal remote fname-remote)))
-                     (setq fname (apheleia--make-temp-file remote "apheleia"))
+                     (setq fname (make-nearby-temp-file "apheleia"))
                      (push fname clear-files)
                      (with-current-buffer buffer
                        (apheleia--write-region-silently
@@ -773,8 +751,8 @@ machine from the machine file is available on")))
                                     arg))
                                 command))))
       (when (or (memq 'input command) (memq 'inplace command))
-        (setq input-fname (apheleia--make-temp-file
-                           remote "apheleia" nil
+        (setq input-fname (make-nearby-temp-file
+                           "apheleia" nil
                            (when-let ((file-name
                                        (or buffer-file-name
                                            (apheleia--safe-buffer-name))))
@@ -790,7 +768,7 @@ machine from the machine file is available on")))
         (when (memq 'inplace command)
           (setq output-fname input-fname)))
       (when (memq 'output command)
-        (setq output-fname (apheleia--make-temp-file remote "apheleia"))
+        (setq output-fname (make-nearby-temp-file "apheleia"))
         (let ((output-fname (apheleia--strip-remote output-fname)))
           (setq command (mapcar (lambda (arg)
                                   (if (eq arg 'output)
