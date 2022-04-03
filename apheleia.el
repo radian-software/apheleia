@@ -871,17 +871,18 @@ formatter being run, for diagnostic purposes."
       (insert-buffer-substring (or stdin buffer))
       (funcall func
                ;; Original buffer being formatted.
-               buffer
+               :buffer buffer
                ;; Buffer the formatter should modify.
-               scratch
+               :scratch scratch
                ;; Callback after succesfully formatting.
+               :callback
                (lambda ()
                  (unwind-protect
                      (funcall callback scratch)
                    (kill-buffer scratch)))
-               ;; A metadata field
-               `((remote . ,remote))
+               :remote remote
                ;; Callback when formatting scratch has failed.
+               :callback
                (apply-partially #'kill-buffer scratch)))))
 
 (defcustom apheleia-formatters
