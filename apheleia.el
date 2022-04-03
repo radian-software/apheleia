@@ -355,9 +355,9 @@ This function accepts all the same arguments as `apheleia--make-process'
 for simplicity, however some may not be used. This includes: NAME, and
 NO-QUERY."
   (ignore name noquery)
-  (let* ((stderr-file (make-nearby-temp-file "apheleia"))
-         (run-on-remote (and (eq apheleia-remote-algorithm 'remote)
+  (let* ((run-on-remote (and (eq apheleia-remote-algorithm 'remote)
                              remote))
+         (stderr-file (apheleia--make-temp-file run-on-remote "apheleia"))
          (args
           (append
            (list (car command)            ; argv[0]
@@ -388,7 +388,8 @@ NO-QUERY."
                    ;; on the remote that runs the formatter and passes the temp
                    ;; file as stdin and then deletes it.
                    (let* ((remote-stdin
-                           (make-nearby-temp-file "apheleia-stdin"))
+                           (apheleia--make-temp-file
+                            run-on-remote "apheleia-stdin"))
                           ;; WARN: This assumes a POSIX compatible shell.
                           (shell
                            (or (bound-and-true-p tramp-default-remote-shell)
@@ -621,6 +622,18 @@ If FILE-NAME is not remote, return it unchanged."
       (substring file-name (length remote))
     file-name))
 
+(defun apheleia--make-temp-file (remote prefix &optional dir-flag suffix)
+  "Create a temporary file optionally on a remote machine.
+This function calls `make-temp-file' or `make-nearby-temp-file' depending on
+the value of REMOTE.
+
+See `make-temp-file' for a description of PREFIX, DIR-FLAG, and SUFFIX."
+  (funcall
+   (if remote
+       #'make-nearby-temp-file
+     #'make-temp-file)
+   prefix dir-flag suffix))
+
 (defun apheleia--create-rcs-patch (old-buffer new-buffer remote callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
 Once finished, invoke CALLBACK with a buffer containing the patch
@@ -648,7 +661,8 @@ See `apheleia--run-formatters' for a description of REMOTE."
                  (let ((fname-remote (and fname (file-remote-p fname))))
                    (when (or (not fname)
                              (not (equal run-on-remote fname-remote)))
-                     (setq fname (make-nearby-temp-file "apheleia"))
+                     (setq fname
+                           (apheleia--make-temp-file run-on-remote "apheleia"))
                      (push fname clear-files)
                      (with-current-buffer buffer
                        (apheleia--write-region-silently
@@ -774,8 +788,8 @@ machine from the machine file is available on")))
                                     arg))
                                 command))))
       (when (or (memq 'input command) (memq 'inplace command))
-        (setq input-fname (make-nearby-temp-file
-                           "apheleia" nil
+        (setq input-fname (apheleia--make-temp-file
+                           run-on-remote "apheleia" nil
                            (when-let ((file-name
                                        (or buffer-file-name
                                            (apheleia--safe-buffer-name))))
@@ -791,7 +805,7 @@ machine from the machine file is available on")))
         (when (memq 'inplace command)
           (setq output-fname input-fname)))
       (when (memq 'output command)
-        (setq output-fname (make-nearby-temp-file "apheleia"))
+        (setq output-fname (apheleia--make-temp-file run-on-remote "apheleia"))
         (let ((output-fname (apheleia--strip-remote output-fname)))
           (setq command (mapcar (lambda (arg)
                                   (if (eq arg 'output)
