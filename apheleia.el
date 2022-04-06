@@ -669,13 +669,15 @@ See `apheleia--run-formatters' for a description of REMOTE."
                         (point-min) (point-max) fname)))
                    (apheleia--strip-remote fname))))
       ;; Ensure file is on target right machine, or create a copy of it.
-      (setq old-fname
-            (apheleia--make-temp-file-for-rcs-patch old-buffer old-fname)
-            new-fname
-            (apheleia--make-temp-file-for-rcs-patch new-buffer new-fname))
+      (when old-fname
+        (setq old-fname
+              (apheleia--make-temp-file-for-rcs-patch old-buffer old-fname)))
+      (when new-fname
+        (setq new-fname
+              (apheleia--make-temp-file-for-rcs-patch new-buffer new-fname)))
       ;; When neither files have an open file-handle, create one.
       (unless (or old-fname new-fname)
-        (setq new-fname (apheleia--make-temp-file-for-rcs-patch "apheleia"))))
+        (setq new-fname (apheleia--make-temp-file-for-rcs-patch new-buffer))))
 
     (apheleia--execute-formatter-process
      :command `("diff" "--rcs" "--strip-trailing-cr" "--"
