@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 2.0
 ## Breaking changes
 * The interface to `apheleia-format-buffer` has changed. You now pass
   in the symbol of a formatter from `apheleia-formatters` (or a list
