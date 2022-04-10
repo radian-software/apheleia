@@ -3,8 +3,24 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Breaking changes
+* The arguments of formatters defined as Elisp functions has changed.
+  A formatter function should now be a `cl-defun` taking key-value
+  arguments with support for more keys being provided on a later
+  apheleia release (by including `&allow-other-keys` in the parameter
+  list). For a list of provided arguments see
+  `apheleia--run-formatter-function`.
+* Emacs 25 is no longer supported.
+
+### Features
+* Support remote files and buffers that were opened through TRAMP
+  ([#33]).
+
+[#33]: https://github.com/raxod502/apheleia/issues/33
+
 ## 2.0
-## Breaking changes
+### Breaking changes
 * The interface to `apheleia-format-buffer` has changed. You now pass
   in the symbol of a formatter from `apheleia-formatters` (or a list
   of them) rather than the actual command. This change improves the
@@ -19,9 +35,8 @@ The format is based on [Keep a Changelog].
   command output rather than just the latest run. You can add further
   customizations using the new hook `apheleia-formatter-exited-hook`
   ([#69]).
-* Emacs 25 is no longer supported.
 
-## Features
+### Features
 * Apheleia can now format buffers that do not have an underlying file
   ([#52]).
 * You can now use a Lisp function as a formatter, by providing a
@@ -35,17 +50,15 @@ The format is based on [Keep a Changelog].
   using the symbol `inplace` in an entry on `apheleia-formatters` to
   stand in for the name of a temporary file that will be modified in
   place by the formatter ([#23]).
-* Support remote files and buffers that were opened through TRAMP
-  ([#33]).
 
-## Enhancements
+### Enhancements
 * The buffer-local variable `apheleia-formatter` is now marked as safe
   ([#74]). This allows you to configure the formatter that Apheleia
   will use in a file-local variable. Note: only formatters already
   declared in `apheleia-formatters` can be used; this does not allow
   arbitrary shell commands to be specified in file-local variables.
 
-## Bugs fixed
+### Bugs fixed
 * Allow running the same formatter in multiple buffers in parallel
   ([#64], [#65]). Previously, when saving a number of files at the
   same time, the contents of those buffers could be corrupted by a
@@ -62,11 +75,11 @@ The format is based on [Keep a Changelog].
   formatting a buffer. This was never intended and the bug has now
   been fixed ([#58]).
 
-## Formatters added
+### Formatters added
 * [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
   for [Fish](https://fishshell.com/) ([#68]).
 
-## Formatter bugs fixed
+### Formatter bugs fixed
 * isort is passed different arguments so as not to trigger a crash
   that appears to be related to the `--stdout` flag.
 * latexindent now has its log file disabled so as to avoid cluttering
@@ -75,7 +88,6 @@ The format is based on [Keep a Changelog].
   projects.
 
 [#23]: https://github.com/raxod502/apheleia/issues/23
-[#33]: https://github.com/raxod502/apheleia/issues/33
 [#47]: https://github.com/raxod502/apheleia/issues/47
 [#52]: https://github.com/raxod502/apheleia/issues/52
 [#58]: https://github.com/raxod502/apheleia/issues/58
