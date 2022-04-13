@@ -6,7 +6,7 @@
 ;; Created: 7 Jul 2019
 ;; Homepage: https://github.com/raxod502/apheleia
 ;; Keywords: tools
-;; Package-Requires: ((emacs "26"))
+;; Package-Requires: ((emacs "27.1"))
 ;; SPDX-License-Identifier: MIT
 ;; Version: 2.0
 
@@ -849,7 +849,16 @@ purposes."
   ;; resolve for the whole formatting process (for example
   ;; `apheleia--current-process').
   (with-current-buffer buffer
-    (when-let ((ret (apheleia--format-command command remote stdin)))
+    (when-let ((ret (apheleia--format-command command remote stdin))
+               (exec-path
+                (append `(,(expand-file-name
+                            "scripts/formatters"
+                            (file-name-directory
+                             (file-truename
+                              ;; Borrowed with love from Magit
+                              (let ((load-suffixes '(".el")))
+                                (locate-library "apheleia"))))))
+                        exec-path)))
       (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
         (apheleia--execute-formatter-process
          :command command
@@ -921,13 +930,15 @@ being run, for diagnostic purposes."
     (mix-format . ("mix" "format" "-"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
+    (phpcs . ("apheleia-phpcs"))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
-The keys may be any symbols you want, and the values are
-shell commands, lists of strings and symbols, or a function
-symbol.
+The keys may be any symbols you want, and the values are shell
+commands, lists of strings and symbols, or a function symbol. You may
+also pass a script to be included from scripts/formatters from within
+the apheleia repository.
 
 If the value is a function, the function will be called with four
 arguments to format the current buffer: the original buffer that
@@ -1028,7 +1039,8 @@ function: %s" command)))
      (car formatters))))
 
 (defcustom apheleia-mode-alist
-  '((cc-mode . clang-format)
+  '((php-mode . phpcs)
+    (cc-mode . clang-format)
     (c-mode . clang-format)
     (c++-mode . clang-format)
     (css-mode . prettier)
@@ -1043,7 +1055,6 @@ function: %s" command)))
     (json-mode . prettier)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
-    (php-mode . nil)
     (python-mode . black)
     (ruby-mode . prettier)
     (rustic-mode . rustfmt)
@@ -1070,7 +1081,11 @@ Earlier entries in this variable take precedence over later ones.
 
 Be careful when writing regexps to include \"\\'\" and to escape
 \"\\.\" in order to properly match a file extension. For example,
-to match \".jsx\" files you might use \"\\.jsx\\'\"."
+to match \".jsx\" files you might use \"\\.jsx\\'\".
+
+If a given mode derives from another mode (e.g. `php-mode' and
+`cc-mode'), then ensure that the deriving mode comes before the mode
+to derive from, as the list is interpreted sequentially."
   :type '(alist
           :key-type
           (choice (symbol :tag "Major mode")

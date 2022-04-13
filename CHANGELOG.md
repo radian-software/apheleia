@@ -19,6 +19,13 @@ The format is based on [Keep a Changelog].
 
 [#33]: https://github.com/raxod502/apheleia/issues/33
 
+* Support script files defined by apheleia for more troublesome
+  formatters. Resides at `scripts/formatters` and uses `file-truename`
+  to get around package managers that symlink files.
+([#87])
+
+[#87]: https://github.com/raxod502/apheleia/pull/87
+
 ## 2.0
 ### Breaking changes
 * The interface to `apheleia-format-buffer` has changed. You now pass
