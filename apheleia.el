@@ -929,14 +929,10 @@ The keys may be any symbols you want, and the values are
 shell commands, lists of strings and symbols, or a function
 symbol.
 
-If the value is a function, the function will be called with four
-arguments to format the current buffer: the original buffer that
-was being formatted (use this to access any relevent local
-variables or options that the formatter needs); a clone of the
-original buffer (that may have been modified by another formatter
-prior to being passed to the function); a callback that should be
-called when formatting is finished; and another callback that
-should be called when an error was raised during formatting.
+If the value is a function, the function will be called with
+keyword arguments (see the implementation of
+`apheleia--run-formatter-function' to see which). It should use
+`cl-defun' with `&allow-other-keys' for forward compatibility.
 
 Otherwise in Lisp code, the format of commands is similar to what
 you pass to `make-process', except as follows.
