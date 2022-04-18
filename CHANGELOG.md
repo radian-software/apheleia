@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog].
   `apheleia--run-formatter-function`.
 * Emacs 25 is no longer supported.
 
+### Formatters
+* [dart-format](https://dart.dev/tools/dart-format) for Dart
+
 ### Features
 * Support remote files and buffers that were opened through TRAMP
   ([#33]).
