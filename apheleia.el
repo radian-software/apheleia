@@ -922,6 +922,7 @@ being run, for diagnostic purposes."
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
+    (shfmt . ("shfmt"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
@@ -1045,6 +1046,7 @@ function: %s" command)))
     (rustic-mode . rustfmt)
     (rust-mode . rustfmt)
     (sass-mode . prettier)
+    (sh-mode . shfmt)
     (terraform-mode . terraform)
     (TeX-latex-mode . latexindent)
     (TeX-mode . latexindent)
