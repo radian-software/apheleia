@@ -1,18 +1,24 @@
-ARCH=$(uname -m)
-case $ARCH in
+arch="$(uname -m)"
+case "${arch}" in
     "x86_64")
-        ARCH="x64"
+        arch="x64"
         ;;
     "i386")
-        ARCH="ia32"
+        arch="ia32"
         ;;
     "aarch64")
-        ARCH="arm64"
+        arch="arm64"
+        ;;
+    *)
+        echo >&2 "unsupported architecture: ${arch}"
+        exit 1
+        ;;
 esac
 
-mkdir /opt/dart && cd /opt/dart || exit
+wget "https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-${arch}-release.zip" -O dart.zip
+unzip dart.zip
+chmod a=u,go-w -R dart-sdk
 
-wget "https://storage.googleapis.com/dart-archive/channels/stable/release/latest/sdk/dartsdk-linux-$ARCH-release.zip"
-
-unzip ./dart*.zip
-echo "export PATH=\"$PATH:/opt/dart/dart-sdk/bin\"" >> /etc/bash.bashrc
+sudo mkdir /opt/dart
+sudo cp -R dart-sdk/. /opt/dart/.
+sudo ln -s /opt/dart/bin/dart /usr/local/bin/
