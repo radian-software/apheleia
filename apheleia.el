@@ -6,7 +6,7 @@
 ;; Created: 7 Jul 2019
 ;; Homepage: https://github.com/raxod502/apheleia
 ;; Keywords: tools
-;; Package-Requires: ((emacs "27.1"))
+;; Package-Requires: ((emacs "26"))
 ;; SPDX-License-Identifier: MIT
 ;; Version: 2.0
 
