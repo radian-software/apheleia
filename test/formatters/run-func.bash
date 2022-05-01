@@ -2,7 +2,10 @@
 
 set -euo pipefail
 
+# Avoid using git to get project directory, due to
+# https://github.com/raxod502/apheleia/pull/89#issuecomment-1107319617
+
 cd "$(dirname "$0")"
-repo="$(git rev-parse --show-toplevel)"
+repo="$(cd ../.. && pwd)"
 
 exec emacs --batch -L "${repo}" -L . -l apheleia-ft -f "$1"

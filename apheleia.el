@@ -922,6 +922,7 @@ being run, for diagnostic purposes."
   '((black . ("black" "-"))
     (brittany . ("brittany"))
     (clang-format . ("clang-format"))
+    (dart-format . ("dart" "format"))
     (fish-indent . ("fish_indent"))
     (gofmt . ("gofmt"))
     (google-java-format . ("google-java-format" "-"))
@@ -940,14 +941,10 @@ commands, lists of strings and symbols, or a function symbol. You may
 also pass a script to be included from scripts/formatters from within
 the apheleia repository.
 
-If the value is a function, the function will be called with four
-arguments to format the current buffer: the original buffer that
-was being formatted (use this to access any relevent local
-variables or options that the formatter needs); a clone of the
-original buffer (that may have been modified by another formatter
-prior to being passed to the function); a callback that should be
-called when formatting is finished; and another callback that
-should be called when an error was raised during formatting.
+If the value is a function, the function will be called with
+keyword arguments (see the implementation of
+`apheleia--run-formatter-function' to see which). It should use
+`cl-defun' with `&allow-other-keys' for forward compatibility.
 
 Otherwise in Lisp code, the format of commands is similar to what
 you pass to `make-process', except as follows.
@@ -1044,6 +1041,7 @@ function: %s" command)))
     (c-mode . clang-format)
     (c++-mode . clang-format)
     (css-mode . prettier)
+    (dart-mode . dart-format)
     (elixir-mode . mix-format)
     (fish-mode . fish-indent)
     (go-mode . gofmt)

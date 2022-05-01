@@ -13,11 +13,15 @@ The format is based on [Keep a Changelog].
   `apheleia--run-formatter-function`.
 * Emacs 25 is no longer supported.
 
+### Formatters
+* [dart-format](https://dart.dev/tools/dart-format) for Dart ([#89]).
+
 ### Features
 * Support remote files and buffers that were opened through TRAMP
   ([#33]).
 
 [#33]: https://github.com/raxod502/apheleia/issues/33
+[#89]: https://github.com/raxod502/apheleia/pull/89
 
 * Support script files defined by apheleia for more troublesome
   formatters. Resides at `scripts/formatters` and uses `file-truename`
