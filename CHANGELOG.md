@@ -15,20 +15,16 @@ The format is based on [Keep a Changelog].
 
 ### Formatters
 * [dart-format](https://dart.dev/tools/dart-format) for Dart ([#89]).
+* [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) for PHP
+  ([#87]).
 
 ### Features
 * Support remote files and buffers that were opened through TRAMP
   ([#33]).
 
 [#33]: https://github.com/raxod502/apheleia/issues/33
-[#89]: https://github.com/raxod502/apheleia/pull/89
-
-* Support script files defined by apheleia for more troublesome
-  formatters. Resides at `scripts/formatters` and uses `file-truename`
-  to get around package managers that symlink files.
-([#87])
-
 [#87]: https://github.com/raxod502/apheleia/pull/87
+[#89]: https://github.com/raxod502/apheleia/pull/89
 
 ## 2.0
 ### Breaking changes

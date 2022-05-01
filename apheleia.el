@@ -937,9 +937,7 @@ being run, for diagnostic purposes."
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell
-commands, lists of strings and symbols, or a function symbol. You may
-also pass a script to be included from scripts/formatters from within
-the apheleia repository.
+commands, lists of strings and symbols, or a function symbol.
 
 If the value is a function, the function will be called with
 keyword arguments (see the implementation of
@@ -975,7 +973,13 @@ words, `inplace' is like `input' and `output' together.
 If you use the symbol `npx' as one of the elements of commands,
 then the first string element of the command list is resolved
 inside node_modules/.bin if such a directory exists anywhere
-above the current `default-directory'."
+above the current `default-directory'.
+
+The \"scripts/formatters\" subdirectory of the Apheleia source
+repository is automatically prepended to `exec-path' when
+invoking external formatters. This is intended for internal use.
+If you would like to define your own script, you can simply place
+it on your normal $PATH rather than using this system."
   :type '(alist
           :key-type symbol
           :value-type
@@ -1036,7 +1040,8 @@ function: %s" command)))
      (car formatters))))
 
 (defcustom apheleia-mode-alist
-  '((php-mode . phpcs)
+  '(;; php-mode has to come before cc-mode
+    (php-mode . phpcs)
     (cc-mode . clang-format)
     (c-mode . clang-format)
     (c++-mode . clang-format)
