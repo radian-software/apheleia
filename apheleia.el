@@ -849,7 +849,16 @@ purposes."
   ;; resolve for the whole formatting process (for example
   ;; `apheleia--current-process').
   (with-current-buffer buffer
-    (when-let ((ret (apheleia--format-command command remote stdin)))
+    (when-let ((ret (apheleia--format-command command remote stdin))
+               (exec-path
+                (append `(,(expand-file-name
+                            "scripts/formatters"
+                            (file-name-directory
+                             (file-truename
+                              ;; Borrowed with love from Magit
+                              (let ((load-suffixes '(".el")))
+                                (locate-library "apheleia"))))))
+                        exec-path)))
       (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
         (apheleia--execute-formatter-process
          :command command
@@ -922,13 +931,13 @@ being run, for diagnostic purposes."
     (mix-format . ("mix" "format" "-"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
+    (phpcs . ("apheleia-phpcs"))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
-The keys may be any symbols you want, and the values are
-shell commands, lists of strings and symbols, or a function
-symbol.
+The keys may be any symbols you want, and the values are shell
+commands, lists of strings and symbols, or a function symbol.
 
 If the value is a function, the function will be called with
 keyword arguments (see the implementation of
@@ -964,7 +973,14 @@ words, `inplace' is like `input' and `output' together.
 If you use the symbol `npx' as one of the elements of commands,
 then the first string element of the command list is resolved
 inside node_modules/.bin if such a directory exists anywhere
-above the current `default-directory'."
+above the current `default-directory'.
+
+The \"scripts/formatters\" subdirectory of the Apheleia source
+repository is automatically prepended to $PATH (variable
+`exec-path', to be specific) when invoking external formatters.
+This is intended for internal use. If you would like to define
+your own script, you can simply place it on your normal $PATH
+rather than using this system."
   :type '(alist
           :key-type symbol
           :value-type
@@ -1025,7 +1041,9 @@ function: %s" command)))
      (car formatters))))
 
 (defcustom apheleia-mode-alist
-  '((cc-mode . clang-format)
+  '(;; php-mode has to come before cc-mode
+    (php-mode . phpcs)
+    (cc-mode . clang-format)
     (c-mode . clang-format)
     (c++-mode . clang-format)
     (caml-mode . ocamlformat)
@@ -1042,7 +1060,6 @@ function: %s" command)))
     (json-mode . prettier)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
-    (php-mode . nil)
     (python-mode . black)
     (ruby-mode . prettier)
     (rustic-mode . rustfmt)
@@ -1069,7 +1086,11 @@ Earlier entries in this variable take precedence over later ones.
 
 Be careful when writing regexps to include \"\\'\" and to escape
 \"\\.\" in order to properly match a file extension. For example,
-to match \".jsx\" files you might use \"\\.jsx\\'\"."
+to match \".jsx\" files you might use \"\\.jsx\\'\".
+
+If a given mode derives from another mode (e.g. `php-mode' and
+`cc-mode'), then ensure that the deriving mode comes before the mode
+to derive from, as the list is interpreted sequentially."
   :type '(alist
           :key-type
           (choice (symbol :tag "Major mode")

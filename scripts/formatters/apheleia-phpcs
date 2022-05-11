@@ -1,0 +1,6 @@
+#!/bin/sh
+
+phpcbf "$@"
+if [ "$?" -eq 1 ]; then
+   exit 0
+fi

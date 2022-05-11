@@ -216,7 +216,16 @@ environment variable, defaulting to all formatters."
             (default-directory temporary-file-directory)
             (exit-status nil)
             (out-file (replace-regexp-in-string
-                       "/in\\([^/]+\\)" "/out\\1" in-file 'fixedcase)))
+                       "/in\\([^/]+\\)" "/out\\1" in-file 'fixedcase))
+            (exec-path
+                (append `(,(expand-file-name
+                            "scripts/formatters"
+                            (file-name-directory
+                             (file-truename
+                              ;; Borrowed with love from Magit
+                              (let ((load-suffixes '(".el")))
+                                (locate-library "apheleia"))))))
+                        exec-path)))
         (mapc
          (lambda (arg)
            (when (memq arg '(file filepath input output inplace))

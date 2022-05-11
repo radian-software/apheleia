@@ -19,12 +19,15 @@ The format is based on [Keep a Changelog].
 
 ### Formatters
 * [dart-format](https://dart.dev/tools/dart-format) for Dart ([#89]).
+* [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) for PHP
+  ([#87]).
 
 ### Features
 * Support remote files and buffers that were opened through TRAMP
   ([#33]).
 
 [#33]: https://github.com/raxod502/apheleia/issues/33
+[#87]: https://github.com/raxod502/apheleia/pull/87
 [#89]: https://github.com/raxod502/apheleia/pull/89
 [#94]: https://github.com/radian-software/apheleia/pull/94
 
