@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog].
   `apheleia--run-formatter-function`.
 * Emacs 25 is no longer supported.
 
+### Enhancements
+* Ocamlformat is now used in `caml-mode` in addition to `tuareg-mode`
+  ([#94]).
+
 ### Formatters
 * [dart-format](https://dart.dev/tools/dart-format) for Dart ([#89]).
 
@@ -22,6 +26,7 @@ The format is based on [Keep a Changelog].
 
 [#33]: https://github.com/raxod502/apheleia/issues/33
 [#89]: https://github.com/raxod502/apheleia/pull/89
+[#94]: https://github.com/radian-software/apheleia/pull/94
 
 ## 2.0
 ### Breaking changes
