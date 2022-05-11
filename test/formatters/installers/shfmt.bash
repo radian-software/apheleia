@@ -1,12 +1,12 @@
-ver="$(basename $(curl -fs -o/dev/null -w %{redirect_url} https://github.com/mvdan/sh/releases/latest))"
+ver="$(latest_release mvdan/sh)"
 
 arch="$(uname -m)"
 case "${arch}" in
     "x86_64")
-        arch="x64"
+        arch="amd64"
         ;;
     "i386")
-        arch="ia32"
+        arch="386"
         ;;
     "aarch64")
         arch="arm64"
@@ -17,5 +17,5 @@ case "${arch}" in
         ;;
 esac
 
-wget "https://github.com/mvdan/sh/releases/download/${ver}/shfmt_${ver}_$(uname | tr '[:upper:]' '[:lower:]')_${arch}" -O /usr/local/bin/shfmt
+wget "https://github.com/mvdan/sh/releases/download/${ver}/shfmt_${ver}_linux_${arch}" -O /usr/local/bin/shfmt
 chmod +x /usr/local/bin/shfmt
