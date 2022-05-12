@@ -4,7 +4,7 @@ set -euxo pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-apt-get install -y curl gnupg lsb-release
+apt-get install -y ca-certificates curl gnupg lsb-release
 
 curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
 
