@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog].
 * [dart-format](https://dart.dev/tools/dart-format) for Dart ([#89]).
 * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) for PHP
   ([#87]).
+* [ktlint](https://github.com/pinterest/ktlint) for Kotlin ([#95]).
 
 ### Features
 * Support remote files and buffers that were opened through TRAMP
