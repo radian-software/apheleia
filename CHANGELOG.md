@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog].
 * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) for PHP
   ([#87]).
 * [ktlint](https://github.com/pinterest/ktlint) for Kotlin ([#95]).
+* [nixfmt](https://github.com/serokell/nixfmt) for Nix ([#98]).
 
 ### Features
 * Support remote files and buffers that were opened through TRAMP
