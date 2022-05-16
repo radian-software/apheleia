@@ -21,7 +21,8 @@ The format is based on [Keep a Changelog].
 * [dart-format](https://dart.dev/tools/dart-format) for Dart ([#89]).
 * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) for PHP
   ([#87]).
-* [ktlint](https://github.com/pinterest/ktlint) for Kotlin ([#95]).
+* [ktlint](https://github.com/pinterest/ktlint) for Kotlin ([#97]).
+* [nixfmt](https://github.com/serokell/nixfmt) for Nix ([#98]).
 
 ### Features
 * Support remote files and buffers that were opened through TRAMP
@@ -31,6 +32,8 @@ The format is based on [Keep a Changelog].
 [#87]: https://github.com/raxod502/apheleia/pull/87
 [#89]: https://github.com/raxod502/apheleia/pull/89
 [#94]: https://github.com/radian-software/apheleia/pull/94
+[#97]: https://github.com/radian-software/apheleia/pull/97
+[#98]: https://github.com/radian-software/apheleia/pull/98
 
 ## 2.0
 ### Breaking changes
