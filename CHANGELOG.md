@@ -32,7 +32,7 @@ The format is based on [Keep a Changelog].
 [#87]: https://github.com/raxod502/apheleia/pull/87
 [#89]: https://github.com/raxod502/apheleia/pull/89
 [#94]: https://github.com/radian-software/apheleia/pull/94
-[#95]: https://github.com/radian-software/apheleia/pull/97
+[#97]: https://github.com/radian-software/apheleia/pull/97
 [#98]: https://github.com/radian-software/apheleia/pull/98
 
 ## 2.0
