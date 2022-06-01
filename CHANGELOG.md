@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 3.0 (released 2022-06-01)
 ### Breaking changes
 * The arguments of formatters defined as Elisp functions has changed.
   A formatter function should now be a `cl-defun` taking key-value
@@ -35,7 +35,7 @@ The format is based on [Keep a Changelog].
 [#97]: https://github.com/radian-software/apheleia/pull/97
 [#98]: https://github.com/radian-software/apheleia/pull/98
 
-## 2.0
+## 2.0 (released 2022-04-10)
 ### Breaking changes
 * The interface to `apheleia-format-buffer` has changed. You now pass
   in the symbol of a formatter from `apheleia-formatters` (or a list
