@@ -928,6 +928,7 @@ being run, for diagnostic purposes."
     (gofmt . ("gofmt"))
     (google-java-format . ("google-java-format" "-"))
     (isort . ("isort" "-"))
+    (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--stdin" "-F"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("mix" "format" "-"))
@@ -986,19 +987,30 @@ repository is automatically prepended to $PATH (variable
 This is intended for internal use. If you would like to define
 your own script, you can simply place it on your normal $PATH
 rather than using this system."
-  :type '(alist
-          :key-type symbol
-          :value-type
-          (choice
-           (repeat
-            (choice
-             (string :tag "Argument")
-             (const :tag "Look for command in node_modules/.bin" npx)
-             (const :tag "Name of file being formatted" filepath)
-             (const :tag "Name of real file used for input" file)
-             (const :tag "Name of temporary file used for input" input)
-             (const :tag "Name of temporary file used for output" output)))
-           (function :tag "Formatter function"))))
+   :type '(alist
+           :key-type symbol
+            :value-type
+             (choice
+              (repeat
+               (choice
+                (string :tag "Argument")
+                (const :tag "Look for command in node_modules/.bin" npx)
+                (const :tag "Name of file being formatted" filepath)
+                (const :tag "Name of real file used for input" file)
+                (const :tag "Name of temporary file used for input" input)
+                (const :tag "Name of temporary file used for output" output)))
+              (function :tag "Formatter function"))))
+
+(cl-defun apheleia-indent-lisp-buffer (&key buffer scratch callback &allow-other-keys)
+  "Format a lisp BUFFER using SCRATCH as a temporary buffer and
+  CALLBACK to apply the transformation.
+
+For more implementation detail, see `apheleia--run-formatter-function'"
+  (with-current-buffer scratch
+    (setq-local indent-line-function (buffer-local-value 'indent-line-function buffer))
+    (setq-local lisp-indent-function (buffer-local-value 'lisp-indent-function buffer))
+    (indent-region (point-min) (point-max))
+    (funcall callback)))
 
 (defun apheleia--run-formatters
     (formatters buffer remote callback &optional stdin)
