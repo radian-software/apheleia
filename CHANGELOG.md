@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Formatters
+* [elm-format](https://github.com/avh4/elm-format) for Elm ([#100])
+
+[#100]: https://github.com/radian-software/apheleia/pull/100
+
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
 * The arguments of formatters defined as Elisp functions has changed.
