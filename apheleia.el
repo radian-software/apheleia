@@ -919,7 +919,8 @@ being run, for diagnostic purposes."
                (apply-partially #'kill-buffer scratch)))))
 
 (defcustom apheleia-formatters
-  '((black . ("black" "-"))
+  '((bean-format . ("bean-format" filepath))
+    (black . ("black" "-"))
     (brittany . ("brittany"))
     (clang-format . ("clang-format"))
     (dart-format . ("dart" "format"))
@@ -1046,6 +1047,7 @@ function: %s" command)))
 (defcustom apheleia-mode-alist
   '(;; php-mode has to come before cc-mode
     (php-mode . phpcs)
+    (beancount-mode . bean-format)
     (cc-mode . clang-format)
     (c-mode . clang-format)
     (c++-mode . clang-format)
