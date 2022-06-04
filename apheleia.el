@@ -935,7 +935,7 @@ being run, for diagnostic purposes."
                     "--enable-outside-detected-project"))
     (phpcs . ("apheleia-phpcs"))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
-    (shfmt . ("shfmt"))
+    (shfmt . ("shfmt" "-i" "4"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
