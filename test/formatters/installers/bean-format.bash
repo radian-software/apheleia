@@ -1,2 +1,2 @@
 apt-get install -y python3-pip
-pip install beancount
+pip3 install beancount
