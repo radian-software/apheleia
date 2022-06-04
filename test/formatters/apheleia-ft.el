@@ -59,8 +59,8 @@ already in memory on the current branch."
 (defun apheleia-ft--get-formatters-for-pull-request ()
   "Return list of formatter string names that were touched in this PR.
 This means their commands in `apheleia-formatters' are different
-from how they appear on master, or they were added relative to
-master."
+from how they appear on main, or they were added relative to
+main."
   (let ((old-formatters (apheleia-ft--get-formatters-from-ref "origin/main"))
         (new-formatters apheleia-formatters)
         (touched-formatters nil))
