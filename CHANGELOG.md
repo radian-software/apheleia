@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Enhancements
+* shfmt uses 4 spaces instead of tabs by default.
+
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
 * The arguments of formatters defined as Elisp functions has changed.
