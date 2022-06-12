@@ -1001,14 +1001,18 @@ rather than using this system."
                 (const :tag "Name of temporary file used for output" output)))
               (function :tag "Formatter function"))))
 
-(cl-defun apheleia-indent-lisp-buffer (&key buffer scratch callback &allow-other-keys)
-  "Format a lisp BUFFER using SCRATCH as a temporary buffer and
-  CALLBACK to apply the transformation.
+(cl-defun apheleia-indent-lisp-buffer
+    (&key buffer scratch callback &allow-other-keys)
+  "Format a Lisp BUFFER.
+Use SCRATCH as a temporary buffer and CALLBACK to apply the
+transformation.
 
 For more implementation detail, see `apheleia--run-formatter-function'"
   (with-current-buffer scratch
-    (setq-local indent-line-function (buffer-local-value 'indent-line-function buffer))
-    (setq-local lisp-indent-function (buffer-local-value 'lisp-indent-function buffer))
+    (setq-local indent-line-function
+                (buffer-local-value 'indent-line-function buffer))
+    (setq-local lisp-indent-function
+                (buffer-local-value 'lisp-indent-function buffer))
     (indent-region (point-min) (point-max))
     (funcall callback)))
 
