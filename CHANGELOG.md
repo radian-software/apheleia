@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog].
 ### Enhancements
 * shfmt uses 4 spaces instead of tabs by default.
 
+### Formatters
+* [stylua](https://github.com/JohnnyMorganz/StyLua) for Lua ([#105]).
+
+[#105]: https://github.com/raxod502/apheleia/pull/105
+
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
 * The arguments of formatters defined as Elisp functions has changed.
