@@ -10,8 +10,10 @@ The format is based on [Keep a Changelog].
 ### Formatters
 * [bean-format](https://github.com/beancount/beancount) for Beancount
   ([#101]).
+* [stylua](https://github.com/JohnnyMorganz/StyLua) for Lua ([#105]).
 
 [#101]: https://github.com/radian-software/apheleia/pull/101
+[#105]: https://github.com/radian-software/apheleia/pull/105
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
