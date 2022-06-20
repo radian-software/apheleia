@@ -919,7 +919,8 @@ being run, for diagnostic purposes."
                (apply-partially #'kill-buffer scratch)))))
 
 (defcustom apheleia-formatters
-  '((black . ("black" "-"))
+  '((bean-format . ("bean-format" filepath))
+    (black . ("black" "-"))
     (brittany . ("brittany"))
     (clang-format . ("clang-format"))
     (dart-format . ("dart" "format"))
@@ -936,7 +937,8 @@ being run, for diagnostic purposes."
                     "--enable-outside-detected-project"))
     (phpcs . ("apheleia-phpcs"))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
-    (shfmt . ("shfmt"))
+    (shfmt . ("shfmt" "-i" "4"))
+    (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
@@ -1047,6 +1049,7 @@ function: %s" command)))
 (defcustom apheleia-mode-alist
   '(;; php-mode has to come before cc-mode
     (php-mode . phpcs)
+    (beancount-mode . bean-format)
     (cc-mode . clang-format)
     (c-mode . clang-format)
     (c++-mode . clang-format)
@@ -1066,6 +1069,7 @@ function: %s" command)))
     (kotlin-mode . ktlint)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
+    (lua-mode . stylua)
     (nix-mode . nixfmt)
     (python-mode . black)
     (ruby-mode . prettier)
