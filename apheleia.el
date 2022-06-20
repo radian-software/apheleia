@@ -1007,7 +1007,8 @@ rather than using this system."
 Use SCRATCH as a temporary buffer and CALLBACK to apply the
 transformation.
 
-For more implementation detail, see `apheleia--run-formatter-function'"
+For more implementation detail, see
+`apheleia--run-formatter-function'."
   (with-current-buffer scratch
     (setq-local indent-line-function
                 (buffer-local-value 'indent-line-function buffer))
