@@ -11,3 +11,7 @@ gem install syntax_tree -v 2.3.1
 # Ruby, not Prettier itself. Also, same issue as above where we have
 # to specify the version manually.
 gem install prettier -v 2.1.0
+
+# Then of course we need to install what sounds like the same thing
+# again, but isn't...
+npm install -g prettier @prettier/plugin-ruby
