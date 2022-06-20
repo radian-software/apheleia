@@ -360,20 +360,21 @@ NO-QUERY."
          (stderr-file (apheleia--make-temp-file run-on-remote "apheleia"))
          (args
           (append
-           (list (car command)            ; argv[0]
-                 (not stdin)              ; If stdin we don't delete the STDIN
-                                        ; buffer text with
-                                        ; `call-process-region'. Otherwise we
-                                        ; send no INFILE argument to
-                                        ; `call-process'.
-                 `(,stdout ,stderr-file)  ; stdout buffer and stderr file.
-                                        ; `call-process' cannot capture
-                                        ; stderr into a separate buffer, the
-                                        ; best we can do is save and read
-                                        ; from a file.
-                 nil)                     ; Do not re/display stdout as output
-                                        ; is recieved.
-           (cdr command))))               ; argv[1:]
+           (list
+            ;; argv[0]
+            (car command)
+            ;; If stdin we don't delete the STDIN buffer text with
+            ;; `call-process-region'. Otherwise we send no INFILE
+            ;; argument to `call-process'.
+            (not stdin)
+            ;; stdout buffer and stderr file. `call-process' cannot
+            ;; capture stderr into a separate buffer, the best we can
+            ;; do is save and read from a file.
+            `(,stdout ,stderr-file)
+            ;; Do not re/display stdout as output is recieved.
+            nil)
+           ;; argv[1:]
+           (cdr command))))
     (unwind-protect
         (let ((exit-status
                (cl-letf* ((message (symbol-function #'message))
