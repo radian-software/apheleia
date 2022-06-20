@@ -6,13 +6,24 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Enhancements
 * shfmt uses 4 spaces instead of tabs by default.
+* Prettier now specifies `--parser` argument explicitly, so it will
+  work properly even when the name of the file does not match what
+  Prettier expects (e.g. `.yamllint` will be formatted as YAML by
+  Prettier as long as it is in `yaml-mode`). See [#103].
 
 ### Formatters
 * [bean-format](https://github.com/beancount/beancount) for Beancount
   ([#101]).
 * [stylua](https://github.com/JohnnyMorganz/StyLua) for Lua ([#105]).
 
+### Bugfixes
+* Prettier supports SCSS instead of SASS. The original support for
+  SASS in Apheleia was a bug because Prettier actually never had
+  support for SASS in the first place, so Apheleia would have failed
+  anyway on trying to format a SASS file.
+
 [#101]: https://github.com/radian-software/apheleia/pull/101
+[#103]: https://github.com/radian-software/apheleia/issues/103
 [#105]: https://github.com/radian-software/apheleia/pull/105
 
 ## 3.0 (released 2022-06-01)

@@ -1,6 +1,1 @@
-interface GreetingSettings {
-  greeting: string;
-  duration?: number;
-  color?: string;
-}
-declare function greet(setting: GreetingSettings): void;
+../prettier-typescript/out.ts
