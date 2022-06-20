@@ -22,7 +22,7 @@ help: ## Show this message
 		column -t -s'|' >&2
 
 .PHONY: lint
-lint: compile checkdoc longlines checkindent fmt-lint ## Build project and run all linters
+lint: compile checkdoc longlines checkindent fmt-lint ## Run all fast linters
 
 .PHONY: compile
 compile: ## Check for byte-compiler errors
