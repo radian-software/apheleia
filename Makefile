@@ -1,3 +1,5 @@
+SHELL := bash
+
 VERSION ?=
 CMD ?=
 
@@ -8,6 +10,7 @@ TAG ?= latest
 # The order is important for compilation.
 for_compile := *.el
 for_checkdoc := *.el
+for_checkindent := *.el
 
 .PHONY: help
 help: ## Show this message
@@ -19,7 +22,7 @@ help: ## Show this message
 		column -t -s'|' >&2
 
 .PHONY: lint
-lint: compile checkdoc longlines fmt-lint ## Build project and run all linters
+lint: compile checkdoc longlines checkindent fmt-lint ## Build project and run all linters
 
 .PHONY: compile
 compile: ## Check for byte-compiler errors
@@ -40,6 +43,24 @@ checkdoc: ## Check for missing or poorly formatted docstrings
 	        --eval "(setq sentence-end-double-space nil)" \
 	        --eval "(checkdoc-file \"$$file\")" 2>&1 \
 	        | grep . && exit 1 || true ;\
+	done
+
+.PHONY: checkindent
+checkindent: ## Ensure that indentation is correct
+	@tmpdir="$$(mktemp -d)"; for file in $(for_checkindent); do \
+	    echo "[checkindent] $$file" >&2; \
+	    emacs -Q --batch \
+		-l scripts/apheleia-indent.el \
+	        --eval "(setq inhibit-message t)" \
+	        --eval "(load (expand-file-name \"apheleia.el\") nil t)" \
+	        --eval "(find-file \"$$file\")" \
+	        --eval "(indent-region (point-min) (point-max))" \
+	        --eval "(write-file \"$$tmpdir/$$file\")"; \
+	    (diff <(cat          "$$file" | nl -v1 -ba | \
+                           sed "s/\t/: /" | sed "s/^ */$$file:/") \
+	          <(cat "$$tmpdir/$$file" | nl -v1 -ba | \
+                           sed "s/\t/: /" | sed "s/^ */$$file:/") ) \
+	        | grep -F ">" | grep -o "[a-z].*" | grep . && exit 1 || true; \
 	done
 
 .PHONY: longlines
