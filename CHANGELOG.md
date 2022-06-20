@@ -8,9 +8,12 @@ The format is based on [Keep a Changelog].
 * shfmt uses 4 spaces instead of tabs by default.
 
 ### Formatters
+* [bean-format](https://github.com/beancount/beancount) for Beancount
+  ([#101]).
 * [stylua](https://github.com/JohnnyMorganz/StyLua) for Lua ([#105]).
 
-[#105]: https://github.com/raxod502/apheleia/pull/105
+[#101]: https://github.com/radian-software/apheleia/pull/101
+[#105]: https://github.com/radian-software/apheleia/pull/105
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
