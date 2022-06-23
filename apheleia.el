@@ -362,17 +362,17 @@ NO-QUERY."
           (append
            (list (car command)            ; argv[0]
                  (not stdin)              ; If stdin we don't delete the STDIN
-                                          ; buffer text with
-                                          ; `call-process-region'. Otherwise we
-                                          ; send no INFILE argument to
-                                          ; `call-process'.
+                                        ; buffer text with
+                                        ; `call-process-region'. Otherwise we
+                                        ; send no INFILE argument to
+                                        ; `call-process'.
                  `(,stdout ,stderr-file)  ; stdout buffer and stderr file.
-                                          ; `call-process' cannot capture
-                                          ; stderr into a separate buffer, the
-                                          ; best we can do is save and read
-                                          ; from a file.
+                                        ; `call-process' cannot capture
+                                        ; stderr into a separate buffer, the
+                                        ; best we can do is save and read
+                                        ; from a file.
                  nil)                     ; Do not re/display stdout as output
-                                          ; is recieved.
+                                        ; is recieved.
            (cdr command))))               ; argv[1:]
     (unwind-protect
         (let ((exit-status
@@ -827,12 +827,12 @@ machine from the machine file is available on")))
                               arg
                             (eval arg)))
              if val
-               if (and (consp val)
-                       (cl-every #'stringp val))
-                 append val
-               else if (stringp val)
-                 collect val
-               else do (error "Result of command evaluation must be a string \
+             if (and (consp val)
+                     (cl-every #'stringp val))
+             append val
+             else if (stringp val)
+             collect val
+             else do (error "Result of command evaluation must be a string \
 or list of strings: %S" arg)))
       `(,input-fname ,output-fname ,stdin ,@command))))
 
@@ -987,19 +987,19 @@ repository is automatically prepended to $PATH (variable
 This is intended for internal use. If you would like to define
 your own script, you can simply place it on your normal $PATH
 rather than using this system."
-   :type '(alist
-           :key-type symbol
-            :value-type
-             (choice
-              (repeat
-               (choice
-                (string :tag "Argument")
-                (const :tag "Look for command in node_modules/.bin" npx)
-                (const :tag "Name of file being formatted" filepath)
-                (const :tag "Name of real file used for input" file)
-                (const :tag "Name of temporary file used for input" input)
-                (const :tag "Name of temporary file used for output" output)))
-              (function :tag "Formatter function"))))
+  :type '(alist
+          :key-type symbol
+          :value-type
+          (choice
+           (repeat
+            (choice
+             (string :tag "Argument")
+             (const :tag "Look for command in node_modules/.bin" npx)
+             (const :tag "Name of file being formatted" filepath)
+             (const :tag "Name of real file used for input" file)
+             (const :tag "Name of temporary file used for input" input)
+             (const :tag "Name of temporary file used for output" output)))
+           (function :tag "Formatter function"))))
 
 (cl-defun apheleia-indent-lisp-buffer
     (&key buffer scratch callback &allow-other-keys)
@@ -1013,7 +1013,11 @@ For more implementation detail, see `apheleia--run-formatter-function'"
                 (buffer-local-value 'indent-line-function buffer))
     (setq-local lisp-indent-function
                 (buffer-local-value 'lisp-indent-function buffer))
-    (indent-region (point-min) (point-max))
+    (funcall (with-current-buffer buffer major-mode))
+    (goto-char (point-min))
+    (let ((inhibit-message t)
+          (message-log-max nil))
+      (indent-region (point-min) (point-max)))
     (funcall callback)))
 
 (defun apheleia--run-formatters
@@ -1069,8 +1073,10 @@ function: %s" command)))
     (c-mode . clang-format)
     (c++-mode . clang-format)
     (caml-mode . ocamlformat)
+    (common-lisp-mode . lisp-indent)
     (css-mode . prettier)
     (dart-mode . dart-format)
+    (emacs-lisp-mode . lisp-indent)
     (elixir-mode . mix-format)
     (fish-mode . fish-indent)
     (go-mode . gofmt)
@@ -1084,6 +1090,7 @@ function: %s" command)))
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
+    (lisp-mode . lisp-indent)
     (nix-mode . nixfmt)
     (python-mode . black)
     (ruby-mode . prettier)
