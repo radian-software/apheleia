@@ -919,7 +919,7 @@ being run, for diagnostic purposes."
                (apply-partially #'kill-buffer scratch)))))
 
 (defcustom apheleia-formatters
-  '((bean-format . ("bean-format" filepath))
+  '((bean-format . ("bean-format"))
     (black . ("black" "-"))
     (brittany . ("brittany"))
     (clang-format . ("clang-format"))
