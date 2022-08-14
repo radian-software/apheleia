@@ -767,26 +767,21 @@ cmd is to be run."
 it's first in the sequence"))
           (unless remote-match
             (error "Formatter uses `file' but process will run on different \
-machine from the machine file is available on")))
+machine from the machine file is available on"))
+	  (setq stdin nil)
+          ;; If `buffer-file-name' is nil then there is no backing
+          ;; file, so `buffer-modified-p' should be ignored (it always
+          ;; returns non-nil).
+          (when (and (buffer-modified-p) buffer-file-name)
+            (cl-return)))
         ;; We always strip out the remote-path prefix for file/filepath.
         (let ((file-name (apheleia--strip-remote
                           (or buffer-file-name
                               (concat default-directory
                                       (apheleia--safe-buffer-name))))))
           (setq command (mapcar (lambda (arg)
-                                  (when (eq arg 'file)
-                                    (setq stdin nil))
                                   (if (memq arg '(file filepath))
-                                      (prog1 file-name
-                                        ;; If `buffer-file-name' is
-                                        ;; nil then there is no
-                                        ;; backing file, so
-                                        ;; `buffer-modified-p' should
-                                        ;; be ignored (it always
-                                        ;; returns non-nil).
-                                        (when (and (buffer-modified-p)
-                                                   buffer-file-name)
-                                          (cl-return)))
+                                      file-name
                                     arg))
                                 command))))
       (when (or (memq 'input command) (memq 'inplace command))
@@ -919,7 +914,7 @@ being run, for diagnostic purposes."
                (apply-partially #'kill-buffer scratch)))))
 
 (defcustom apheleia-formatters
-  '((bean-format . ("bean-format" filepath))
+  '((bean-format . ("bean-format"))
     (black . ("black" "-"))
     (brittany . ("brittany"))
     (clang-format . ("clang-format"))

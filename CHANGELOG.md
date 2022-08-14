@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Enhancements
 * shfmt uses 4 spaces instead of tabs by default.
+* Formatters using `'filepath` (OCamlFormat and Prettier) are no
+  longer prevented from running on a modified buffer ([#109], [#110]).
 
 ### Formatters
 * [bean-format](https://github.com/beancount/beancount) for Beancount
@@ -14,6 +16,8 @@ The format is based on [Keep a Changelog].
 
 [#101]: https://github.com/radian-software/apheleia/pull/101
 [#105]: https://github.com/radian-software/apheleia/pull/105
+[#109]: https://github.com/radian-software/apheleia/issues/109
+[#110]: https://github.com/radian-software/apheleia/pull/110
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
