@@ -1030,13 +1030,14 @@ function: %s" command)))
      buffer
      remote
      (lambda (stdout)
-       (if (cdr formatters)
-           ;; Forward current stdout to remaining formatters, passing along
-           ;; the current callback and using the current formatters output
-           ;; as stdin.
-           (apheleia--run-formatters
-            (cdr formatters) buffer remote callback stdout)
-         (funcall callback stdout)))
+       (unless (string-empty-p (with-current-buffer stdout (buffer-string)))
+         (if (cdr formatters)
+             ;; Forward current stdout to remaining formatters, passing along
+             ;; the current callback and using the current formatters output
+             ;; as stdin.
+             (apheleia--run-formatters
+              (cdr formatters) buffer remote callback stdout)
+           (funcall callback stdout))))
      stdin
      (car formatters))))
 
