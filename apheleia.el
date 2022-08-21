@@ -939,10 +939,14 @@ being run, for diagnostic purposes."
      . (npx "prettier" "--stdin-filepath" filepath "--parser=css"))
     (prettier-html
      . (npx "prettier" "--stdin-filepath" filepath "--parser=html"))
+    (prettier-graphql
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"))
     (prettier-javascript
      . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"))
     (prettier-json
      . (npx "prettier" "--stdin-filepath" filepath "--parser=json"))
+    (prettier-markdown
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"))
     (prettier-ruby
      . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"))
     (prettier-scss
@@ -1064,6 +1068,7 @@ function: %s" command)))
 (defcustom apheleia-mode-alist
   '(;; php-mode has to come before cc-mode
     (php-mode . phpcs)
+    ;; rest are alphabetical
     (beancount-mode . bean-format)
     (cc-mode . clang-format)
     (c-mode . clang-format)
@@ -1074,6 +1079,7 @@ function: %s" command)))
     (elixir-mode . mix-format)
     (fish-mode . fish-indent)
     (go-mode . gofmt)
+    (graphql-mode . prettier-graphql)
     (haskell-mode . brittany)
     (html-mode . prettier-html)
     (java-mode . google-java-format)
