@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog].
 * shfmt uses 4 spaces instead of tabs by default.
 * Formatters using `'filepath` (OCamlFormat and Prettier) are no
   longer prevented from running on a modified buffer ([#109], [#110]).
+* Buffer content is now always passed to formatters using a pipe. This
+  fixes issues with formatters that behave differently when receiving
+  input on stdin versus being run on a tty.
 
 ### Formatters
 * [bean-format](https://github.com/beancount/beancount) for Beancount
