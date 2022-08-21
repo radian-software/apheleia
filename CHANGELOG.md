@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog].
 * Formatters using `'filepath` (OCamlFormat and Prettier) are no
   longer prevented from running on a modified buffer ([#109], [#110]).
 
+### Bugs fixed
+* When a formatter has a bug and fails to return anything on stdout
+  (e.g. scalafmt), do not erase the buffer ([#116]).
+
 ### Formatters
 * [bean-format](https://github.com/beancount/beancount) for Beancount
   ([#101]).
@@ -18,6 +22,7 @@ The format is based on [Keep a Changelog].
 [#105]: https://github.com/radian-software/apheleia/pull/105
 [#109]: https://github.com/radian-software/apheleia/issues/109
 [#110]: https://github.com/radian-software/apheleia/pull/110
+[#116]: https://github.com/radian-software/apheleia/pull/116
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
