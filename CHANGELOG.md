@@ -6,10 +6,19 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Enhancements
 * shfmt uses 4 spaces instead of tabs by default.
+* Formatters using `'filepath` (OCamlFormat and Prettier) are no
+  longer prevented from running on a modified buffer ([#109], [#110]).
+* Buffer content is now always passed to formatters using a pipe. This
+  fixes issues with formatters that behave differently when receiving
+  input on stdin versus being run on a tty ([#119]).
 * Prettier now specifies `--parser` argument explicitly, so it will
   work properly even when the name of the file does not match what
   Prettier expects (e.g. `.yamllint` will be formatted as YAML by
   Prettier as long as it is in `yaml-mode`). See [#103].
+
+### Bugs fixed
+* When a formatter has a bug and fails to return anything on stdout
+  (e.g. scalafmt), do not erase the buffer ([#116]).
 
 ### Formatters
 * [bean-format](https://github.com/beancount/beancount) for Beancount
@@ -25,6 +34,10 @@ The format is based on [Keep a Changelog].
 [#101]: https://github.com/radian-software/apheleia/pull/101
 [#103]: https://github.com/radian-software/apheleia/issues/103
 [#105]: https://github.com/radian-software/apheleia/pull/105
+[#109]: https://github.com/radian-software/apheleia/issues/109
+[#110]: https://github.com/radian-software/apheleia/pull/110
+[#116]: https://github.com/radian-software/apheleia/pull/116
+[#119]: https://github.com/radian-software/apheleia/pull/119
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes

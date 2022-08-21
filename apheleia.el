@@ -309,7 +309,8 @@ at once.")
 This points into a log buffer.")
 
 (cl-defun apheleia--make-process
-    (&key name stdin stdout stderr command remote noquery callback)
+    (&key name stdin stdout stderr command
+          remote noquery connection-type callback)
   "Helper to run a formatter process asynchronously.
 This starts a formatter process using COMMAND and then connects STDIN,
 STDOUT and STDERR buffers to the processes different streams. Once the
@@ -326,6 +327,7 @@ See `make-process' for a description of the NAME and NOQUERY arguments."
           :command command
           :file-handler remote
           :noquery noquery
+          :connection-type connection-type
           :sentinel
           (lambda (proc _event)
             (unless (process-live-p proc)
@@ -344,7 +346,8 @@ See `make-process' for a description of the NAME and NOQUERY arguments."
     proc))
 
 (cl-defun apheleia--call-process
-    (&key name stdin stdout stderr command remote noquery callback)
+    (&key name stdin stdout stderr command
+          remote noquery connection-type callback)
   "Helper to synchronously run a formatter process.
 This function essentially runs COMMAND synchronously passing STDIN
 as standard input and saving output to the STDOUT and STDERR buffers.
@@ -352,9 +355,9 @@ Once the process is finished CALLBACK will be invoked with the exit
 code (see `process-exit-status') of the process.
 
 This function accepts all the same arguments as `apheleia--make-process'
-for simplicity, however some may not be used. This includes: NAME, and
-NO-QUERY."
-  (ignore name noquery)
+for simplicity, however some may not be used. This includes: NAME,
+NO-QUERY, and CONNECTION-TYPE."
+  (ignore name noquery connection-type)
   (let* ((run-on-remote (and (eq apheleia-remote-algorithm 'remote)
                              remote))
          (stderr-file (apheleia--make-temp-file run-on-remote "apheleia"))
@@ -470,6 +473,7 @@ spawned on remote machines."
                  :stderr stderr
                  :command command
                  :remote remote
+                 :connection-type 'pipe
                  :noquery t
                  :callback
                  (lambda (proc-exit-status)
@@ -767,26 +771,21 @@ cmd is to be run."
 it's first in the sequence"))
           (unless remote-match
             (error "Formatter uses `file' but process will run on different \
-machine from the machine file is available on")))
+machine from the machine file is available on"))
+	  (setq stdin nil)
+          ;; If `buffer-file-name' is nil then there is no backing
+          ;; file, so `buffer-modified-p' should be ignored (it always
+          ;; returns non-nil).
+          (when (and (buffer-modified-p) buffer-file-name)
+            (cl-return)))
         ;; We always strip out the remote-path prefix for file/filepath.
         (let ((file-name (apheleia--strip-remote
                           (or buffer-file-name
                               (concat default-directory
                                       (apheleia--safe-buffer-name))))))
           (setq command (mapcar (lambda (arg)
-                                  (when (eq arg 'file)
-                                    (setq stdin nil))
                                   (if (memq arg '(file filepath))
-                                      (prog1 file-name
-                                        ;; If `buffer-file-name' is
-                                        ;; nil then there is no
-                                        ;; backing file, so
-                                        ;; `buffer-modified-p' should
-                                        ;; be ignored (it always
-                                        ;; returns non-nil).
-                                        (when (and (buffer-modified-p)
-                                                   buffer-file-name)
-                                          (cl-return)))
+                                      file-name
                                     arg))
                                 command))))
       (when (or (memq 'input command) (memq 'inplace command))
@@ -919,7 +918,7 @@ being run, for diagnostic purposes."
                (apply-partially #'kill-buffer scratch)))))
 
 (defcustom apheleia-formatters
-  '((bean-format . ("bean-format" filepath))
+  '((bean-format . ("bean-format"))
     (black . ("black" "-"))
     (brittany . ("brittany"))
     (clang-format . ("clang-format"))
@@ -1051,13 +1050,14 @@ function: %s" command)))
      buffer
      remote
      (lambda (stdout)
-       (if (cdr formatters)
-           ;; Forward current stdout to remaining formatters, passing along
-           ;; the current callback and using the current formatters output
-           ;; as stdin.
-           (apheleia--run-formatters
-            (cdr formatters) buffer remote callback stdout)
-         (funcall callback stdout)))
+       (unless (string-empty-p (with-current-buffer stdout (buffer-string)))
+         (if (cdr formatters)
+             ;; Forward current stdout to remaining formatters, passing along
+             ;; the current callback and using the current formatters output
+             ;; as stdin.
+             (apheleia--run-formatters
+              (cdr formatters) buffer remote callback stdout)
+           (funcall callback stdout))))
      stdin
      (car formatters))))
 
