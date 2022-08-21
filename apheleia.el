@@ -309,7 +309,7 @@ at once.")
 This points into a log buffer.")
 
 (cl-defun apheleia--make-process
-    (&key name stdin stdout stderr command remote noquery callback)
+    (&key name stdin stdout stderr command remote noquery connection-type callback)
   "Helper to run a formatter process asynchronously.
 This starts a formatter process using COMMAND and then connects STDIN,
 STDOUT and STDERR buffers to the processes different streams. Once the
@@ -326,6 +326,7 @@ See `make-process' for a description of the NAME and NOQUERY arguments."
           :command command
           :file-handler remote
           :noquery noquery
+          :connection-type connection-type
           :sentinel
           (lambda (proc _event)
             (unless (process-live-p proc)
@@ -344,7 +345,7 @@ See `make-process' for a description of the NAME and NOQUERY arguments."
     proc))
 
 (cl-defun apheleia--call-process
-    (&key name stdin stdout stderr command remote noquery callback)
+    (&key name stdin stdout stderr command remote noquery connection-type callback)
   "Helper to synchronously run a formatter process.
 This function essentially runs COMMAND synchronously passing STDIN
 as standard input and saving output to the STDOUT and STDERR buffers.
@@ -352,9 +353,9 @@ Once the process is finished CALLBACK will be invoked with the exit
 code (see `process-exit-status') of the process.
 
 This function accepts all the same arguments as `apheleia--make-process'
-for simplicity, however some may not be used. This includes: NAME, and
-NO-QUERY."
-  (ignore name noquery)
+for simplicity, however some may not be used. This includes: NAME,
+NO-QUERY, and CONNECTION-TYPE."
+  (ignore name noquery connection-type)
   (let* ((run-on-remote (and (eq apheleia-remote-algorithm 'remote)
                              remote))
          (stderr-file (apheleia--make-temp-file run-on-remote "apheleia"))
@@ -470,6 +471,7 @@ spawned on remote machines."
                  :stderr stderr
                  :command command
                  :remote remote
+                 :connection-type 'pipe
                  :noquery t
                  :callback
                  (lambda (proc-exit-status)
