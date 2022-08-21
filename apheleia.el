@@ -309,7 +309,8 @@ at once.")
 This points into a log buffer.")
 
 (cl-defun apheleia--make-process
-    (&key name stdin stdout stderr command remote noquery connection-type callback)
+    (&key name stdin stdout stderr command
+          remote noquery connection-type callback)
   "Helper to run a formatter process asynchronously.
 This starts a formatter process using COMMAND and then connects STDIN,
 STDOUT and STDERR buffers to the processes different streams. Once the
@@ -345,7 +346,8 @@ See `make-process' for a description of the NAME and NOQUERY arguments."
     proc))
 
 (cl-defun apheleia--call-process
-    (&key name stdin stdout stderr command remote noquery connection-type callback)
+    (&key name stdin stdout stderr command
+          remote noquery connection-type callback)
   "Helper to synchronously run a formatter process.
 This function essentially runs COMMAND synchronously passing STDIN
 as standard input and saving output to the STDOUT and STDERR buffers.
