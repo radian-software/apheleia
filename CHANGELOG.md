@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog].
   longer prevented from running on a modified buffer ([#109], [#110]).
 * Buffer content is now always passed to formatters using a pipe. This
   fixes issues with formatters that behave differently when receiving
-  input on stdin versus being run on a tty.
+  input on stdin versus being run on a tty ([#119]).
 
 ### Formatters
 * [bean-format](https://github.com/beancount/beancount) for Beancount
@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog].
 [#105]: https://github.com/radian-software/apheleia/pull/105
 [#109]: https://github.com/radian-software/apheleia/issues/109
 [#110]: https://github.com/radian-software/apheleia/pull/110
+[#119]: https://github.com/radian-software/apheleia/pull/119
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
