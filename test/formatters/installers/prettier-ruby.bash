@@ -1,17 +1,14 @@
-# Need ruby for gem, need gcc for native gem deps
-apt-get install -y ruby gcc
-
-# Need to do this manually for some reason because gem does not
-# apparently include a dependency solver that can recognize the older
-# version must be installed to support the Ruby version currently in
-# use.
-gem install syntax_tree -v 2.3.1
+# Need ruby for gem, need gcc and ruby headers for native gem deps
+apt-get install -y ruby ruby-dev gcc
 
 # Despite the name this is actually installing the Prettier plugin for
-# Ruby, not Prettier itself. Also, same issue as above where we have
-# to specify the version manually.
-gem install prettier -v 2.1.0
+# Ruby, not Prettier itself.
+gem install prettier
 
 # Then of course we need to install what sounds like the same thing
 # again, but isn't...
 npm install -g prettier @prettier/plugin-ruby
+
+# These are required dependencies documented at
+# https://www.npmjs.com/package/@prettier/plugin-ruby
+gem install prettier_print syntax_tree syntax_tree-haml syntax_tree-rbs
