@@ -121,7 +121,7 @@ The format is based on [Keep a Changelog].
   been fixed ([#58]).
 
 ### Formatters added
-* [fish_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
+* [fish\_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
   for [Fish](https://fishshell.com/) ([#68]).
 
 ### Formatter bugs fixed
@@ -257,13 +257,13 @@ The format is based on [Keep a Changelog].
 * Package `apheleia`
 * Command `apheleia-format-buffer`
 * User options:
-  - `apheleia-formatters`, with supported formatters:
-    - `black`
-    - `prettier`
-    - `gofmt`
-    - `terraform`
-  - `apheleia-mode-alist`
-  - `apheleia-post-format-hook`
+  * `apheleia-formatters`, with supported formatters:
+    * `black`
+    * `prettier`
+    * `gofmt`
+    * `terraform`
+  * `apheleia-mode-alist`
+  * `apheleia-post-format-hook`
 * Variable `apheleia-formatter`
 * Minor mode `apheleia-mode` (and `apheleia-global-mode`)
 
