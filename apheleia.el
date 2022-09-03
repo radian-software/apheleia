@@ -363,20 +363,21 @@ NO-QUERY, and CONNECTION-TYPE."
          (stderr-file (apheleia--make-temp-file run-on-remote "apheleia"))
          (args
           (append
-           (list (car command)            ; argv[0]
-                 (not stdin)              ; If stdin we don't delete the STDIN
-                                          ; buffer text with
-                                          ; `call-process-region'. Otherwise we
-                                          ; send no INFILE argument to
-                                          ; `call-process'.
-                 `(,stdout ,stderr-file)  ; stdout buffer and stderr file.
-                                          ; `call-process' cannot capture
-                                          ; stderr into a separate buffer, the
-                                          ; best we can do is save and read
-                                          ; from a file.
-                 nil)                     ; Do not re/display stdout as output
-                                          ; is recieved.
-           (cdr command))))               ; argv[1:]
+           (list
+            ;; argv[0]
+            (car command)
+            ;; If stdin we don't delete the STDIN buffer text with
+            ;; `call-process-region'. Otherwise we send no INFILE
+            ;; argument to `call-process'.
+            (not stdin)
+            ;; stdout buffer and stderr file. `call-process' cannot
+            ;; capture stderr into a separate buffer, the best we can
+            ;; do is save and read from a file.
+            `(,stdout ,stderr-file)
+            ;; Do not re/display stdout as output is recieved.
+            nil)
+           ;; argv[1:]
+           (cdr command))))
     (unwind-protect
         (let ((exit-status
                (cl-letf* ((message (symbol-function #'message))
@@ -656,7 +657,9 @@ See `apheleia--run-formatters' for a description of REMOTE."
         (clear-files nil)
         (run-on-remote (and (eq apheleia-remote-algorithm 'remote)
                             remote)))
-    (cl-labels ((apheleia--make-temp-file-for-rcs-patch
+    (cl-labels ((;; Weird indentation because of differences in Emacs
+                 ;; indentation algorithm between 27 and 28
+                 apheleia--make-temp-file-for-rcs-patch
                  (buffer &optional fname)
                  ;; Ensure there's a file with the contents of `buffer' on the
                  ;; target machine. `fname', if given, refers to an existing
@@ -826,12 +829,12 @@ machine from the machine file is available on"))
                               arg
                             (eval arg)))
              if val
-               if (and (consp val)
-                       (cl-every #'stringp val))
-                 append val
-               else if (stringp val)
-                 collect val
-               else do (error "Result of command evaluation must be a string \
+             if (and (consp val)
+                     (cl-every #'stringp val))
+             append val
+             else if (stringp val)
+             collect val
+             else do (error "Result of command evaluation must be a string \
 or list of strings: %S" arg)))
       `(,input-fname ,output-fname ,stdin ,@command))))
 
@@ -928,6 +931,7 @@ being run, for diagnostic purposes."
     (gofmt . ("gofmt"))
     (google-java-format . ("google-java-format" "-"))
     (isort . ("isort" "-"))
+    (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--stdin" "-F"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("mix" "format" "-"))
@@ -1000,6 +1004,26 @@ rather than using this system."
              (const :tag "Name of temporary file used for output" output)))
            (function :tag "Formatter function"))))
 
+(cl-defun apheleia-indent-lisp-buffer
+    (&key buffer scratch callback &allow-other-keys)
+  "Format a Lisp BUFFER.
+Use SCRATCH as a temporary buffer and CALLBACK to apply the
+transformation.
+
+For more implementation detail, see
+`apheleia--run-formatter-function'."
+  (with-current-buffer scratch
+    (setq-local indent-line-function
+                (buffer-local-value 'indent-line-function buffer))
+    (setq-local lisp-indent-function
+                (buffer-local-value 'lisp-indent-function buffer))
+    (funcall (with-current-buffer buffer major-mode))
+    (goto-char (point-min))
+    (let ((inhibit-message t)
+          (message-log-max nil))
+      (indent-region (point-min) (point-max)))
+    (funcall callback)))
+
 (defun apheleia--run-formatters
     (formatters buffer remote callback &optional stdin)
   "Run one or more code formatters on the current buffer.
@@ -1054,8 +1078,10 @@ function: %s" command)))
     (c-mode . clang-format)
     (c++-mode . clang-format)
     (caml-mode . ocamlformat)
+    (common-lisp-mode . lisp-indent)
     (css-mode . prettier)
     (dart-mode . dart-format)
+    (emacs-lisp-mode . lisp-indent)
     (elixir-mode . mix-format)
     (elm-mode . elm-format)
     (fish-mode . fish-indent)
@@ -1070,6 +1096,7 @@ function: %s" command)))
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
+    (lisp-mode . lisp-indent)
     (nix-mode . nixfmt)
     (python-mode . black)
     (ruby-mode . prettier)

@@ -21,9 +21,11 @@ The format is based on [Keep a Changelog].
 * [bean-format](https://github.com/beancount/beancount) for Beancount
   ([#101]).
 * [stylua](https://github.com/JohnnyMorganz/StyLua) for Lua ([#105]).
+* Native Emacs indentation of Emacs Lisp code as a formatter ([#102]).
 
 [#100]: https://github.com/radian-software/apheleia/pull/100
 [#101]: https://github.com/radian-software/apheleia/pull/101
+[#102]: https://github.com/radian-software/apheleia/pull/102
 [#105]: https://github.com/radian-software/apheleia/pull/105
 [#109]: https://github.com/radian-software/apheleia/issues/109
 [#110]: https://github.com/radian-software/apheleia/pull/110
