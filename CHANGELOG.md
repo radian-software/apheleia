@@ -4,9 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
-
 ### Enhancements
-
 * shfmt uses 4 spaces instead of tabs by default.
 * Formatters using `'filepath` (OCamlFormat and Prettier) are no
   longer prevented from running on a modified buffer ([#109], [#110]).
@@ -29,16 +27,13 @@ The format is based on [Keep a Changelog].
 [#101]: https://github.com/radian-software/apheleia/pull/101
 [#102]: https://github.com/radian-software/apheleia/pull/102
 [#105]: https://github.com/radian-software/apheleia/pull/105
-[#105]: https://github.com/radian-software/apheleia/pull/105
 [#109]: https://github.com/radian-software/apheleia/issues/109
 [#110]: https://github.com/radian-software/apheleia/pull/110
 [#116]: https://github.com/radian-software/apheleia/pull/116
 [#119]: https://github.com/radian-software/apheleia/pull/119
 
 ## 3.0 (released 2022-06-01)
-
 ### Breaking changes
-
 * The arguments of formatters defined as Elisp functions has changed.
   A formatter function should now be a `cl-defun` taking key-value
   arguments with support for more keys being provided on a later
@@ -48,12 +43,10 @@ The format is based on [Keep a Changelog].
 * Emacs 25 is no longer supported.
 
 ### Enhancements
-
 * Ocamlformat is now used in `caml-mode` in addition to `tuareg-mode`
   ([#94]).
 
 ### Formatters
-
 * [dart-format](https://dart.dev/tools/dart-format) for Dart ([#89]).
 * [phpcs](https://github.com/squizlabs/PHP_CodeSniffer) for PHP
   ([#87]).
@@ -61,7 +54,6 @@ The format is based on [Keep a Changelog].
 * [nixfmt](https://github.com/serokell/nixfmt) for Nix ([#98]).
 
 ### Features
-
 * Support remote files and buffers that were opened through TRAMP
   ([#33]).
 
@@ -73,9 +65,7 @@ The format is based on [Keep a Changelog].
 [#98]: https://github.com/radian-software/apheleia/pull/98
 
 ## 2.0 (released 2022-04-10)
-
 ### Breaking changes
-
 * The interface to `apheleia-format-buffer` has changed. You now pass
   in the symbol of a formatter from `apheleia-formatters` (or a list
   of them) rather than the actual command. This change improves the
@@ -92,7 +82,6 @@ The format is based on [Keep a Changelog].
   ([#69]).
 
 ### Features
-
 * Apheleia can now format buffers that do not have an underlying file
   ([#52]).
 * You can now use a Lisp function as a formatter, by providing a
@@ -108,7 +97,6 @@ The format is based on [Keep a Changelog].
   place by the formatter ([#23]).
 
 ### Enhancements
-
 * The buffer-local variable `apheleia-formatter` is now marked as safe
   ([#74]). This allows you to configure the formatter that Apheleia
   will use in a file-local variable. Note: only formatters already
@@ -116,7 +104,6 @@ The format is based on [Keep a Changelog].
   arbitrary shell commands to be specified in file-local variables.
 
 ### Bugs fixed
-
 * Allow running the same formatter in multiple buffers in parallel
   ([#64], [#65]). Previously, when saving a number of files at the
   same time, the contents of those buffers could be corrupted by a
@@ -134,12 +121,10 @@ The format is based on [Keep a Changelog].
   been fixed ([#58]).
 
 ### Formatters added
-
 * [fish_indent](https://fishshell.com/docs/current/cmds/fish_indent.html)
   for [Fish](https://fishshell.com/) ([#68]).
 
 ### Formatter bugs fixed
-
 * isort is passed different arguments so as not to trigger a crash
   that appears to be related to the `--stdout` flag.
 * latexindent now has its log file disabled so as to avoid cluttering
@@ -160,9 +145,7 @@ The format is based on [Keep a Changelog].
 [#74]: https://github.com/radian-software/apheleia/pull/74
 
 ## 1.2 (released 2021-12-27)
-
 ### Enhancements
-
 * Support multiple formatters ([#31]). You can now configure a list of
   formatters for a major-mode in `apheleia-mode-alist` and they will
   be run in sequence.
@@ -170,7 +153,6 @@ The format is based on [Keep a Changelog].
   commands more dynamic ([#50], [#55]).
 
 ### Formatters
-
 * [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) for
   C/C++
 * [`google-java-format`](https://github.com/google/google-java-format)
@@ -187,7 +169,6 @@ The format is based on [Keep a Changelog].
   for Ruby ([#49])
 
 ### Bugs fixed
-
 * Fix spelling error in generated process names ([#32]).
 * Apheleia no longer conflicts with undo-fu ([#39]).
 * Apheleia no longer triggers `after-set-visited-file-name-hook`,
@@ -213,13 +194,10 @@ The format is based on [Keep a Changelog].
 [#65]: https://github.com/radian-software/apheleia/pull/65
 
 ## 1.1.2 (released 2021-02-26)
-
 ### Enhancements
-
 * Prettier is now enabled in `json-mode`.
 
 ### Bugs fixed
-
 * Prettier now respects `.prettierignore` ([#21]).
 * Apheleia's global mode should no longer trigger warnings about a locally
   let-bound `after-save-hook` ([#27]).
@@ -228,14 +206,11 @@ The format is based on [Keep a Changelog].
 [#27]: https://github.com/radian-software/apheleia/issues/27
 
 ## 1.1.1 (released 2020-07-16)
-
 ### Formatters
-
 * New: [OCamlFormat](https://github.com/ocaml-ppx/ocamlformat) for
   [Ocaml](https://ocaml.org/) ([#19]).
 
 ### Bugs fixed
-
 * Previously, there were some race conditions related to switching the
   current buffer. In particular, if you switched the current buffer
   right after saving, or save two buffers in quick succession, then it
@@ -253,20 +228,16 @@ The format is based on [Keep a Changelog].
 [#19]: https://github.com/radian-software/apheleia/pull/19
 
 ## 1.1 (released 2020-04-02)
-
 ### Enhancements
-
 * There is now a maximum length for the dynamic programming algorithm,
   controlled by `apheleia-max-alignment-size`. This prevents Emacs
   from hanging due to Apheleia. under any circumstances ([#4]).
 
 ### Formatters
-
 * New: [Brittany](https://hackage.haskell.org/package/brittany) for
   [Haskell](https://www.haskell.org/).
 
 ### Bugs fixed
-
 * Previously, weirdness could happen if manually running Prettier via
   `M-x apheleia-format-buffer` on a buffer which was modified from
   what was written to disk. Now we simply abort running a command that
@@ -282,9 +253,7 @@ The format is based on [Keep a Changelog].
 [#9]: https://github.com/radian-software/apheleia/pull/9
 
 ## 1.0 (released 2019-09-20)
-
 ### Added
-
 * Package `apheleia`
 * Command `apheleia-format-buffer`
 * User options:
