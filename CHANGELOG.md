@@ -8,6 +8,15 @@ The format is based on [Keep a Changelog].
 ### Enhancements
 
 - shfmt uses 4 spaces instead of tabs by default.
+- Formatters using `'filepath` (OCamlFormat and Prettier) are no
+  longer prevented from running on a modified buffer ([#109], [#110]).
+- Buffer content is now always passed to formatters using a pipe. This
+  fixes issues with formatters that behave differently when receiving
+  input on stdin versus being run on a tty ([#119]).
+
+### Bugs fixed
+- When a formatter has a bug and fails to return anything on stdout
+  (e.g. scalafmt), do not erase the buffer ([#116]).
 
 ### Formatters
 
@@ -18,7 +27,12 @@ The format is based on [Keep a Changelog].
 
 [#101]: https://github.com/radian-software/apheleia/pull/101
 [#102]: https://github.com/radian-software/apheleia/pull/102
-[#105]: https://github.com/raxod502/apheleia/pull/105
+[#105]: https://github.com/radian-software/apheleia/pull/105
+[#105]: https://github.com/radian-software/apheleia/pull/105
+[#109]: https://github.com/radian-software/apheleia/issues/109
+[#110]: https://github.com/radian-software/apheleia/pull/110
+[#116]: https://github.com/radian-software/apheleia/pull/116
+[#119]: https://github.com/radian-software/apheleia/pull/119
 
 ## 3.0 (released 2022-06-01)
 
