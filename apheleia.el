@@ -657,7 +657,9 @@ See `apheleia--run-formatters' for a description of REMOTE."
         (clear-files nil)
         (run-on-remote (and (eq apheleia-remote-algorithm 'remote)
                             remote)))
-    (cl-labels ((apheleia--make-temp-file-for-rcs-patch
+    (cl-labels ((;; Weird indentation because of differences in Emacs
+                 ;; indentation algorithm between 27 and 28
+                 apheleia--make-temp-file-for-rcs-patch
                  (buffer &optional fname)
                  ;; Ensure there's a file with the contents of `buffer' on the
                  ;; target machine. `fname', if given, refers to an existing
