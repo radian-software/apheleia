@@ -925,7 +925,14 @@ being run, for diagnostic purposes."
   '((bean-format . ("bean-format"))
     (black . ("black" "-"))
     (brittany . ("brittany"))
-    (clang-format . ("clang-format"))
+    (clang-format . ("clang-format"
+                     "-assume-filename"
+                     (or (buffer-file-name)
+                         (cdr (assoc major-mode
+                                     '((c-mode        . ".c")
+                                       (c++-mode      . ".cpp")
+                                       (cuda-mode     . ".cu")
+                                       (protobuf-mode . ".proto")))))))
     (dart-format . ("dart" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
