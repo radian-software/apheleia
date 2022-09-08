@@ -1285,7 +1285,7 @@ operating, to prevent an infinite loop.")
 (defun apheleia--format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
   (unless apheleia--format-after-save-in-progress
-    (when apheleia-mode
+    (when (and apheleia-mode (not (buffer-narrowed-p)))
       (when-let ((formatters (apheleia--get-formatters)))
         (apheleia-format-buffer
          formatters
