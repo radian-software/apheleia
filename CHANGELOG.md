@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog].
 ### Bugs fixed
 * When a formatter has a bug and fails to return anything on stdout
   (e.g. scalafmt), do not erase the buffer ([#116]).
+* Apheleia does not delete the contents of narrowed buffers when
+  running. Instead, it is disabled in narrowed buffers. Support for
+  narrowed buffers may be added in future but it has never been
+  correctly supported in the past (see [#43]). More at [#124], [#127].
 
 ### Formatters
 * [elm-format](https://github.com/avh4/elm-format) for Elm ([#100]).
@@ -23,6 +27,7 @@ The format is based on [Keep a Changelog].
 * [stylua](https://github.com/JohnnyMorganz/StyLua) for Lua ([#105]).
 * Native Emacs indentation of Emacs Lisp code as a formatter ([#102]).
 
+[#43]: https://github.com/radian-software/apheleia/issues/43
 [#100]: https://github.com/radian-software/apheleia/pull/100
 [#101]: https://github.com/radian-software/apheleia/pull/101
 [#102]: https://github.com/radian-software/apheleia/pull/102
@@ -31,6 +36,8 @@ The format is based on [Keep a Changelog].
 [#110]: https://github.com/radian-software/apheleia/pull/110
 [#116]: https://github.com/radian-software/apheleia/pull/116
 [#119]: https://github.com/radian-software/apheleia/pull/119
+[#124]: https://github.com/radian-software/apheleia/issues/124
+[#127]: https://github.com/radian-software/apheleia/pull/127
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
