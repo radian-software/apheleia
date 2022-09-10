@@ -1253,18 +1253,24 @@ changes), CALLBACK, if provided, is invoked with no arguments."
          cur-buffer
          remote
          (lambda (formatted-buffer)
-           (with-current-buffer cur-buffer
-             ;; Short-circuit.
-             (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
-               (apheleia--create-rcs-patch
-                cur-buffer formatted-buffer remote
-                (lambda (patch-buffer)
-                  (with-current-buffer cur-buffer
-                    (when (equal apheleia--buffer-hash (apheleia--buffer-hash))
-                      (apheleia--apply-rcs-patch
-                       (current-buffer) patch-buffer)
-                      (when callback
-                        (funcall callback))))))))))))))
+           (when (buffer-live-p cur-buffer)
+             (with-current-buffer cur-buffer
+               ;; Short-circuit.
+               (when
+                   (equal
+                    apheleia--buffer-hash (apheleia--buffer-hash))
+                 (apheleia--create-rcs-patch
+                  cur-buffer formatted-buffer remote
+                  (lambda (patch-buffer)
+                    (when (buffer-live-p cur-buffer)
+                      (with-current-buffer cur-buffer
+                        (when
+                            (equal
+                             apheleia--buffer-hash (apheleia--buffer-hash))
+                          (apheleia--apply-rcs-patch
+                           (current-buffer) patch-buffer)
+                          (when callback
+                            (funcall callback))))))))))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."
