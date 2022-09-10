@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog].
 ### Bugs fixed
 * When a formatter has a bug and fails to return anything on stdout
   (e.g. scalafmt), do not erase the buffer ([#116]).
+* Fix `Error: "Selecting deleted buffer"` which occurred in some
+  circumstances due to a race condition ([#123]).
 
 ### Formatters
 * [elm-format](https://github.com/avh4/elm-format) for Elm ([#100]).
@@ -31,6 +33,8 @@ The format is based on [Keep a Changelog].
 [#110]: https://github.com/radian-software/apheleia/pull/110
 [#116]: https://github.com/radian-software/apheleia/pull/116
 [#119]: https://github.com/radian-software/apheleia/pull/119
+[#123]: https://github.com/radian-software/apheleia/issues/123
+[#125]: https://github.com/radian-software/apheleia/pull/125
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
