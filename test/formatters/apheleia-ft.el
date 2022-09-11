@@ -218,65 +218,82 @@ environment variable, defaulting to all formatters."
             (out-file (replace-regexp-in-string
                        "/in\\([^/]+\\)" "/out\\1" in-file 'fixedcase))
             (exec-path
-                (append `(,(expand-file-name
-                            "scripts/formatters"
-                            (file-name-directory
-                             (file-truename
-                              ;; Borrowed with love from Magit
-                              (let ((load-suffixes '(".el")))
-                                (locate-library "apheleia"))))))
-                        exec-path)))
-        (mapc
-         (lambda (arg)
-           (when (memq arg '(file filepath input output inplace))
-             (cl-pushnew arg syms)))
-         command)
-        (when (or (memq 'file syms) (memq 'filepath syms))
-          (setq in-temp-real-file (apheleia-ft--write-temp-file
-                                   in-text extension)))
-        (when (or (memq 'input syms) (memq 'inplace syms))
-          (setq in-temp-file (apheleia-ft--write-temp-file
-                              in-text extension))
-          (when (memq 'inplace syms)
-            (setq out-temp-file in-temp-file)))
-        (when (memq 'output syms)
-          (setq out-temp-file (apheleia-ft--write-temp-file
-                               "" extension)))
-        (setq command
-              (mapcar
-               (lambda (arg)
-                 (pcase arg
-                   ((or `file `filepath)
-                    in-temp-real-file)
-                   ((or `input `inplace)
-                    in-temp-file)
-                   (`output
-                    out-temp-file)
-                   (_ arg)))
-               command))
-        (setq command (delq 'npx command))
+             (append `(,(expand-file-name
+                         "scripts/formatters"
+                         (file-name-directory
+                          (file-truename
+                           ;; Borrowed with love from Magit
+                           (let ((load-suffixes '(".el")))
+                             (locate-library "apheleia"))))))
+                     exec-path)))
         (setq stdout-buffer (get-buffer-create
                              (format "*apheleia-ft-stdout-%S" formatter)))
         (with-current-buffer stdout-buffer
           (erase-buffer))
-        (setq exit-status
-              (apply
-               #'call-process
-               (car command)
-               (unless (or (memq 'file syms)
-                           (memq 'input syms)
-                           (memq 'inplace syms))
-                 in-file)
-               (list stdout-buffer stderr-file)
-               nil
-               (cdr command)))
-        ;; Verify that formatter succeeded.
-        (unless (zerop exit-status)
-          (with-temp-buffer
-            (insert-file-contents stderr-file)
-            (princ (buffer-string)))
-          (error
-           "Formatter %s exited with status %S" formatter exit-status))
+        (if (functionp command)
+            (progn
+              (setq in-temp-file (apheleia-ft--write-temp-file
+                                  in-text extension))
+              (with-current-buffer (find-file-noselect in-temp-file)
+                (funcall command
+                         :buffer (current-buffer)
+                         :scratch (current-buffer)
+                         :formatter formatter
+                         :callback (lambda ()))
+                (copy-to-buffer stdout-buffer (point-min) (point-max))))
+          (progn
+
+            (with-current-buffer stdout-buffer
+              (erase-buffer))
+            (mapc
+             (lambda (arg)
+               (when (memq arg '(file filepath input output inplace))
+                 (cl-pushnew arg syms)))
+             command)
+            (when (or (memq 'file syms) (memq 'filepath syms))
+              (setq in-temp-real-file (apheleia-ft--write-temp-file
+                                       in-text extension)))
+            (when (or (memq 'input syms) (memq 'inplace syms))
+              (setq in-temp-file (apheleia-ft--write-temp-file
+                                  in-text extension))
+              (when (memq 'inplace syms)
+                (setq out-temp-file in-temp-file)))
+            (when (memq 'output syms)
+              (setq out-temp-file (apheleia-ft--write-temp-file
+                                   "" extension)))
+            (setq command
+                  (mapcar
+                   (lambda (arg)
+                     (pcase arg
+                       ((or `file `filepath)
+                        in-temp-real-file)
+                       ((or `input `inplace)
+                        in-temp-file)
+                       (`output
+                        out-temp-file)
+                       (_ arg)))
+                   command))
+            (setq command (delq 'npx command))
+            (setq stdout-buffer (get-buffer-create
+                                 (format "*apheleia-ft-stdout-%S" formatter)))
+            (setq exit-status
+                  (apply
+                   #'call-process
+                   (car command)
+                   (unless (or (memq 'file syms)
+                               (memq 'input syms)
+                               (memq 'inplace syms))
+                     in-file)
+                   (list stdout-buffer stderr-file)
+                   nil
+                   (cdr command)))
+            ;; Verify that formatter succeeded.
+            (unless (zerop exit-status)
+              (with-temp-buffer
+                (insert-file-contents stderr-file)
+                (princ (buffer-string)))
+              (error
+               "Formatter %s exited with status %S" formatter exit-status))))
         ;; Verify that formatter has not touched original file.
         (when in-temp-real-file
           (let ((in-text-now (apheleia-ft--read-file in-temp-real-file)))

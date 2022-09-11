@@ -19,11 +19,19 @@ The format is based on [Keep a Changelog].
 ### Bugs fixed
 * When a formatter has a bug and fails to return anything on stdout
   (e.g. scalafmt), do not erase the buffer ([#116]).
+* Fix `Error: "Selecting deleted buffer"` which occurred in some
+  circumstances due to a race condition ([#123]).
+* Apheleia does not delete the contents of narrowed buffers when
+  running. Instead, it is disabled in narrowed buffers. Support for
+  narrowed buffers may be added in future but it has never been
+  correctly supported in the past (see [#43]). More at [#124], [#127].
 
 ### Formatters
+* [elm-format](https://github.com/avh4/elm-format) for Elm ([#100]).
 * [bean-format](https://github.com/beancount/beancount) for Beancount
   ([#101]).
 * [stylua](https://github.com/JohnnyMorganz/StyLua) for Lua ([#105]).
+* Native Emacs indentation of Emacs Lisp code as a formatter ([#102]).
 
 ### Bugfixes
 * Prettier supports SCSS instead of SASS. The original support for
@@ -31,13 +39,20 @@ The format is based on [Keep a Changelog].
   support for SASS in the first place, so Apheleia would have failed
   anyway on trying to format a SASS file.
 
+[#43]: https://github.com/radian-software/apheleia/issues/43
+[#100]: https://github.com/radian-software/apheleia/pull/100
 [#101]: https://github.com/radian-software/apheleia/pull/101
+[#102]: https://github.com/radian-software/apheleia/pull/102
 [#103]: https://github.com/radian-software/apheleia/issues/103
 [#105]: https://github.com/radian-software/apheleia/pull/105
 [#109]: https://github.com/radian-software/apheleia/issues/109
 [#110]: https://github.com/radian-software/apheleia/pull/110
 [#116]: https://github.com/radian-software/apheleia/pull/116
 [#119]: https://github.com/radian-software/apheleia/pull/119
+[#123]: https://github.com/radian-software/apheleia/issues/123
+[#124]: https://github.com/radian-software/apheleia/issues/124
+[#125]: https://github.com/radian-software/apheleia/pull/125
+[#127]: https://github.com/radian-software/apheleia/pull/127
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
