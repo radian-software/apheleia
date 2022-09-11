@@ -940,6 +940,26 @@ being run, for diagnostic purposes."
                     "--enable-outside-detected-project"))
     (phpcs . ("apheleia-phpcs"))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
+    (prettier-css
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=css"))
+    (prettier-html
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=html"))
+    (prettier-graphql
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"))
+    (prettier-javascript
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"))
+    (prettier-json
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=json"))
+    (prettier-markdown
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"))
+    (prettier-ruby
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"))
+    (prettier-scss
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"))
+    (prettier-typescript
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
+    (prettier-yaml
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"))
     (shfmt . ("shfmt" "-i" "4"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
@@ -1073,25 +1093,27 @@ function: %s" command)))
 (defcustom apheleia-mode-alist
   '(;; php-mode has to come before cc-mode
     (php-mode . phpcs)
+    ;; rest are alphabetical
     (beancount-mode . bean-format)
     (cc-mode . clang-format)
     (c-mode . clang-format)
     (c++-mode . clang-format)
     (caml-mode . ocamlformat)
     (common-lisp-mode . lisp-indent)
-    (css-mode . prettier)
+    (css-mode . prettier-css)
     (dart-mode . dart-format)
     (emacs-lisp-mode . lisp-indent)
     (elixir-mode . mix-format)
     (elm-mode . elm-format)
     (fish-mode . fish-indent)
     (go-mode . gofmt)
+    (graphql-mode . prettier-graphql)
     (haskell-mode . brittany)
-    (html-mode . prettier)
+    (html-mode . prettier-html)
     (java-mode . google-java-format)
-    (js3-mode . prettier)
-    (js-mode . prettier)
-    (json-mode . prettier)
+    (js3-mode . prettier-javascript)
+    (js-mode . prettier-javascript)
+    (json-mode . prettier-json)
     (kotlin-mode . ktlint)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
@@ -1099,18 +1121,18 @@ function: %s" command)))
     (lisp-mode . lisp-indent)
     (nix-mode . nixfmt)
     (python-mode . black)
-    (ruby-mode . prettier)
+    (ruby-mode . prettier-ruby)
     (rustic-mode . rustfmt)
     (rust-mode . rustfmt)
-    (sass-mode . prettier)
+    (scss-mode . prettier-scss)
     (sh-mode . shfmt)
     (terraform-mode . terraform)
     (TeX-latex-mode . latexindent)
     (TeX-mode . latexindent)
     (tuareg-mode . ocamlformat)
-    (typescript-mode . prettier)
+    (typescript-mode . prettier-typescript)
     (web-mode . prettier)
-    (yaml-mode . prettier))
+    (yaml-mode . prettier-yaml))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode

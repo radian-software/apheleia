@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog].
 * Buffer content is now always passed to formatters using a pipe. This
   fixes issues with formatters that behave differently when receiving
   input on stdin versus being run on a tty ([#119]).
+* Prettier now specifies `--parser` argument explicitly, so it will
+  work properly even when the name of the file does not match what
+  Prettier expects (e.g. `.yamllint` will be formatted as YAML by
+  Prettier as long as it is in `yaml-mode`). See [#103].
 
 ### Bugs fixed
 * When a formatter has a bug and fails to return anything on stdout
@@ -29,10 +33,17 @@ The format is based on [Keep a Changelog].
 * [stylua](https://github.com/JohnnyMorganz/StyLua) for Lua ([#105]).
 * Native Emacs indentation of Emacs Lisp code as a formatter ([#102]).
 
+### Bugfixes
+* Prettier supports SCSS instead of SASS. The original support for
+  SASS in Apheleia was a bug because Prettier actually never had
+  support for SASS in the first place, so Apheleia would have failed
+  anyway on trying to format a SASS file.
+
 [#43]: https://github.com/radian-software/apheleia/issues/43
 [#100]: https://github.com/radian-software/apheleia/pull/100
 [#101]: https://github.com/radian-software/apheleia/pull/101
 [#102]: https://github.com/radian-software/apheleia/pull/102
+[#103]: https://github.com/radian-software/apheleia/issues/103
 [#105]: https://github.com/radian-software/apheleia/pull/105
 [#109]: https://github.com/radian-software/apheleia/issues/109
 [#110]: https://github.com/radian-software/apheleia/pull/110
