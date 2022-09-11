@@ -25,6 +25,10 @@ The format is based on [Keep a Changelog].
   running. Instead, it is disabled in narrowed buffers. Support for
   narrowed buffers may be added in future but it has never been
   correctly supported in the past (see [#43]). More at [#124], [#127].
+* Currently, when a formatter invoked via a process isn't installed
+  correctly; it throws an error. It doesn't make sense to attempt to
+  format if we can't find the correct formatter, so instead formatting
+  is only attempted when the formatter is found. [#126]
 
 ### Formatters
 * [elm-format](https://github.com/avh4/elm-format) for Elm ([#100]).
@@ -53,6 +57,7 @@ The format is based on [Keep a Changelog].
 [#124]: https://github.com/radian-software/apheleia/issues/124
 [#125]: https://github.com/radian-software/apheleia/pull/125
 [#127]: https://github.com/radian-software/apheleia/pull/127
+[#128]: https://github.com/radian-software/apheleia/pull/128
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes

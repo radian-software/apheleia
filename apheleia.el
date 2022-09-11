@@ -862,27 +862,28 @@ purposes."
                                 (locate-library "apheleia"))))))
                         exec-path)))
       (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
-        (apheleia--execute-formatter-process
-         :command command
-         :stdin (unless input-fname
-                  stdin)
-         :callback
-         (lambda (stdout)
-           (when output-fname
-             ;; Load output-fname contents into the stdout buffer.
-             (erase-buffer)
-             (insert-file-contents-literally output-fname))
-
-           (funcall callback stdout))
-         :ensure
-         (lambda ()
-           (ignore-errors
-             (when input-fname
-               (delete-file input-fname))
+        (when (executable-find (car command))
+          (apheleia--execute-formatter-process
+           :command command
+           :stdin (unless input-fname
+                    stdin)
+           :callback
+           (lambda (stdout)
              (when output-fname
-               (delete-file output-fname))))
-         :remote remote
-         :formatter formatter)))))
+               ;; Load output-fname contents into the stdout buffer.
+               (erase-buffer)
+               (insert-file-contents-literally output-fname))
+
+             (funcall callback stdout))
+           :ensure
+           (lambda ()
+             (ignore-errors
+               (when input-fname
+                 (delete-file input-fname))
+               (when output-fname
+                 (delete-file output-fname))))
+           :remote remote
+           :formatter formatter))))))
 
 (defun apheleia--run-formatter-function
     (func buffer remote callback stdin formatter)
