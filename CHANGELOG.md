@@ -29,6 +29,9 @@ The format is based on [Keep a Changelog].
   correctly; it throws an error. It doesn't make sense to attempt to
   format if we can't find the correct formatter, so instead formatting
   is only attempted when the formatter is found. [#126]
+* clang-format doesn't handle filenames correctly by default. Support
+  for guessing the flags from first the file name then the major mode
+  in the case of a temporary buffer was added in [#128]
 
 ### Formatters
 * [elm-format](https://github.com/avh4/elm-format) for Elm ([#100]).
@@ -56,6 +59,7 @@ The format is based on [Keep a Changelog].
 [#123]: https://github.com/radian-software/apheleia/issues/123
 [#124]: https://github.com/radian-software/apheleia/issues/124
 [#125]: https://github.com/radian-software/apheleia/pull/125
+[#126]: https://github.com/radian-software/apheleia/pull/126
 [#127]: https://github.com/radian-software/apheleia/pull/127
 [#128]: https://github.com/radian-software/apheleia/pull/128
 

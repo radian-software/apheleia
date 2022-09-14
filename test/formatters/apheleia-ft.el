@@ -271,7 +271,9 @@ environment variable, defaulting to all formatters."
                         in-temp-file)
                        (`output
                         out-temp-file)
-                       (_ arg)))
+                       ((guard (stringp arg))
+                        arg)
+                       (_ (eval arg))))
                    command))
             (setq command (delq 'npx command))
             (setq stdout-buffer (get-buffer-create
