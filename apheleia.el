@@ -1102,6 +1102,8 @@ function: %s" command)))
 (defcustom apheleia-mode-alist
   '(;; php-mode has to come before cc-mode
     (php-mode . phpcs)
+    ;; json-mode has to come before javascript-mode (aka js-mode)
+    (json-mode . prettier-json)
     ;; rest are alphabetical
     (beancount-mode . bean-format)
     (cc-mode . clang-format)
@@ -1121,7 +1123,6 @@ function: %s" command)))
     (java-mode . google-java-format)
     (js3-mode . prettier-javascript)
     (js-mode . prettier-javascript)
-    (json-mode . prettier-json)
     (kotlin-mode . ktlint)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
