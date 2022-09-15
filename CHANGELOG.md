@@ -39,6 +39,8 @@ The format is based on [Keep a Changelog].
   ([#101]).
 * [stylua](https://github.com/JohnnyMorganz/StyLua) for Lua ([#105]).
 * Native Emacs indentation of Emacs Lisp code as a formatter ([#102]).
+  This is not enabled by default but you can enable it by adding
+  `(emacs-lisp-mode . lisp-indent)` to `apheleia-mode-alist`
 
 ### Bugfixes
 * Prettier supports SCSS instead of SASS. The original support for
