@@ -17,6 +17,11 @@ if [[ "$OSTYPE" != darwin* ]] && [[ "$EUID" != 0 ]]; then
     docker=(sudo -E "${docker[@]}")
 fi
 
-exec "${docker[@]}" build .                    \
-     -t "apheleia-formatters:${TAG:-latest}"   \
-     --build-arg "FORMATTERS=${FORMATTERS:-}"
+no_cache=()
+if [[ -n "${NO_CACHE:-}" ]]; then
+    no_cache=("--no-cache")
+fi
+
+exec "${docker[@]}" build . \
+    -t "apheleia-formatters:${TAG:-latest}" \
+    --build-arg "FORMATTERS=${FORMATTERS:-}" "${no_cache[@]}"
