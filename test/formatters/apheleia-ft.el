@@ -64,13 +64,15 @@ This means added, removed, or changed compared to main."
       (let ((exit-status
              (call-process
               "git" nil (list (current-buffer) stderr-file) nil
-              "diff" "--name-only" "main...HEAD")))
+              "diff" "--name-only" "origin/main...HEAD")))
         (unless (zerop exit-status)
           (with-temp-buffer
             (insert-file-contents stderr-file)
             (princ (buffer-string)))
           (error
-           "Failed to 'git diff --name-only main...HEAD', got exit status %S"
+           (concat
+            "Failed to 'git diff --name-only "
+            "origin/main...HEAD', got exit status %S")
            exit-status)))
       (split-string (buffer-string)))))
 
