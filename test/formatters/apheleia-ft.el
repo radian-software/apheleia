@@ -309,6 +309,7 @@ environment variable, defaulting to all formatters."
                         out-temp-file)
                        ((guard (stringp arg))
                         arg)
+                       (`npx arg)
                        (_ (eval arg))))
                    command))
             (setq command (delq 'npx command))
