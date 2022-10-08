@@ -1,0 +1,16 @@
+name: Lint
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        emacs_version: [26, 27, 28, "master"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Run linters
+        env:
+          VERSION: ${{ matrix.emacs_version }}
+        run: >-
+          make docker CMD="make lint"
