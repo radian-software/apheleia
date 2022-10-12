@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog].
   work properly even when the name of the file does not match what
   Prettier expects (e.g. `.yamllint` will be formatted as YAML by
   Prettier as long as it is in `yaml-mode`). See [#103].
+* Add Crystal lang support.
 
 ### Bugs fixed
 * When a formatter has a bug and fails to return anything on stdout
