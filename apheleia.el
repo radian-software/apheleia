@@ -934,7 +934,7 @@ being run, for diagnostic purposes."
                                        (cuda-mode     . ".cu")
                                        (protobuf-mode . ".proto"))))
                          ".c")))
-    (crystal-tool-format . ("crystal" "tool" "format" "--no-color" filepath))
+    (crystal-tool-format . ("crystal" "tool" "format" "-"))
     (dart-format . ("dart" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
