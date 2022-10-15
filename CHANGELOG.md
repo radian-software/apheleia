@@ -32,6 +32,8 @@ The format is based on [Keep a Changelog].
 * clang-format doesn't handle filenames correctly by default. Support
   for guessing the flags from first the file name then the major mode
   in the case of a temporary buffer was added in [#128]
+* Fix handling of formatters using `inplace` in some circumstances
+  ([#132]).
 
 ### Formatters
 * [elm-format](https://github.com/avh4/elm-format) for Elm ([#100]).
@@ -64,6 +66,7 @@ The format is based on [Keep a Changelog].
 [#126]: https://github.com/radian-software/apheleia/pull/126
 [#127]: https://github.com/radian-software/apheleia/pull/127
 [#128]: https://github.com/radian-software/apheleia/pull/128
+[#132]: https://github.com/radian-software/apheleia/pull/132
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes

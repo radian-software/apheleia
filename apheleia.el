@@ -803,11 +803,11 @@ machine from the machine file is available on"))
         (let ((input-fname (apheleia--strip-remote input-fname)))
           (setq command (mapcar (lambda (arg)
                                   (if (memq arg '(input inplace))
-                                      input-fname
+                                      (progn
+                                        (setq output-fname input-fname)
+                                        input-fname)
                                     arg))
-                                command)))
-        (when (memq 'inplace command)
-          (setq output-fname input-fname)))
+                                command))))
       (when (memq 'output command)
         (setq output-fname (apheleia--make-temp-file run-on-remote "apheleia"))
         (let ((output-fname (apheleia--strip-remote output-fname)))
@@ -871,9 +871,9 @@ purposes."
            (lambda (stdout)
              (when output-fname
                ;; Load output-fname contents into the stdout buffer.
-               (erase-buffer)
-               (insert-file-contents-literally output-fname))
-
+               (with-current-buffer stdout
+                 (erase-buffer)
+                 (insert-file-contents-literally output-fname)))
              (funcall callback stdout))
            :ensure
            (lambda ()
