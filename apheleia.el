@@ -1307,8 +1307,30 @@ changes), CALLBACK, if provided, is invoked with no arguments."
   "Normal hook run after Apheleia formats a buffer successfully."
   :type 'hook)
 
+(defcustom apheleia-inhibit-functions nil
+  "Disable `apheleia-mode' when one of those returns non-nil.
+When set to a non-empty list of functions, before attempting to
+format after saving, each of those functions is ran until one
+returns non-nil, if so then abort formatting and disable
+`apheleia-mode' locally."
+  :type '(repeat function))
+
 ;; Handle recursive references.
 (defvar apheleia-mode)
+
+(defun apheleia--not-inhibited ()
+  "Whether auto-formatting isn't inhibited by `apheleia-inhibit-functions'."
+  (if apheleia-inhibit-functions
+      (if-let ((inhibit? (run-hook-with-args-until-success
+                          'apheleia-inhibit-functions)))
+          (progn
+            ;; disable formatting locally
+            (apheleia-mode 0)
+            nil)
+        ;; mark as non-inhibited to prevent more computation
+        (setq-local apheleia-inhibit-functions nil)
+        t)
+    t))
 
 ;; Prevent infinite loop.
 (defvar apheleia--format-after-save-in-progress nil
@@ -1322,7 +1344,8 @@ operating, to prevent an infinite loop.")
 (defun apheleia--format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
   (unless apheleia--format-after-save-in-progress
-    (when (and apheleia-mode (not (buffer-narrowed-p)))
+    (when (and apheleia-mode (not (buffer-narrowed-p))
+               (apheleia--not-inhibited))
       (when-let ((formatters (apheleia--get-formatters)))
         (apheleia-format-buffer
          formatters

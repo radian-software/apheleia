@@ -206,6 +206,14 @@ Apheleia exposes some hooks for advanced customization:
   or it could be a list if multiple formatters were run in a chain),
   and a boolean for whether there was an error.
 
+* `apheleia-inhibit-functions`: List of functions to run before
+  auto-formatting, if one of those returns non-nil, terminate
+  formatting and disable `apheleia-mode` locally in current buffer.
+  While `apheleia-global-mode`, you can add to this a function that
+  returns non-nil when you are not the maintainer of a project to
+  avoid diff noises, or set it to `'(always)` in `.dir-locals-2.el` to
+  disable auto-formatting.
+
 ## Known issues
 
 * `process aphelieia-whatever no longer connected to pipe; closed it`:
