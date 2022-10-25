@@ -312,11 +312,13 @@ This points into a log buffer.")
     (&key name stdin stdout stderr command
           remote noquery connection-type callback)
   "Helper to run a formatter process asynchronously.
-This starts a formatter process using COMMAND and then connects STDIN,
-STDOUT and STDERR buffers to the processes different streams. Once the
-process is finished CALLBACK will be invoked with the exit-code of the
-formatter process. REMOTE if supplied will be passed as the FILE-HANDLER
-argument to `make-process'.
+This starts a formatter process using COMMAND and then connects
+STDIN, STDOUT and STDERR buffers to the processes different
+streams. Once the process is finished CALLBACK will be invoked
+with the exit-code of the formatter process as well as a boolean
+saying whether the process was interrupted before completion.
+REMOTE if supplied will be passed as the FILE-HANDLER argument to
+`make-process'.
 
 See `make-process' for a description of the NAME and NOQUERY arguments."
   (let ((proc
@@ -331,7 +333,10 @@ See `make-process' for a description of the NAME and NOQUERY arguments."
           :sentinel
           (lambda (proc _event)
             (unless (process-live-p proc)
-              (funcall callback (process-exit-status proc)))))))
+              (funcall
+               callback
+               (process-exit-status proc)
+               (process-get proc :interrupted)))))))
     (set-process-sentinel (get-buffer-process stderr) #'ignore)
     (when stdin
       (set-process-coding-system
@@ -424,7 +429,10 @@ NO-QUERY, and CONNECTION-TYPE."
           ;; Save stderr from STDERR-FILE back into the STDERR buffer.
           (with-current-buffer stderr
             (insert-file-contents stderr-file))
-          (funcall callback exit-status)
+          ;; I don't think it's possible to get here if the process
+          ;; was interrupted, since we were running it synchronously,
+          ;; so it should be ok to assume we pass nil to the callback.
+          (funcall callback exit-status nil)
           ;; We return nil because there's no live process that can be
           ;; returned.
           nil)
@@ -449,6 +457,7 @@ formatter buffers file-handler, allowing the process to be
 spawned on remote machines."
   (when (process-live-p apheleia--current-process)
     (message "Interrupting %s" apheleia--current-process)
+    (process-put apheleia--current-process :interrupted t)
     (interrupt-process apheleia--current-process)
     (accept-process-output apheleia--current-process 0.1 nil 'just-this-one)
     (when (process-live-p apheleia--current-process)
@@ -477,10 +486,12 @@ spawned on remote machines."
                  :connection-type 'pipe
                  :noquery t
                  :callback
-                 (lambda (proc-exit-status)
-                   (let ((exit-ok (funcall
-                                   (or exit-status #'zerop)
-                                   proc-exit-status)))
+                 (lambda (proc-exit-status proc-interrupted)
+                   (let ((exit-ok (and
+                                   (not proc-interrupted)
+                                   (funcall
+                                    (or exit-status #'zerop)
+                                    proc-exit-status))))
                      ;; Append standard-error from current formatter
                      ;; to log buffer when
                      ;; `apheleia-log-only-errors' is nil or the
