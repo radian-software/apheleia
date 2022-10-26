@@ -43,6 +43,9 @@ The format is based on [Keep a Changelog].
 * Native Emacs indentation of Emacs Lisp code as a formatter ([#102]).
   This is not enabled by default but you can enable it by adding
   `(emacs-lisp-mode . lisp-indent)` to `apheleia-mode-alist`
+* [`crystal tool
+  format`](https://crystal-lang.org/reference/1.6/man/crystal/index.html#crystal-tool-format)
+  for [Crystal](https://crystal-lang.org/) ([#137]).
 
 ### Bugfixes
 * Prettier supports SCSS instead of SASS. The original support for
@@ -67,6 +70,7 @@ The format is based on [Keep a Changelog].
 [#127]: https://github.com/radian-software/apheleia/pull/127
 [#128]: https://github.com/radian-software/apheleia/pull/128
 [#132]: https://github.com/radian-software/apheleia/pull/132
+[#137]: https://github.com/radian-software/apheleia/pull/137
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
