@@ -983,7 +983,7 @@ being run, for diagnostic purposes."
      . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"))
     (shfmt . ("shfmt" "-i" "4"))
     (stylua . ("stylua" "-"))
-    (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
+    (rustfmt . ("cargo" "fmt" "--" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell
