@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog].
   in the case of a temporary buffer was added in [#128]
 * Fix handling of formatters using `inplace` in some circumstances
   ([#132]).
+* Use `cargo fmt` to format Rust code to support Rust editions ([#140]).
 
 ### Formatters
 * [elm-format](https://github.com/avh4/elm-format) for Elm ([#100]).
