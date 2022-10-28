@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Features
+* You can use `apheleia-inhibit` as a file-local variable to disable
+  Apheleia turning on automatically for a file or directory. You can
+  also use `apheleia-inhibit-functions` to configure custom logic to
+  prevent Apheleia from turning on automatically under certain
+  circumstances, without needing to adjust file-local variables. See
+  [#134] and [#138].
+
 ### Enhancements
 * shfmt uses 4 spaces instead of tabs by default.
 * Formatters using `'filepath` (OCamlFormat and Prettier) are no
@@ -71,6 +79,8 @@ The format is based on [Keep a Changelog].
 [#128]: https://github.com/radian-software/apheleia/pull/128
 [#132]: https://github.com/radian-software/apheleia/pull/132
 [#137]: https://github.com/radian-software/apheleia/pull/137
+[#134]: https://github.com/radian-software/apheleia/issues/134
+[#138]: https://github.com/radian-software/apheleia/pull/138
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
