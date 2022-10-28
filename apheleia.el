@@ -1320,19 +1320,10 @@ changes), CALLBACK, if provided, is invoked with no arguments."
   "Normal hook run after Apheleia formats a buffer successfully."
   :type 'hook)
 
-(defvar-local apheleia-inhibit nil
-  "Do not enable `apheleia-mode' automatically if non-nil.
-This is designed for use in .dir-locals.el.
-
-See also `apheleia-inhibit-functions'.")
-(put 'apheleia-inhibit 'safe-local-variable #'booleanp)
-
 (defcustom apheleia-inhibit-functions nil
-  "Disable `apheleia-mode' when one of those returns non-nil.
-When set to a non-empty list of functions, before attempting to
-format after saving, each of those functions is ran until one
-returns non-nil, if so then abort formatting and disable
-`apheleia-mode' locally.
+  "List of functions to run before turning on Apheleia automatically
+from `apheleia-global-mode`. If one of these returns non-nil then
+`apheleia-mode` is not enabled in the buffer.
 
 See also `apheleia-inhibit'."
   :type '(repeat function))
@@ -1377,6 +1368,14 @@ and `apheleia-formatters'."
     (if apheleia-mode
         (add-hook 'after-save-hook #'apheleia--format-after-save nil 'local)
       (remove-hook 'after-save-hook #'apheleia--format-after-save 'local)))
+
+
+  (defvar-local apheleia-inhibit nil
+    "Do not enable `apheleia-mode' automatically if non-nil.
+This is designed for use in .dir-locals.el.
+
+See also `apheleia-inhibit-functions'.")
+  (put 'apheleia-inhibit 'safe-local-variable #'booleanp)
 
   (defun apheleia-mode-maybe ()
     "Enable `apheleia-mode' if allowed by user configuration.
