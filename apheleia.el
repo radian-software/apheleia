@@ -947,6 +947,16 @@ being run, for diagnostic purposes."
                          ".c")))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
     (dart-format . ("dart" "format"))
+    (deno-fmt . ("deno" "fmt" "-"
+                 "--ext" (or (cdr (assoc major-mode
+                                         '((js-mode . "js")
+                                           (js-json-mode . "json")
+                                           (js-jsx-mode . "jsx")
+                                           (markdown-mode . "md")
+                                           (typescript-mode . "ts"))))
+                             "ts")))
+    (deno-fmt-jsonc . ("deno" "fmt" "-" "--ext" "jsonc"))
+    (deno-fmt-tsx . ("deno" "fmt" "-" "--ext" "tsx"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
     (gofmt . ("gofmt"))
