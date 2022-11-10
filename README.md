@@ -196,6 +196,9 @@ The following user options are also available:
   programming algorithm for point alignment. This cannot be too big or
   Emacs will hang noticeably on large reformatting operations, since
   the DP algorithm is quadratic-time.
+* `apheleia-mode-lighter`: `apheleia-mode` lighter displayed in the
+  mode-line. If you don't want to display it, use nil. Otherwise, its
+  value must be a string.
 
 Apheleia exposes some hooks for advanced customization:
 

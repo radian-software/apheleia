@@ -72,6 +72,9 @@ The format is based on [Keep a Changelog].
 [#132]: https://github.com/radian-software/apheleia/pull/132
 [#137]: https://github.com/radian-software/apheleia/pull/137
 
+### Features
+* `apheleia-mode` lighter is now customizable.
+
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
 * The arguments of formatters defined as Elisp functions has changed.
