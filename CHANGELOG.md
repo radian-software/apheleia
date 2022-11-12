@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog].
   prevent Apheleia from turning on automatically under certain
   circumstances, without needing to adjust file-local variables. See
   [#134] and [#138].
+* `apheleia-mode` lighter is now customizable ([#143]).
 
 ### Enhancements
 * shfmt uses 4 spaces instead of tabs by default.
@@ -81,6 +82,7 @@ The format is based on [Keep a Changelog].
 [#137]: https://github.com/radian-software/apheleia/pull/137
 [#134]: https://github.com/radian-software/apheleia/issues/134
 [#138]: https://github.com/radian-software/apheleia/pull/138
+[#143]: https://github.com/radian-software/apheleia/pull/143
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
