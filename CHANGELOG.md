@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 3.1 (released 2022-11-11)
 ### Enhancements
 * shfmt uses 4 spaces instead of tabs by default.
 * Formatters using `'filepath` (OCamlFormat and Prettier) are no
