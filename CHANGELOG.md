@@ -13,6 +13,26 @@ The format is based on [Keep a Changelog].
   [#134] and [#138].
 * `apheleia-mode` lighter is now customizable ([#143]).
 
+### Bugs fixed
+* If a formatter exited with a zero exit code when being killed by a
+  signal (even though that is really weird behavior and arguably a bug
+  in the formatter), then if a file was saved multiple times in quick
+  succession, its contents could be erased and replaced with an error
+  message from the formatter. This has been fixed. See [#131] for more
+  details.
+
+### Formatters
+* [`crystal tool
+  format`](https://crystal-lang.org/reference/1.6/man/crystal/index.html#crystal-tool-format)
+  for [Crystal](https://crystal-lang.org/) ([#137]).
+
+[#131]: https://github.com/radian-software/apheleia/issues/131
+[#134]: https://github.com/radian-software/apheleia/issues/134
+[#137]: https://github.com/radian-software/apheleia/pull/137
+[#138]: https://github.com/radian-software/apheleia/pull/138
+[#143]: https://github.com/radian-software/apheleia/pull/143
+
+## 3.1 (released 2022-11-11)
 ### Enhancements
 * shfmt uses 4 spaces instead of tabs by default.
 * Formatters using `'filepath` (OCamlFormat and Prettier) are no
@@ -52,9 +72,6 @@ The format is based on [Keep a Changelog].
 * Native Emacs indentation of Emacs Lisp code as a formatter ([#102]).
   This is not enabled by default but you can enable it by adding
   `(emacs-lisp-mode . lisp-indent)` to `apheleia-mode-alist`
-* [`crystal tool
-  format`](https://crystal-lang.org/reference/1.6/man/crystal/index.html#crystal-tool-format)
-  for [Crystal](https://crystal-lang.org/) ([#137]).
 
 ### Bugfixes
 * Prettier supports SCSS instead of SASS. The original support for
@@ -79,10 +96,6 @@ The format is based on [Keep a Changelog].
 [#127]: https://github.com/radian-software/apheleia/pull/127
 [#128]: https://github.com/radian-software/apheleia/pull/128
 [#132]: https://github.com/radian-software/apheleia/pull/132
-[#137]: https://github.com/radian-software/apheleia/pull/137
-[#134]: https://github.com/radian-software/apheleia/issues/134
-[#138]: https://github.com/radian-software/apheleia/pull/138
-[#143]: https://github.com/radian-software/apheleia/pull/143
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes
