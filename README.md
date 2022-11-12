@@ -157,6 +157,9 @@ variables:
       of `file` in general.
 * `apheleia-formatter`: Optional buffer-local variable specifying the
   formatter to use in this buffer. Overrides `apheleia-mode-alist`.
+* `apheleia-inhibit`: Optional buffer-local variable, if set to
+  non-nil then Apheleia does not turn on automatically even if
+  `apheleia-global-mode` is on.
 
 You can run `M-x apheleia-mode` to toggle automatic formatting on save
 in a single buffer, or `M-x apheleia-global-mode` to toggle the
@@ -209,6 +212,11 @@ Apheleia exposes some hooks for advanced customization:
   or it could be a list if multiple formatters were run in a chain),
   and a boolean for whether there was an error.
 
+* `apheleia-inhibit-functions`: List of functions to run before
+  turning on Apheleia automatically from `apheleia-global-mode`. If
+  one of these returns non-nil then `apheleia-mode` is not enabled in
+  the buffer.
+
 ## Known issues
 
 * `process aphelieia-whatever no longer connected to pipe; closed it`:
@@ -224,7 +232,7 @@ Please see [the contributor guide for my
 projects](https://github.com/raxod502/contributor-guide) for general
 information, and the following sections for Apheleia-specific details.
 
-There's also a [wiki](https://github.com/radian-software/apheleia/wiki) that could do with additions/clarity. Any 
+There's also a [wiki](https://github.com/radian-software/apheleia/wiki) that could do with additions/clarity. Any
 improvement suggestions should be submitted as an issue.
 
 ### Adding a formatter

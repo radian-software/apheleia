@@ -1326,6 +1326,16 @@ changes), CALLBACK, if provided, is invoked with no arguments."
   "Normal hook run after Apheleia formats a buffer successfully."
   :type 'hook)
 
+(defcustom apheleia-inhibit-functions nil
+  "List of functions that prevent Apheleia from turning on automatically.
+If one of these returns non-nil then `apheleia-mode' is not
+enabled in a buffer, even if `apheleia-global-mode' is on. You
+can still manually enable `apheleia-mode' in such a buffer.
+
+See also `apheleia-inhibit' for another way to accomplish a
+similar task."
+  :type '(repeat function))
+
 ;; Handle recursive references.
 (defvar apheleia-mode)
 
@@ -1367,8 +1377,26 @@ and `apheleia-formatters'."
         (add-hook 'after-save-hook #'apheleia--format-after-save nil 'local)
       (remove-hook 'after-save-hook #'apheleia--format-after-save 'local)))
 
+
+  (defvar-local apheleia-inhibit nil
+    "Do not enable `apheleia-mode' automatically if non-nil.
+This is designed for use in .dir-locals.el.
+
+See also `apheleia-inhibit-functions'.")
+  (put 'apheleia-inhibit 'safe-local-variable #'booleanp)
+
+  (defun apheleia-mode-maybe ()
+    "Enable `apheleia-mode' if allowed by user configuration.
+This checks `apheleia-inhibit-functions' and `apheleia-inhibit'
+to see if it is allowed."
+    (unless (or
+             apheleia-inhibit
+             (run-hook-with-args-until-success
+              'apheleia-inhibit-functions))
+      (apheleia-mode)))
+
   (define-globalized-minor-mode apheleia-global-mode
-    apheleia-mode apheleia-mode)
+    apheleia-mode apheleia-mode-maybe)
 
   (put 'apheleia-mode 'safe-local-variable #'booleanp))
 
