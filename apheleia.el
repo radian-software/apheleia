@@ -1321,11 +1321,13 @@ changes), CALLBACK, if provided, is invoked with no arguments."
   :type 'hook)
 
 (defcustom apheleia-inhibit-functions nil
-  "List of functions to run before turning on Apheleia automatically
-from `apheleia-global-mode`. If one of these returns non-nil then
-`apheleia-mode` is not enabled in the buffer.
+  "List of functions that prevent Apheleia from turning on automatically.
+If one of these returns non-nil then `apheleia-mode' is not
+enabled in a buffer, even if `apheleia-global-mode' is on. You
+can still manually enable `apheleia-mode' in such a buffer.
 
-See also `apheleia-inhibit'."
+See also `apheleia-inhibit' for another way to accomplish a
+similar task."
   :type '(repeat function))
 
 ;; Handle recursive references.
