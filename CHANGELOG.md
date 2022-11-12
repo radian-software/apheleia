@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Features
+* `apheleia-mode` lighter is now customizable ([#143]).
+
 ### Enhancements
 * shfmt uses 4 spaces instead of tabs by default.
 * Formatters using `'filepath` (OCamlFormat and Prettier) are no
@@ -71,6 +74,7 @@ The format is based on [Keep a Changelog].
 [#128]: https://github.com/radian-software/apheleia/pull/128
 [#132]: https://github.com/radian-software/apheleia/pull/132
 [#137]: https://github.com/radian-software/apheleia/pull/137
+[#143]: https://github.com/radian-software/apheleia/pull/143
 
 ## 3.0 (released 2022-06-01)
 ### Breaking changes

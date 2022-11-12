@@ -86,6 +86,12 @@ compatible with this option and formatters relying on them will crash."
                  (const :tag "Run the formatter on the remote machine" remote)
                  (const :tag "Disable formatting for remote buffers" cancel)))
 
+(defcustom apheleia-mode-lighter " Apheleia"
+  "Lighter for `apheleia-mode'."
+  :type '(choice :tag "Lighter" (const :tag "No lighter" nil) string)
+  :risky t
+  :group 'apheleia)
+
 (cl-defun apheleia--edit-distance-table (s1 s2)
   "Align strings S1 and S2 for minimum edit distance.
 Return the dynamic programming table as has table which maps cons
@@ -1356,7 +1362,7 @@ operating, to prevent an infinite loop.")
     "Minor mode for reformatting code on save without moving point.
 It is customized by means of the variables `apheleia-mode-alist'
 and `apheleia-formatters'."
-    :lighter " Apheleia"
+    :lighter apheleia-mode-lighter
     (if apheleia-mode
         (add-hook 'after-save-hook #'apheleia--format-after-save nil 'local)
       (remove-hook 'after-save-hook #'apheleia--format-after-save 'local)))
