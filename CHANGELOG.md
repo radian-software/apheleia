@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog].
   circumstances, without needing to adjust file-local variables. See
   [#134] and [#138].
 * `apheleia-mode` lighter is now customizable ([#143]).
+
+### Enhancements
 * Emacs 29's tree-sitter-based major modes have been added to
   `apheleia-mode-alist` ([#145]).
 
