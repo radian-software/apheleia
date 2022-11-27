@@ -13,6 +13,10 @@ The format is based on [Keep a Changelog].
   [#134] and [#138].
 * `apheleia-mode` lighter is now customizable ([#143]).
 
+### Enhancements
+* Emacs 29's tree-sitter-based major modes have been added to
+  `apheleia-mode-alist` ([#145]).
+
 ### Bugs fixed
 * If a formatter exited with a zero exit code when being killed by a
   signal (even though that is really weird behavior and arguably a bug
@@ -31,6 +35,7 @@ The format is based on [Keep a Changelog].
 [#137]: https://github.com/radian-software/apheleia/pull/137
 [#138]: https://github.com/radian-software/apheleia/pull/138
 [#143]: https://github.com/radian-software/apheleia/pull/143
+[#145]: https://github.com/radian-software/apheleia/pull/145
 
 ## 3.1 (released 2022-11-11)
 ### Enhancements
