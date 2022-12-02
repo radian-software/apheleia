@@ -956,6 +956,8 @@ being run, for diagnostic purposes."
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
     (gofmt . ("gofmt"))
+    (gofumpt . ("gofumpt"))
+    (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
     (isort . ("isort" "-"))
     (lisp-indent . apheleia-indent-lisp-buffer)
