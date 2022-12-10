@@ -29,6 +29,9 @@ The format is based on [Keep a Changelog].
 * [`crystal tool
   format`](https://crystal-lang.org/reference/1.6/man/crystal/index.html#crystal-tool-format)
   for [Crystal](https://crystal-lang.org/) ([#137]).
+* [gofumpt](https://pkg.go.dev/mvdan.cc/gofumpt) and
+  [goimports](https://pkg.go.dev/golang.org/x/tools/cmd/goimports) for
+  [Go](https://golang.google.cn/) ([#147]).
 
 [#131]: https://github.com/radian-software/apheleia/issues/131
 [#134]: https://github.com/radian-software/apheleia/issues/134
@@ -36,6 +39,7 @@ The format is based on [Keep a Changelog].
 [#138]: https://github.com/radian-software/apheleia/pull/138
 [#143]: https://github.com/radian-software/apheleia/pull/143
 [#145]: https://github.com/radian-software/apheleia/pull/145
+[#147]: https://github.com/radian-software/apheleia/pull/147
 
 ## 3.1 (released 2022-11-11)
 ### Enhancements
