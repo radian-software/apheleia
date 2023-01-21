@@ -13,6 +13,12 @@ The format is based on [Keep a Changelog].
   [#134] and [#138].
 * `apheleia-mode` lighter is now customizable ([#143]).
 
+### Changes
+* shfmt is no longer enabled by default in order to prevent corruption
+  of zsh scripts. Re-enabling shfmt in a future release is intended,
+  but depends on further implementation work in Apheleia to only
+  enable it for supported shells.
+
 ### Enhancements
 * Emacs 29's tree-sitter-based major modes have been added to
   `apheleia-mode-alist` ([#145], [#148]).
