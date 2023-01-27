@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog].
 
 ### Enhancements
 * Emacs 29's tree-sitter-based major modes have been added to
-  `apheleia-mode-alist` ([#145], [#148]).
+  `apheleia-mode-alist` ([#145], [#148], [#151]).
 
 ### Bugs fixed
 * If a formatter exited with a zero exit code when being killed by a
