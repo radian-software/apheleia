@@ -30,6 +30,8 @@ The format is based on [Keep a Changelog].
   succession, its contents could be erased and replaced with an error
   message from the formatter. This has been fixed. See [#131] for more
   details.
+* Npx commands in apheleia-formatters are not overwritten when
+  expanding binary path to node_modules directory ([#152]).
 
 ### Formatters
 * [`crystal tool
@@ -47,6 +49,7 @@ The format is based on [Keep a Changelog].
 [#145]: https://github.com/radian-software/apheleia/pull/145
 [#147]: https://github.com/radian-software/apheleia/pull/147
 [#148]: https://github.com/radian-software/apheleia/pull/148
+[#152]: https://github.com/radian-software/apheleia/pull/152
 
 ## 3.1 (released 2022-11-11)
 ### Enhancements
