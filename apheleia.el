@@ -760,7 +760,8 @@ cmd is to be run."
            ;; remote.
            (remote-match (equal run-on-remote remote))
            (stdin (or stdin-buffer (current-buffer)))
-           (npx nil))
+           (npx nil)
+           (command (apply #'list command)))
       ;; TODO: Support arbitrary package managers, not just NPM.
       (when (memq 'npx command)
         (setq npx t)
