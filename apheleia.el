@@ -943,6 +943,7 @@ being run, for diagnostic purposes."
   '((bean-format . ("bean-format"))
     (black . ("black" "-"))
     (brittany . ("brittany"))
+    (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
                      (or (buffer-file-name)
@@ -1130,6 +1131,7 @@ function: %s" command)))
     (bash-ts-mode . shfmt)
     (beancount-mode . bean-format)
     (c++-ts-mode . clang-format)
+    (caddyfile-mode . caddyfmt)
     (cc-mode . clang-format)
     (c-mode . clang-format)
     (c-ts-mode . clang-format)
