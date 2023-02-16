@@ -32,6 +32,8 @@ The format is based on [Keep a Changelog].
   details.
 * Npx commands in apheleia-formatters are not overwritten when
   expanding binary path to node_modules directory ([#152]).
+* Error is no longer reported when the first element of a command is
+  an evaluable form rather than a literal string ([#156]).
 
 ### Formatters
 * [`crystal tool

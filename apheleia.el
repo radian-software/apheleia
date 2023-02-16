@@ -766,8 +766,6 @@ cmd is to be run."
       (when (memq 'npx command)
         (setq npx t)
         (setq command (remq 'npx command)))
-      (unless (stringp (car command))
-        (error "Command cannot start with %S" (car command)))
       (when (and npx remote-match)
         (when-let ((project-dir
                     (locate-dominating-file
