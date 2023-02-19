@@ -42,9 +42,13 @@ The format is based on [Keep a Changelog].
 * [gofumpt](https://pkg.go.dev/mvdan.cc/gofumpt) and
   [goimports](https://pkg.go.dev/golang.org/x/tools/cmd/goimports) for
   [Go](https://golang.google.cn/) ([#147]).
+* [`caddy fmt`](https://caddyserver.com/docs/command-line#caddy-fmt)
+  for [Caddyfile](https://caddyserver.com/docs/caddyfile), used by
+  [Caddy 2](https://caddyserver.com/) ([#136])
 
 [#131]: https://github.com/radian-software/apheleia/issues/131
 [#134]: https://github.com/radian-software/apheleia/issues/134
+[#136]: https://github.com/radian-software/apheleia/issues/136
 [#137]: https://github.com/radian-software/apheleia/pull/137
 [#138]: https://github.com/radian-software/apheleia/pull/138
 [#143]: https://github.com/radian-software/apheleia/pull/143
