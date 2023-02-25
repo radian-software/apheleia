@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 3.2 (released 2023-02-25)
 ### Features
 * You can use `apheleia-inhibit` as a file-local variable to disable
   Apheleia turning on automatically for a file or directory. You can
