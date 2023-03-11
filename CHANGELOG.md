@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Bugs fixed
+* `ktlint` would emit log messages into its stdout when formatting,
+  and these would get spliced into the source file. This has been fixed
+  by suppressing all logs from `ktlint`.
+
 ## 3.2 (released 2023-02-25)
 ### Features
 * You can use `apheleia-inhibit` as a file-local variable to disable
