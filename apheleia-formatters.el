@@ -1,4 +1,4 @@
-;;; apheleia-formatters.el --- Apheleia formatter definitions -*- lexical-binding: t -*-
+;;; apheleia-formatters.el --- Apheleia formatters -*- lexical-binding: t -*-
 
 ;;; Commentary:
 
@@ -125,7 +125,8 @@ rather than using this system."
              (const :tag "Name of real file used for input" file)
              (const :tag "Name of temporary file used for input" input)
              (const :tag "Name of temporary file used for output" output)))
-           (function :tag "Formatter function"))))
+           (function :tag "Formatter function")))
+  :group 'apheleia)
 
 (defcustom apheleia-mode-alist
   '(;; php-mode has to come before cc-mode
@@ -213,7 +214,8 @@ to derive from, as the list is interpreted sequentially."
           :value-type
           (choice (symbol :tag "Formatter")
                   (repeat
-                   (symbol :tag "Formatter")))))
+                   (symbol :tag "Formatter"))))
+  :group 'apheleia)
 
 (provide 'apheleia-formatters)
 

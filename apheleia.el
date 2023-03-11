@@ -23,6 +23,8 @@
 
 ;;; Code:
 
+(require 'apheleia-core)
+
 (defgroup apheleia nil
   "Reformat buffer without moving point."
   :group 'external

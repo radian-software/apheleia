@@ -25,13 +25,15 @@
 Hidden buffers have names that begin with a space, and do not
 appear in `switch-to-buffer' unless you type in a space
 manually."
-  :type 'boolean)
+  :type 'boolean
+  :group 'apheleia)
 
 (defcustom apheleia-log-only-errors t
   "Non-nil means Apheleia will only log when an error occurs.
 Otherwise, Apheleia will log every time a formatter is run, even
 if it is successful."
-  :type 'boolean)
+  :type 'boolean
+  :group 'apheleia)
 
 (defcustom apheleia-formatter-exited-hook nil
   "Abnormal hook run after a formatter has finished running.
@@ -48,7 +50,8 @@ none (e.g., because logging is not enabled).
 This hook is run before `apheleia-after-format-hook', and may be
 run multiple times if `apheleia-mode-alist' configures multiple
 formatters to run in a chain, with one run per formatter."
-  :type 'hook)
+  :type 'hook
+  :group 'apheleia)
 
 (defcustom apheleia-remote-algorithm 'cancel
   "How `apheleia' should process remote files/buffers.
@@ -68,7 +71,8 @@ features of `apheleia' (such as `file' in `apheleia-formatters') is not
 compatible with this option and formatters relying on them will crash."
   :type '(choice (const :tag "Run the formatter on the local machine" local)
                  (const :tag "Run the formatter on the remote machine" remote)
-                 (const :tag "Disable formatting for remote buffers" cancel)))
+                 (const :tag "Disable formatting for remote buffers" cancel))
+  :group 'apheleia)
 
 (defcustom apheleia-mode-lighter " Apheleia"
   "Lighter for `apheleia-mode'."
@@ -172,7 +176,8 @@ diff region that is too large. The value of this variable serves
 as a limit on the input size to the algorithm; larger diff
 regions will still be applied, but Apheleia won't try to move
 point correctly."
-  :type 'integer)
+  :type 'integer
+  :group 'apheleia)
 
 (defun apheleia--apply-rcs-patch (content-buffer patch-buffer)
   "Apply RCS patch.
@@ -987,94 +992,6 @@ function: %s" command)))
      stdin
      (car formatters))))
 
-(defcustom apheleia-mode-alist
-  '(;; php-mode has to come before cc-mode
-    (php-mode . phpcs)
-    ;; json-mode has to come before javascript-mode (aka js-mode)
-    (json-mode . prettier-json)
-    (json-ts-mode . prettier-json)
-    ;; rest are alphabetical
-    (bash-ts-mode . shfmt)
-    (beancount-mode . bean-format)
-    (c++-ts-mode . clang-format)
-    (caddyfile-mode . caddyfmt)
-    (cc-mode . clang-format)
-    (c-mode . clang-format)
-    (c-ts-mode . clang-format)
-    (c++-mode . clang-format)
-    (caml-mode . ocamlformat)
-    (common-lisp-mode . lisp-indent)
-    (crystal-mode . crystal-tool-format)
-    (css-mode . prettier-css)
-    (css-ts-mode . prettier-css)
-    (dart-mode . dart-format)
-    (elixir-mode . mix-format)
-    (elixir-ts-mode . mix-format)
-    (elm-mode . elm-format)
-    (fish-mode . fish-indent)
-    (go-mode . gofmt)
-    (go-mod-ts-mode . gofmt)
-    (go-ts-mode . gofmt)
-    (graphql-mode . prettier-graphql)
-    (haskell-mode . brittany)
-    (html-mode . prettier-html)
-    (java-mode . google-java-format)
-    (java-ts-mode . google-java-format)
-    (js3-mode . prettier-javascript)
-    (js-mode . prettier-javascript)
-    (js-ts-mode . prettier-javascript)
-    (kotlin-mode . ktlint)
-    (latex-mode . latexindent)
-    (LaTeX-mode . latexindent)
-    (lua-mode . stylua)
-    (lisp-mode . lisp-indent)
-    (nix-mode . nixfmt)
-    (python-mode . black)
-    (python-ts-mode . black)
-    (ruby-mode . prettier-ruby)
-    (ruby-ts-mode . prettier-ruby)
-    (rustic-mode . rustfmt)
-    (rust-mode . rustfmt)
-    (rust-ts-mode . rustfmt)
-    (scss-mode . prettier-scss)
-    (terraform-mode . terraform)
-    (TeX-latex-mode . latexindent)
-    (TeX-mode . latexindent)
-    (tsx-ts-mode . prettier-typescript)
-    (tuareg-mode . ocamlformat)
-    (typescript-mode . prettier-typescript)
-    (typescript-ts-mode . prettier-typescript)
-    (web-mode . prettier)
-    (yaml-mode . prettier-yaml)
-    (yaml-ts-mode . prettier-yaml))
-  "Alist mapping major mode names to formatters to use in those modes.
-This determines what formatter to use in buffers without a
-setting for `apheleia-formatter'. The keys are major mode
-symbols (matched against `major-mode' with `derived-mode-p') or
-strings (matched against value of variable `buffer-file-name'
-with `string-match-p'), and the values are symbols with entries
-in `apheleia-formatters' (or equivalently, they are allowed
-values for `apheleia-formatter'). Values can be a list of such
-symnols causing each formatter in the list to be called one after
-the other (with the output of the previous formatter).
-Earlier entries in this variable take precedence over later ones.
-
-Be careful when writing regexps to include \"\\'\" and to escape
-\"\\.\" in order to properly match a file extension. For example,
-to match \".jsx\" files you might use \"\\.jsx\\'\".
-
-If a given mode derives from another mode (e.g. `php-mode' and
-`cc-mode'), then ensure that the deriving mode comes before the mode
-to derive from, as the list is interpreted sequentially."
-  :type '(alist
-          :key-type
-          (choice (symbol :tag "Major mode")
-                  (string :tag "Buffer name regexp"))
-          :value-type
-          (choice (symbol :tag "Formatter")
-                  (repeat
-                   (symbol :tag "Formatter")))))
-
 (defvar-local apheleia-formatter nil
   "Name of formatter to use in current buffer, a symbol or nil.
 If non-nil, then `apheleia-formatters' should have a matching
@@ -1210,7 +1127,8 @@ changes), CALLBACK, if provided, is invoked with no arguments."
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."
-  :type 'hook)
+  :type 'hook
+  :group 'apheleia)
 
 (defcustom apheleia-inhibit-functions nil
   "List of functions that prevent Apheleia from turning on automatically.
@@ -1220,7 +1138,8 @@ can still manually enable `apheleia-mode' in such a buffer.
 
 See also `apheleia-inhibit' for another way to accomplish a
 similar task."
-  :type '(repeat function))
+  :type '(repeat function)
+  :group 'apheleia)
 
 ;; Handle recursive references.
 (defvar apheleia-mode)
@@ -1282,7 +1201,8 @@ to see if it is allowed."
       (apheleia-mode)))
 
   (define-globalized-minor-mode apheleia-global-mode
-    apheleia-mode apheleia-mode-maybe)
+    apheleia-mode apheleia-mode-maybe
+    :group 'apheleia)
 
   (put 'apheleia-mode 'safe-local-variable #'booleanp))
 
