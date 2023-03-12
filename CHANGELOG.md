@@ -9,6 +9,12 @@ The format is based on [Keep a Changelog].
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
 
+### Formatters
+* [`cmake-format`](https://github.com/cheshirekow/cmake_format)
+  for [CMake](https://cmake.org/) ([#172]).
+
+[#172]: https://github.com/radian-software/apheleia/pull/172
+
 ## 3.2 (released 2023-02-25)
 ### Features
 * You can use `apheleia-inhibit` as a file-local variable to disable
