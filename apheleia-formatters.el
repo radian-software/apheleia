@@ -123,7 +123,7 @@ Otherwise return the extension only."
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
     (dart-format . ("dart" "format"))
-    (dotnet . ("dotnet" "format"))
+    ;; (dotnet . ("dotnet" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
     (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
@@ -132,34 +132,37 @@ Otherwise return the extension only."
     (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
     (html-tidy "tidy"
-               "--quiet" "yes" "-indent" "auto" "--vertical-space" "yes"
+               "--quiet" "yes"
                "--tidy-mark" "no"
+               "--vertical-space" "yes"
+               "-indent"
                (when (derived-mode-p 'nxml-mode)
                  "-xml")
                (apheleia-formatters-indent
-                (list "--indent-with-tabs" "yes")
+                "--indent-with-tabs"
                 "--indent-spaces"
                 (cond
                  ((derived-mode-p 'nxml-mode)
                   'nxml-child-indent)
                  ((derived-mode-p 'web-mode)
                   'web-mode-indent-style)))
-               (apheleia-formatters-fill-column "-wrap"))
+               (apheleia-formatters-fill-column "-wrap")
+               )
     (isort . ("isort" "-"))
     (jq "jq" "."
         (apheleia-formatters-js-indent "--tab" "--indent"))
     (lisp-indent . apheleia-indent-lisp-buffer)
-    (ktlint . ("ktlint" "--stdin" "-F"))
+    (ktlint . ("ktlint" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("mix" "format" "-"))
     (nixfmt . ("nixfmt"))
-    (ocamlformat . ("ocamlformat" "-" "--name" filepath
-                    "--enable-outside-detected-project"))
+    ;; (ocamlformat . ("ocamlformat" "-" "--name" filepath
+    ;;                 "--enable-outside-detected-project"))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
     (phpcs . ("apheleia-phpcs"))
-    (prettier . (npx "prettier" "--stdin-filepath" filepath
-                     (apheleia-formatters-js-indent
-                      "--use-tabs" "--tab-width")))
+    ;; (prettier . (npx "prettier" "--stdin-filepath" filepath
+    ;;                  (apheleia-formatters-js-indent
+    ;;                   "--use-tabs" "--tab-width")))
     (prettier-css
      . (npx "prettier" "--stdin-filepath" filepath "--parser=css"))
     (prettier-html
@@ -180,22 +183,22 @@ Otherwise return the extension only."
      . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
     (prettier-yaml
      . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"))
-    (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
-                "--stderr" "--format" "quiet" "--fail-level" "fatal"))
-    (rufo . ("rufo" "--filename" filepath))
+    ;; (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
+    ;;             "--stderr" "--format" "quiet" "--fail-level" "fatal"))
+    ;; (rufo . ("rufo" "--filename" filepath))
     (rustfmt . ("rustfmt" "--unstable-features" "--skip-children"
                 "--quiet" "--emit" "stdout"))
     (shfmt . ("shfmt"
               "-filename" filepath
-              "-ln" (cl-case sh-shell
-                      ((zsh bash) "bash")
-                      (t "posix"))
+              "-ln" (cl-case (bound-and-true-p sh-shell)
+                      (sh "posix")
+                      (t "bash"))
               "-i" (number-to-string
                     (cond
                      (indent-tabs-mode 0)
                      ((boundp 'sh-basic-offset)
                       sh-basic-offset)
-                     4))
+                     (t 4)))
               "-"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))

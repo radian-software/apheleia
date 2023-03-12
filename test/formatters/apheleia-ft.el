@@ -243,42 +243,49 @@ environment variable, defaulting to all formatters."
                 (copy-to-buffer stdout-buffer (point-min) (point-max))))
           (progn
 
+            (let ((result (apheleia--format-command command nil nil)))
+              (setq command (nthcdr 3 result)
+                    in-temp-real-file (nth 0 result)
+                    out-temp-file (nth 1 result)))
+            (message "%S" command)
+
             (with-current-buffer stdout-buffer
               (erase-buffer))
-            (mapc
-             (lambda (arg)
-               (when (memq arg '(file filepath input output inplace))
-                 (cl-pushnew arg syms)))
-             command)
-            (when (or (memq 'file syms) (memq 'filepath syms))
-              (setq in-temp-real-file (apheleia-ft--write-temp-file
-                                       in-text extension)))
-            (when (or (memq 'input syms) (memq 'inplace syms))
-              (setq in-temp-file (apheleia-ft--write-temp-file
-                                  in-text extension))
-              (when (memq 'inplace syms)
-                (setq out-temp-file in-temp-file)))
-            (when (memq 'output syms)
-              (setq out-temp-file (apheleia-ft--write-temp-file
-                                   "" extension)))
-            (setq command
-                  (mapcar
-                   (lambda (arg)
-                     (pcase arg
-                       ((or `file `filepath)
-                        in-temp-real-file)
-                       ((or `input `inplace)
-                        in-temp-file)
-                       (`output
-                        out-temp-file)
-                       ((guard (stringp arg))
-                        arg)
-                       (_ (eval arg))))
-                   command))
-            (setq command (delq nil command))
-            (setq command (delq 'npx command))
-            (setq stdout-buffer (get-buffer-create
-                                 (format "*apheleia-ft-stdout-%S" formatter)))
+            ;; (mapc
+            ;;  (lambda (arg)
+            ;;    (when (memq arg '(file filepath input output inplace))
+            ;;      (cl-pushnew arg syms)))
+            ;;  command)
+            ;; (when (or (memq 'file syms) (memq 'filepath syms))
+            ;;   (setq in-temp-real-file (apheleia-ft--write-temp-file
+            ;;                            in-text extension)))
+            ;; (when (or (memq 'input syms) (memq 'inplace syms))
+            ;;   (setq in-temp-file (apheleia-ft--write-temp-file
+            ;;                       in-text extension))
+            ;;   (when (memq 'inplace syms)
+            ;;     (setq out-temp-file in-temp-file)))
+            ;; (when (memq 'output syms)
+            ;;   (setq out-temp-file (apheleia-ft--write-temp-file
+            ;;                        "" extension)))
+            ;; (setq command (delq 'npx command))
+            ;; (setq command
+            ;;       (mapcar
+            ;;        (lambda (arg)
+            ;;          (pcase arg
+            ;;            ((or `file `filepath)
+            ;;             in-temp-real-file)
+            ;;            ((or `input `inplace)
+            ;;             in-temp-file)
+            ;;            (`output
+            ;;             out-temp-file)
+            ;;            ((guard (stringp arg))
+            ;;             arg)
+            ;;            (_ (eval arg))))
+            ;;        command))
+            ;; (setq command (delq nil command))
+            ;; (setq stdout-buffer (get-buffer-create
+            ;;                      (format "*apheleia-ft-stdout-%S" formatter)))
+
             (setq exit-status
                   (apply
                    #'call-process
