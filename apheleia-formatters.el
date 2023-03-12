@@ -129,6 +129,7 @@ Otherwise return the extension only."
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
+    (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
     (phpcs . ("apheleia-phpcs"))
     (prettier . (npx "prettier" "--stdin-filepath" filepath))
     (prettier-css
@@ -263,6 +264,7 @@ rather than using this system."
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
     (nix-mode . nixfmt)
+    (perl-mode . perltidy)
     (python-mode . black)
     (python-ts-mode . black)
     (ruby-mode . prettier-ruby)
