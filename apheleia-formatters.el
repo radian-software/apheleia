@@ -100,16 +100,17 @@ Otherwise return the extension only."
 
 (defcustom apheleia-formatters
   '((bean-format . ("bean-format"))
-    (black . ("black"
-              (when (apheleia-formatters-extension-p "pyi") "--pyi")
-              (apheleia-formatters-fill-column "--line-length")
-              "-"))
+    (black . ("black" "-"))
     (brittany . ("brittany"))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
                      (or (buffer-file-name)
-                         (apheleia-formatters-mode-extension)
+                         (cdr (assoc major-mode
+                                     '((c-mode        . ".c")
+                                       (c++-mode      . ".cpp")
+                                       (cuda-mode     . ".cu")
+                                       (protobuf-mode . ".proto"))))
                          ".c")))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
     (dart-format . ("dart" "format"))
@@ -121,58 +122,35 @@ Otherwise return the extension only."
     (google-java-format . ("google-java-format" "-"))
     (isort . ("isort" "-"))
     (lisp-indent . apheleia-indent-lisp-buffer)
-    (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
+    (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("mix" "format" "-"))
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
     (phpcs . ("apheleia-phpcs"))
-    (prettier
-     . (npx "prettier" "--stdin-filepath" filepath
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+    (prettier . (npx "prettier" "--stdin-filepath" filepath))
     (prettier-css
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=css"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=css"))
     (prettier-html
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=html"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=html"))
     (prettier-graphql
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"))
     (prettier-javascript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"))
     (prettier-json
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=json"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=json"))
     (prettier-markdown
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"))
     (prettier-ruby
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"))
     (prettier-scss
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"))
     (prettier-typescript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
     (prettier-yaml
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
-    (shfmt . ("shfmt"
-              "-filename" filepath
-              "-ln" (cl-case (bound-and-true-p sh-shell)
-                      (sh "posix")
-                      (t "bash"))
-              "-i" (number-to-string
-                    (cond
-                     (indent-tabs-mode 0)
-                     ((boundp 'sh-basic-offset)
-                      sh-basic-offset)
-                     (t 4)))
-              "-"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"))
+    (shfmt . ("shfmt" "-i" "4"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
