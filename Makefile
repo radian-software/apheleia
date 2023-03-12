@@ -52,8 +52,8 @@ checkindent: ## Ensure that indentation is correct
 	    emacs -Q --batch \
 		-l scripts/apheleia-indent.el \
 	        --eval "(setq inhibit-message t)" \
-            --eval "(setq load-path \
-                          (append (list default-directory) load-path))" \
+	        --eval "(setq load-path \
+	                      (append (list default-directory) load-path))" \
 	        --eval "(load (expand-file-name \"apheleia.el\") nil t)" \
 	        --eval "(find-file \"$$file\")" \
 	        --eval "(indent-region (point-min) (point-max))" \
