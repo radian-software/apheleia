@@ -117,6 +117,7 @@ Otherwise return the extension only."
     (dart-format . ("dart" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
+    (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
     (gofmt . ("gofmt"))
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
@@ -228,6 +229,7 @@ rather than using this system."
     (json-mode . prettier-json)
     (json-ts-mode . prettier-json)
     ;; rest are alphabetical
+    (awk-mode . gawk)
     (bash-ts-mode . shfmt)
     (beancount-mode . bean-format)
     (c++-ts-mode . clang-format)
