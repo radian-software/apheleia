@@ -123,7 +123,6 @@ Otherwise return the extension only."
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
     (dart-format . ("dart" "format"))
-    ;; (dotnet . ("dotnet" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
     (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
@@ -156,36 +155,46 @@ Otherwise return the extension only."
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("mix" "format" "-"))
     (nixfmt . ("nixfmt"))
-    ;; (ocamlformat . ("ocamlformat" "-" "--name" filepath
-    ;;                 "--enable-outside-detected-project"))
+    (ocamlformat . ("ocamlformat" "-" "--name" filepath
+                    "--enable-outside-detected-project"))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
     (phpcs . ("apheleia-phpcs"))
-    ;; (prettier . (npx "prettier" "--stdin-filepath" filepath
-    ;;                  (apheleia-formatters-js-indent
-    ;;                   "--use-tabs" "--tab-width")))
+    (prettier
+     . (npx "prettier" "--stdin-filepath" filepath
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-css
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=css"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=css"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-html
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=html"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=html"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-graphql
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-javascript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-json
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=json"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=json"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-ruby
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-scss
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-typescript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-yaml
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"))
-    ;; (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
-    ;;             "--stderr" "--format" "quiet" "--fail-level" "fatal"))
-    ;; (rufo . ("rufo" "--filename" filepath))
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"
+            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+    (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
+                "--stderr" "--format" "quiet" "--fail-level" "fatal"))
+    (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (rustfmt . ("rustfmt" "--unstable-features" "--skip-children"
                 "--quiet" "--emit" "stdout"))
     (shfmt . ("shfmt"
