@@ -100,7 +100,8 @@ Otherwise return the extension only."
 
 
 (defcustom apheleia-formatters
-  '((bean-format . ("bean-format"))
+  '((asmfmt . ("asmfmt"))
+    (bean-format . ("bean-format"))
     (black . ("black" "-"))
     (brittany . ("brittany"))
     (caddyfmt . ("caddy" "fmt" "-"))
@@ -228,6 +229,7 @@ rather than using this system."
     (json-mode . prettier-json)
     (json-ts-mode . prettier-json)
     ;; rest are alphabetical
+    (asm-mode . asmfmt)
     (bash-ts-mode . shfmt)
     (beancount-mode . bean-format)
     (c++-ts-mode . clang-format)
@@ -262,6 +264,7 @@ rather than using this system."
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
+    (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (python-mode . black)
     (python-ts-mode . black)

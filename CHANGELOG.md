@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog].
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
 
+### Formatters
+* [`asmfmt`](https://github.com/klauspost/asmfmt) for assembly ([#168]).
+
 ## 3.2 (released 2023-02-25)
 ### Features
 * You can use `apheleia-inhibit` as a file-local variable to disable
