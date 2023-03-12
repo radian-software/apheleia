@@ -11,9 +11,9 @@ The format is based on [Keep a Changelog].
 
 ### Formatters
 * [`buildifier`](https://github.com/bazelbuild/buildtools)
-  for [Bazel Build](https://bazel.build/) ([#191]).
+  for [Bazel Build](https://bazel.build/) ([#171]).
 
-[#191]: https://github.com/radian-software/apheleia/pull/191
+[#171]: https://github.com/radian-software/apheleia/pull/171
 
 ## 3.2 (released 2023-02-25)
 ### Features
