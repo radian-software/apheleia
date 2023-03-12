@@ -100,7 +100,12 @@ Otherwise return the extension only."
 
 
 (defcustom apheleia-formatters
-  '((bean-format . ("bean-format"))
+  '((beautysh . ("beautysh"
+                 (when-let ((indent (bound-and-true-p sh-basic-offset)))
+                   (list "--indent-size" (number-to-string indent)))
+                 (when indent-tabs-mode "--tab")
+                 "-"))
+    (bean-format . ("bean-format"))
     (black . ("black" "-"))
     (brittany . ("brittany"))
     (caddyfmt . ("caddy" "fmt" "-"))

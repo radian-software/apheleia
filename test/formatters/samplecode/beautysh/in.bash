@@ -1,0 +1,1 @@
+../shfmt/in.bash
