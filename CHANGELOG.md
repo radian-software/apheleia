@@ -9,6 +9,13 @@ The format is based on [Keep a Changelog].
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
 
+### Formatters
+* [`jq`](https://stedolan.github.io/jq/) for
+  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
+  ([#174]).
+
+[#174]: https://github.com/radian-software/apheleia/pull/174
+
 ## 3.2 (released 2023-02-25)
 ### Features
 * You can use `apheleia-inhibit` as a file-local variable to disable

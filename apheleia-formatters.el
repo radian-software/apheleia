@@ -122,6 +122,8 @@ Otherwise return the extension only."
     (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
     (isort . ("isort" "-"))
+    (jq "jq" "."
+        (apheleia-formatters-js-indent "--tab" "--indent"))
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
