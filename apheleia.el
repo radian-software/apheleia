@@ -766,7 +766,7 @@ cmd is to be run."
       (when (memq 'npx command)
         (setq npx t)
         (setq command (remq 'npx command)))
-      (when (and npx remote-match)
+      (when (and "npx" remote-match)
         (when-let ((project-dir
                     (locate-dominating-file
                      default-directory "node_modules")))
@@ -968,29 +968,29 @@ being run, for diagnostic purposes."
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
     (phpcs . ("apheleia-phpcs"))
-    (prettier . (npx "prettier" "--stdin-filepath" filepath))
+    (prettier . ("npx" "prettier" "--stdin-filepath" filepath))
     (prettier-css
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=css"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=css"))
     (prettier-html
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=html"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=html"))
     (prettier-graphql
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=graphql"))
     (prettier-javascript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=babel-flow"))
     (prettier-json
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=json"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=json"))
     (prettier-markdown
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=markdown"))
     (prettier-ruby
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=ruby"))
     (prettier-scss
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=scss"))
     (prettier-svelte
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=svelte"))
+     . (""npx"" "prettier" "--stdin-filepath" filepath "--parser=svelte"))
     (prettier-typescript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=typescript"))
     (prettier-yaml
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"))
+     . ("npx" "prettier" "--stdin-filepath" filepath "--parser=yaml"))
     (shfmt . ("shfmt" "-i" "4"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
@@ -1030,7 +1030,7 @@ However, unlike `input', it is expected that the formatter write
 the formatted file back to the same file in place. In other
 words, `inplace' is like `input' and `output' together.
 
-If you use the symbol `npx' as one of the elements of commands,
+If you use the symbol `"npx"' as one of the elements of commands,
 then the first string element of the command list is resolved
 inside node_modules/.bin if such a directory exists anywhere
 above the current `default-directory'.
@@ -1053,7 +1053,7 @@ rather than using this system."
            (repeat
             (choice
              (string :tag "Argument")
-             (const :tag "Look for command in node_modules/.bin" npx)
+             (const :tag "Look for command in node_modules/.bin" "npx")
              (const :tag "Name of file being formatted" filepath)
              (const :tag "Name of real file used for input" file)
              (const :tag "Name of temporary file used for input" input)
