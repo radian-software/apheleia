@@ -100,7 +100,9 @@ Otherwise return the extension only."
 
 
 (defcustom apheleia-formatters
-  '((bean-format . ("bean-format"))
+  '((astyle . ("astyle" (apheleia-formatters-locate-file
+                         "--options" ".astylerc")))
+    (bean-format . ("bean-format"))
     (black . ("black" "-"))
     (brittany . ("brittany"))
     (caddyfmt . ("caddy" "fmt" "-"))
