@@ -275,6 +275,7 @@ environment variable, defaulting to all formatters."
                         arg)
                        (_ (eval arg))))
                    command))
+            (setq command (delq nil command))
             (setq command (delq 'npx command))
             (setq stdout-buffer (get-buffer-create
                                  (format "*apheleia-ft-stdout-%S" formatter)))

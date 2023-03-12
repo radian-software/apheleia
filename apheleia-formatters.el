@@ -100,9 +100,8 @@ Otherwise return the extension only."
 
 (defcustom apheleia-formatters
   '((asmfmt . ("asmfmt"))
-    (astyle ("astyle" (apheleia-formatters-locate-file
-                       "--options" ".astylerc")))
-    (atsfmt . ("atsfmt"))
+    (astyle . ("astyle" (apheleia-formatters-locate-file
+                         "--options" ".astylerc")))
     (beautysh . ("beautysh"
                  (when-let ((indent (bound-and-true-p sh-basic-offset)))
                    (list "--indent-size" (number-to-string indent)))
@@ -114,9 +113,7 @@ Otherwise return the extension only."
               (apheleia-formatters-fill-column "--line-length")
               "-"))
     (brittany . ("brittany"))
-    (bsrefmt . ("bsrefmt"))
     (buildifier . ("buildifier"))
-    (cabal-fmt . ("cabal-fmt"))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
