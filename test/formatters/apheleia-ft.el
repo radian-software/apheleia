@@ -261,6 +261,7 @@ environment variable, defaulting to all formatters."
             (when (memq 'output syms)
               (setq out-temp-file (apheleia-ft--write-temp-file
                                    "" extension)))
+            (setq command (delq 'npx command)) 
             (setq command
                   (mapcar
                    (lambda (arg)
@@ -275,7 +276,6 @@ environment variable, defaulting to all formatters."
                         arg)
                        (_ (eval arg))))
                    command))
-            (setq command (delq 'npx command))
             (setq stdout-buffer (get-buffer-create
                                  (format "*apheleia-ft-stdout-%S" formatter)))
             (setq exit-status
