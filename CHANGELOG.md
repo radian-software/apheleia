@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog].
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
 
+### Formatters
+* [`astyle`](https://github.com/steinwurf/astyle) for C ([#169]).
+
+[#169]: https://github.com/radian-software/apheleia/issues/169
+
 ## 3.2 (released 2023-02-25)
 ### Features
 * You can use `apheleia-inhibit` as a file-local variable to disable
