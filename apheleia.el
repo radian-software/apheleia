@@ -985,6 +985,8 @@ being run, for diagnostic purposes."
      . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"))
     (prettier-scss
      . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"))
+    (prettier-svelte
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=svelte"))
     (prettier-typescript
      . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
     (prettier-yaml
@@ -1174,6 +1176,7 @@ function: %s" command)))
     (rust-mode . rustfmt)
     (rust-ts-mode . rustfmt)
     (scss-mode . prettier-scss)
+    (svelte-mode . prettier-svelte)
     (terraform-mode . terraform)
     (TeX-latex-mode . latexindent)
     (TeX-mode . latexindent)
