@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog].
 ### Formatters
 * [`asmfmt`](https://github.com/klauspost/asmfmt) for assembly ([#168]).
 
+[#168]: https://github.com/radian-software/apheleia/pull/168
+
 ## 3.2 (released 2023-02-25)
 ### Features
 * You can use `apheleia-inhibit` as a file-local variable to disable
