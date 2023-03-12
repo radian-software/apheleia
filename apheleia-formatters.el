@@ -152,6 +152,7 @@ Otherwise return the extension only."
     (prettier-yaml
      . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"))
     (shfmt . ("shfmt" "-i" "4"))
+    (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
