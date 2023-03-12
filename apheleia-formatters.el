@@ -7,7 +7,7 @@
 ;;; Code:
 
 (require 'cl-lib)
-(require 'subr-x)
+(require 'subr)
 
 (defun apheleia-formatters-indent (tab-flag indent-flag indent-var)
   "Set flag for indentation.
