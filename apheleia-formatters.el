@@ -30,7 +30,7 @@
     (google-java-format . ("google-java-format" "-"))
     (isort . ("isort" "-"))
     (lisp-indent . apheleia-indent-lisp-buffer)
-    (ktlint . ("ktlint" "--stdin" "-F"))
+    (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("mix" "format" "-"))
     (nixfmt . ("nixfmt"))
