@@ -9,6 +9,12 @@ The format is based on [Keep a Changelog].
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
 
+### Formatters
+* [`buildifier`](https://github.com/bazelbuild/buildtools)
+  for [Bazel Build](https://bazel.build/) ([#191]).
+
+[#191]: https://github.com/radian-software/apheleia/pull/191
+
 ## 3.2 (released 2023-02-25)
 ### Features
 * You can use `apheleia-inhibit` as a file-local variable to disable

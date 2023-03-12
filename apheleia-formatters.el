@@ -103,6 +103,7 @@ Otherwise return the extension only."
   '((bean-format . ("bean-format"))
     (black . ("black" "-"))
     (brittany . ("brittany"))
+    (buildifier . ("buildifier"))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
@@ -229,6 +230,7 @@ rather than using this system."
     (json-ts-mode . prettier-json)
     ;; rest are alphabetical
     (bash-ts-mode . shfmt)
+    (bazel-mode . buildifier)
     (beancount-mode . bean-format)
     (c++-ts-mode . clang-format)
     (caddyfile-mode . caddyfmt)
