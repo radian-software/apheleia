@@ -58,7 +58,7 @@
      . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
     (prettier-yaml
      . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"))
-    (shfmt . ("shfmt" "-i" "4"))
+    (shfmt . ("shfmt" "-i" (number-to-string tab-width)))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
