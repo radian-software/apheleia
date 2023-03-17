@@ -56,6 +56,39 @@ already in memory on the current branch."
       (goto-char (point-min))
       (read (current-buffer)))))
 
+(defun apheleia-ft--get-changed-files-for-pull-request ()
+  "Return list of files (relative to repo root) changed in this PR.
+This means added, removed, or changed compared to main."
+  (let ((stderr-file (make-temp-file "apheleia-ft-stderr-")))
+    (with-temp-buffer
+      (let ((exit-status
+             (call-process
+              "git" nil (list (current-buffer) stderr-file) nil
+              "diff" "--name-only" "origin/main...HEAD")))
+        (unless (zerop exit-status)
+          (with-temp-buffer
+            (insert-file-contents stderr-file)
+            (princ (buffer-string)))
+          (error
+           (concat
+            "Failed to 'git diff --name-only "
+            "origin/main...HEAD', got exit status %S")
+           exit-status)))
+      (split-string (buffer-string)))))
+
+(defun apheleia-ft--get-formatters-with-changed-scripts ()
+  "Return list of formatter symbols whose scripts were touched in this PR.
+This means their install scripts are different from how they
+appear on main. This may include formatters that were removed
+relative to main."
+  (save-match-data
+    (let ((formatters nil))
+      (dolist (file (apheleia-ft--get-changed-files-for-pull-request))
+        (when (string-match
+               "\\`test/formatters/installers/\\([^./]+\\)\\.bash\\'" file)
+          (push (intern (match-string 1 file)) formatters)))
+      formatters)))
+
 (defun apheleia-ft--get-formatters-for-pull-request ()
   "Return list of formatter string names that were touched in this PR.
 This means their commands in `apheleia-formatters' are different
@@ -63,10 +96,13 @@ from how they appear on main, or they were added relative to
 main."
   (let ((old-formatters (apheleia-ft--get-formatters-from-ref "origin/main"))
         (new-formatters apheleia-formatters)
+        (formatters-with-changed-scripts
+         (apheleia-ft--get-formatters-with-changed-scripts))
         (touched-formatters nil))
     (map-do
      (lambda (formatter command)
-       (unless (equal command (alist-get formatter old-formatters))
+       (unless (and (equal command (alist-get formatter old-formatters))
+                    (not (memq formatter formatters-with-changed-scripts)))
          (push (symbol-name formatter) touched-formatters)))
      new-formatters)
     touched-formatters))
@@ -274,6 +310,7 @@ environment variable, defaulting to all formatters."
                         out-temp-file)
                        ((guard (stringp arg))
                         arg)
+                       (`npx arg)
                        (_ (eval arg))))
                    command))
             (setq stdout-buffer (get-buffer-create
