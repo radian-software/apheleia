@@ -39,7 +39,7 @@ already in memory on the current branch."
              (call-process
               "git"
               nil (list (current-buffer) stderr-file) nil
-              "show" (format "%s:apheleia.el" ref))))
+              "show" (format "%s:apheleia-formatters.el" ref))))
         (unless (zerop exit-status)
           (with-temp-buffer
             (insert-file-contents stderr-file)
