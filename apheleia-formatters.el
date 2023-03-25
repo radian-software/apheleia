@@ -147,6 +147,8 @@ Otherwise return the extension only."
      . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"))
     (prettier-scss
      . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"))
+    (prettier-svelte
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=svelte"))
     (prettier-typescript
      . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
     (prettier-yaml
@@ -271,6 +273,7 @@ rather than using this system."
     (rust-mode . rustfmt)
     (rust-ts-mode . rustfmt)
     (scss-mode . prettier-scss)
+    (svelte-mode . prettier-svelte)
     (terraform-mode . terraform)
     (TeX-latex-mode . latexindent)
     (TeX-mode . latexindent)
