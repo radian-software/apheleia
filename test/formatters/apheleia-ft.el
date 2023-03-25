@@ -32,19 +32,16 @@ If ALL is non-nil, unconditionally return all formatters."
   "Check out given Git REF and return `apheleia-formatters' from there.
 Return an Elisp data structure, same as the `apheleia-formatters'
 already in memory on the current branch."
-  (let ((old-apheleia (make-temp-file "apheleia-" nil ".el"))
+  (let ((old-apheleia (make-temp-file "apheleia-" 'dir))
         (stderr-file (make-temp-file "apheleia-ft-stderr-")))
-    (with-temp-file old-apheleia
+    (with-temp-buffer
       (let ((exit-status
              (call-process
               "git"
               nil (list (current-buffer) stderr-file) nil
-              "show" (format "%s:apheleia-formatters.el" ref))))
+              "--work-tree" old-apheleia "checkout" ref "--" "*.el")))
         (unless (zerop exit-status)
-          (with-temp-buffer
-            (insert-file-contents stderr-file)
-            (princ (buffer-string)))
-          (error "Failed to 'git show %s:apheleia.el', got exit status %S"
+          (error "Failed to 'git checkout %s -- *.el', got exit status %S"
                  ref exit-status))))
     (with-temp-buffer
       (call-process
@@ -52,7 +49,9 @@ already in memory on the current branch."
            (expand-file-name invocation-name invocation-directory)
          invocation-name)
        nil (current-buffer) nil
-       "--batch" "-l" old-apheleia "--eval" "(prin1 apheleia-formatters)")
+       "--batch" "-L" old-apheleia
+       "--eval" "(require 'apheleia)"
+       "--eval" "(prin1 apheleia-formatters)")
       (goto-char (point-min))
       (read (current-buffer)))))
 
@@ -226,8 +225,12 @@ environment variable, defaulting to all formatters."
                            (let ((load-suffixes '(".el")))
                              (locate-library "apheleia"))))))
                      exec-path)))
+        ;; Some formatters use the current file-name or buffer-name to interpret the
+        ;; type of file that is being formatted. Some may not be able to determine
+        ;; this from the contents of the file so we set this to force it.
+        (rename-buffer in-file)
         (setq stdout-buffer (get-buffer-create
-                             (format "*apheleia-ft-stdout-%S" formatter)))
+                             (format "*apheleia-ft-stdout-%S%s" formatter extension)))
         (with-current-buffer stdout-buffer
           (erase-buffer))
         (if (functionp command)
@@ -243,41 +246,14 @@ environment variable, defaulting to all formatters."
                 (copy-to-buffer stdout-buffer (point-min) (point-max))))
           (progn
 
+            (let ((result (apheleia--format-command command nil nil)))
+              (setq command (nthcdr 3 result)
+                    in-temp-real-file (nth 0 result)
+                    out-temp-file (nth 1 result)))
+
             (with-current-buffer stdout-buffer
               (erase-buffer))
-            (mapc
-             (lambda (arg)
-               (when (memq arg '(file filepath input output inplace))
-                 (cl-pushnew arg syms)))
-             command)
-            (when (or (memq 'file syms) (memq 'filepath syms))
-              (setq in-temp-real-file (apheleia-ft--write-temp-file
-                                       in-text extension)))
-            (when (or (memq 'input syms) (memq 'inplace syms))
-              (setq in-temp-file (apheleia-ft--write-temp-file
-                                  in-text extension))
-              (when (memq 'inplace syms)
-                (setq out-temp-file in-temp-file)))
-            (when (memq 'output syms)
-              (setq out-temp-file (apheleia-ft--write-temp-file
-                                   "" extension)))
-            (setq command (delq 'npx command))
-            (setq command
-                  (mapcar
-                   (lambda (arg)
-                     (pcase arg
-                       ((or `file `filepath)
-                        in-temp-real-file)
-                       ((or `input `inplace)
-                        in-temp-file)
-                       (`output
-                        out-temp-file)
-                       ((guard (stringp arg))
-                        arg)
-                       (_ (eval arg))))
-                   command))
-            (setq stdout-buffer (get-buffer-create
-                                 (format "*apheleia-ft-stdout-%S" formatter)))
+
             (setq exit-status
                   (apply
                    #'call-process
