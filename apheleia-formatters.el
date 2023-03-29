@@ -153,6 +153,7 @@ Otherwise return the extension only."
      . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"))
     (prettier-yaml
      . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"))
+    (purs-tidy . (npx "purs-tidy" "format"))
     (shfmt . ("shfmt" "-i" "4"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
@@ -265,6 +266,7 @@ rather than using this system."
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
     (nix-mode . nixfmt)
+    (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
     (ruby-mode . prettier-ruby)
