@@ -6,10 +6,16 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Enhancements
 * Prettier is now enabled in `svelte-mode`.
+
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
+
+### Formatters
+* [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
+
+[#182]: https://github.com/radian-software/apheleia/pull/182
 
 ## 3.2 (released 2023-02-25)
 ### Features
