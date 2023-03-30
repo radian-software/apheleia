@@ -141,6 +141,8 @@ Otherwise return the extension only."
      . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"))
     (prettier-json
      . (npx "prettier" "--stdin-filepath" filepath "--parser=json"))
+    (prettier-json-stringify
+     . (npx "prettier" "--stdin-filepath" filepath "--parser=json-stringify"))
     (prettier-markdown
      . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"))
     (prettier-ruby
