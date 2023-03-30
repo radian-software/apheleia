@@ -69,7 +69,9 @@ The format is based on [Keep a Changelog].
 [#145]: https://github.com/radian-software/apheleia/pull/145
 [#147]: https://github.com/radian-software/apheleia/pull/147
 [#148]: https://github.com/radian-software/apheleia/pull/148
+[#151]: https://github.com/radian-software/apheleia/pull/151
 [#152]: https://github.com/radian-software/apheleia/pull/152
+[#155]: https://github.com/radian-software/apheleia/pull/155
 
 ## 3.1 (released 2022-11-11)
 ### Enhancements
