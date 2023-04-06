@@ -14,8 +14,10 @@ The format is based on [Keep a Changelog].
 
 ### Formatters
 * [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
+* `prettier-json-stringify`, the parser prettier uses for `package.json` files ([#183]).
 
 [#182]: https://github.com/radian-software/apheleia/pull/182
+[#183]: https://github.com/radian-software/apheleia/pull/183
 
 ## 3.2 (released 2023-02-25)
 ### Features
