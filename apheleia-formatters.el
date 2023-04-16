@@ -165,6 +165,7 @@ Otherwise return the extension only."
     (prettier-yaml
      . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+    (purs-tidy . (npx "purs-tidy" "format"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
@@ -288,6 +289,7 @@ rather than using this system."
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
     (nix-mode . nixfmt)
+    (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
     (ruby-mode . prettier-ruby)
