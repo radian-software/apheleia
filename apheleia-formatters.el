@@ -178,8 +178,8 @@ Otherwise return the extension only."
                       sh-basic-offset)
                      (t 4)))
               "-"))
-    (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (stylua . ("stylua" "-"))
+    (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
   "Alist of code formatting commands.
