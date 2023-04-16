@@ -4,16 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Enhancements
+* Prettier is now enabled in `svelte-mode`.
+
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
 
 ### Formatters
+
+* [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
 
 [#175]: https://github.com/radian-software/apheleia/pull/175
+[#182]: https://github.com/radian-software/apheleia/pull/182
 
 ## 3.2 (released 2023-02-25)
 ### Features
@@ -67,7 +73,9 @@ The format is based on [Keep a Changelog].
 [#145]: https://github.com/radian-software/apheleia/pull/145
 [#147]: https://github.com/radian-software/apheleia/pull/147
 [#148]: https://github.com/radian-software/apheleia/pull/148
+[#151]: https://github.com/radian-software/apheleia/pull/151
 [#152]: https://github.com/radian-software/apheleia/pull/152
+[#155]: https://github.com/radian-software/apheleia/pull/155
 
 ## 3.1 (released 2022-11-11)
 ### Enhancements
