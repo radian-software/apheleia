@@ -1,4 +1,4 @@
-;;; apheleia-formatters.el --- Formatter helpers. -*- lexical-binding: t -*-
+;;; apheleia-utils.el --- Formatter helpers. -*- lexical-binding: t -*-
 
 ;;; Commentary:
 
@@ -97,6 +97,6 @@ Otherwise return the extension only."
           (substring name (length remote))
         name))))
 
-(provide 'apheleia-formatters)
+(provide 'apheleia-utils)
 
-;;; apheleia-formatters.el ends here
+;;; apheleia-utils.el ends here

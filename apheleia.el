@@ -23,7 +23,7 @@
 
 ;;; Code:
 
-(require 'apheleia-formatters)
+(require 'apheleia-utils)
 
 (defgroup apheleia nil
   "Reformat buffer without moving point."
