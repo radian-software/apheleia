@@ -9,34 +9,36 @@
 (require 'cl-lib)
 (require 'subr-x)
 
-(defun apheleia-formatters-indent (tab-flag indent-flag indent-var)
+(require 'editorconfig)
+
+(defun apheleia-formatters-indent (tab-flag indent-flag &optional indent-var)
   "Set flag for indentation.
 Helper function for `apheleia-formatters' which allows you to supply
-alternating flags based on the current buffers indent configuration. If the
-buffer is indented with tabs then returns TAB-FLAG. Otherwise if INDENT-VAR
-is set in the buffer return INDENT-FLAG and the value of INDENT-VAR. Use this
-to easily configure the indentation level of a formatter."
+alternating flags based on the current buffers indent configuration.
+If the buffer is indented with tabs then returns TAB-FLAG. Otherwise
+look for an indentation variable associated with the current buffers
+MAJOR-MODE and return it alongside INDENT-FLAG. If INDENT-VAR is set
+then INDENT-VAR will be the only variable queried for INDENT-FLAG.
+
+Use this helper to easily configure the indentation level of a formatter."
   (cond
    (indent-tabs-mode tab-flag)
    (indent-var
     (when-let ((indent (and (boundp indent-var)
                             (symbol-value indent-var))))
-      (list indent-flag (number-to-string indent))))))
+      (list indent-flag (number-to-string indent))))
+   (t
+    (seq-find
+     (lambda (indent-var)
+       (and (boundp indent-var)
+            (symbol-value indent-var)))
+     (ensure-list
+      (alist-get major-mode editorconfig-indentation-alist))))))
 
-(defun apheleia-formatters-js-indent (tab-flag indent-flag)
-  "Variant of `apheleia-formatters-indent' for JavaScript like modes.
-See `apheleia-formatters-indent' for a description of TAB-FLAG and
-INDENT-FLAG."
-  (apheleia-formatters-indent
-   tab-flag indent-flag
-   (cl-case major-mode
-     (json-mode 'js-indent-level)
-     (json-ts-mode 'json-ts-mode-indent-offset)
-     (js-mode 'js-indent-level)
-     (js-jsx-mode 'js-indent-level)
-     (js2-mode 'js2-basic-offset)
-     (js2-jsx-mode 'js2-basic-offset)
-     (js3-mode 'js3-indent-level))))
+(define-obsolete-function-alias
+  'apheleia-formatters-js-indent
+  'apheleia-formatters-indent
+  "3.3")
 
 (defcustom apheleia-formatters-respect-fill-column nil
   "Whether formatters should set `fill-column' related flags."
