@@ -13,12 +13,17 @@ The format is based on [Keep a Changelog].
   by suppressing all logs from `ktlint`.
 
 ### Formatters
-* [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
-* [`gawk`](https://www.gnu.org/software/gawk/) for
-  [awk](https://en.wikipedia.org/wiki/AWK) ([#173]).
 
-[#172]: https://github.com/radian-software/apheleia/pull/172
+* [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
+* [`jq`](https://stedolan.github.io/jq/) for
+  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
+  ([#174]).
+* [`gawk`](https://www.gnu.org/software/gawk/) for
+  [awk](https://en.wikipedia.org/wiki/AWK) ([#187]).
+
+[#174]: https://github.com/radian-software/apheleia/pull/174
 [#182]: https://github.com/radian-software/apheleia/pull/182
+[#187]: https://github.com/radian-software/apheleia/pull/187
 
 ## 3.2 (released 2023-02-25)
 ### Features
