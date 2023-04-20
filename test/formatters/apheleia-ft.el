@@ -5,6 +5,7 @@
 ;; breaking changes may occur at any time.
 
 (require 'apheleia)
+(require 'apheleia-core)
 
 (require 'cl-lib)
 (require 'map)
@@ -50,7 +51,7 @@ already in memory on the current branch."
          invocation-name)
        nil (current-buffer) nil
        "--batch" "-L" old-apheleia
-       "--eval" "(require 'apheleia)"
+       "--eval" "(require 'apheleia-core)"
        "--eval" "(prin1 apheleia-formatters)")
       (goto-char (point-min))
       (read (current-buffer)))))
