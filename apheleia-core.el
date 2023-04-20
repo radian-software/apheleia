@@ -15,7 +15,7 @@
 (require 'map)
 (require 'subr-x)
 
-(require 'apheleia-formatters)
+(require 'apheleia)
 
 (eval-when-compile
   (require 'rx))
