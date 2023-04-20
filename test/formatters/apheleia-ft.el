@@ -5,6 +5,7 @@
 ;; breaking changes may occur at any time.
 
 (require 'apheleia)
+(require 'apheleia-core)
 
 (require 'cl-lib)
 (require 'map)
@@ -50,7 +51,7 @@ already in memory on the current branch."
          invocation-name)
        nil (current-buffer) nil
        "--batch" "-L" old-apheleia
-       "--eval" "(require 'apheleia)"
+       "--eval" "(require 'apheleia-core)"
        "--eval" "(prin1 apheleia-formatters)")
       (goto-char (point-min))
       (read (current-buffer)))))
@@ -201,6 +202,7 @@ environment variable, defaulting to all formatters."
   (interactive
    (unless (or current-prefix-arg noninteractive)
      (list (completing-read "Formatter: " (apheleia-ft--get-formatters)))))
+  (setq-default indent-tabs-mode nil)
   (dolist (formatter (or formatters (apheleia-ft--get-formatters)))
     (dolist (in-file (apheleia-ft--input-files formatter))
       (let ((extension (file-name-extension in-file))
