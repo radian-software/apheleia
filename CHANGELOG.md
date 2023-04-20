@@ -14,7 +14,8 @@ The format is based on [Keep a Changelog].
 
 ### Formatters
 * [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
-* [`gawk`](gawk) for [awk](https://en.wikipedia.org/wiki/AWK) ([#173]).
+* [`gawk`](https://www.gnu.org/software/gawk/) for
+  [awk](https://en.wikipedia.org/wiki/AWK) ([#173]).
 
 [#172]: https://github.com/radian-software/apheleia/pull/172
 [#182]: https://github.com/radian-software/apheleia/pull/182
