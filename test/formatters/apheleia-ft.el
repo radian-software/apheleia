@@ -5,6 +5,7 @@
 ;; breaking changes may occur at any time.
 
 (require 'apheleia)
+(require 'apheleia-core)
 
 (require 'cl-lib)
 (require 'map)
