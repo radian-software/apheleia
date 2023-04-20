@@ -32,7 +32,7 @@
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
 
 (defcustom apheleia-formatters
-  '((bean-formatx . ("bean-format"))
+  '((bean-format . ("bean-format"))
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
               (apheleia-formatters-fill-column "--line-length")
