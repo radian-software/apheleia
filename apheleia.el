@@ -127,6 +127,8 @@
      . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (purs-tidy . (npx "purs-tidy" "format"))
+    (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
+                "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
