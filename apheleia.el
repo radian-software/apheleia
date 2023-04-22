@@ -32,7 +32,9 @@
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
 
 (defcustom apheleia-formatters
-  '((asmfmt . ("asmfmt"))
+  '((astyle . ("astyle" (apheleia-formatters-locate-file
+                         "--options" ".astylerc")))
+    (asmfmt . ("asmfmt"))
     (bean-format . ("bean-format"))
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
