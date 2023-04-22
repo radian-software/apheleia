@@ -32,6 +32,8 @@ The format is based on [Keep a Changelog].
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
+* [`rufo`](https://github.com/ruby-formatter/rufo) for
+  [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
@@ -42,6 +44,7 @@ The format is based on [Keep a Changelog].
 [#174]: https://github.com/radian-software/apheleia/pull/174
 [#175]: https://github.com/radian-software/apheleia/pull/175
 [#176]: https://github.com/radian-software/apheleia/pull/176
+[#177]: https://github.com/radian-software/apheleia/pull/177
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 

@@ -141,6 +141,7 @@
                       sh-basic-offset)
                      (t 4)))
               "-"))
+    (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-")))
