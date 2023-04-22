@@ -29,6 +29,8 @@ The format is based on [Keep a Changelog].
 * [`cmake-format`](https://github.com/cheshirekow/cmake_format)
   for [CMake](https://cmake.org/) ([#172]).
 * [`html-tidy`](https://www.html-tidy.org/) for HTML/XML ([#173]).
+* [`perltidy`](https://perltidy.sourceforge.net/) for
+  [perl](https://www.perl.org/) ([#175]).
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
@@ -37,6 +39,7 @@ The format is based on [Keep a Changelog].
 [#172]: https://github.com/radian-software/apheleia/pull/172
 [#173]: https://github.com/radian-software/apheleia/pull/173
 [#174]: https://github.com/radian-software/apheleia/pull/174
+[#175]: https://github.com/radian-software/apheleia/pull/175
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 

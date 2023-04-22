@@ -88,6 +88,7 @@
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
+    (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
     (phpcs . ("apheleia-phpcs"))
     (prettier
      . (npx "prettier" "--stdin-filepath" filepath
@@ -255,6 +256,7 @@ rather than using this system."
     (lisp-mode . lisp-indent)
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
+    (perl-mode . perltidy)
     (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
