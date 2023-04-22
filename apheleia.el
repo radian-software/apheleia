@@ -45,6 +45,7 @@
               (apheleia-formatters-fill-column "--line-length")
               "-"))
     (brittany . ("brittany"))
+    (buildifier . ("buildifier"))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
@@ -199,6 +200,7 @@ rather than using this system."
     (asm-mode . asmfmt)
     (awk-mode . gawk)
     (bash-ts-mode . shfmt)
+    (bazel-mode . buildifier)
     (beancount-mode . bean-format)
     (c++-ts-mode . clang-format)
     (caddyfile-mode . caddyfmt)
