@@ -28,12 +28,14 @@ The format is based on [Keep a Changelog].
   for [Bazel Build](https://bazel.build/) ([#171]).
 * [`cmake-format`](https://github.com/cheshirekow/cmake_format)
   for [CMake](https://cmake.org/) ([#172]).
+* [`html-tidy`](https://www.html-tidy.org/) for HTML/XML ([#173]).
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
 [#170]: https://github.com/radian-software/apheleia/pull/170
 [#171]: https://github.com/radian-software/apheleia/pull/171
 [#172]: https://github.com/radian-software/apheleia/pull/172
+[#173]: https://github.com/radian-software/apheleia/pull/173
 [#174]: https://github.com/radian-software/apheleia/pull/174
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
