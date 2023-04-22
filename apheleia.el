@@ -32,22 +32,32 @@
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
 
 (defcustom apheleia-formatters
-  '((bean-format . ("bean-format"))
+  '((astyle . ("astyle" (apheleia-formatters-locate-file
+                         "--options" ".astylerc")))
+    (asmfmt . ("asmfmt"))
+    (bean-format . ("bean-format"))
+    (beautysh . ("beautysh"
+                 (apheleia-formatters-indent
+                  "--tab" "--indent-size" 'sh-basic-offset)
+                 "-"))
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
               (apheleia-formatters-fill-column "--line-length")
               "-"))
     (brittany . ("brittany"))
+    (buildifier . ("buildifier"))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
                      (or (buffer-file-name)
                          (apheleia-formatters-mode-extension)
                          ".c")))
+    (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
     (dart-format . ("dart" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
+    (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
     (gofmt . ("gofmt"))
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
@@ -69,6 +79,8 @@
                   'web-mode-indent-style)))
                (apheleia-formatters-fill-column "-wrap"))
     (isort . ("isort" "-"))
+    (jq "jq" "."
+        (apheleia-formatters-js-indent "--tab" "--indent"))
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
@@ -202,7 +214,10 @@ rather than using this system."
     (json-mode . prettier-json)
     (json-ts-mode . prettier-json)
     ;; rest are alphabetical
+    (asm-mode . asmfmt)
+    (awk-mode . gawk)
     (bash-ts-mode . shfmt)
+    (bazel-mode . buildifier)
     (beancount-mode . bean-format)
     (c++-ts-mode . clang-format)
     (caddyfile-mode . caddyfmt)
@@ -211,6 +226,8 @@ rather than using this system."
     (c-ts-mode . clang-format)
     (c++-mode . clang-format)
     (caml-mode . ocamlformat)
+    (cmake-mode . cmake-format)
+    (cmake-ts-mode . cmake-format)
     (common-lisp-mode . lisp-indent)
     (crystal-mode . crystal-tool-format)
     (css-mode . prettier-css)
@@ -236,6 +253,7 @@ rather than using this system."
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
+    (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (purescript-mode . purs-tidy)
     (python-mode . black)
