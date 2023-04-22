@@ -34,6 +34,7 @@
 (defcustom apheleia-formatters
   '((astyle . ("astyle" (apheleia-formatters-locate-file
                          "--options" ".astylerc")))
+    (asmfmt . ("asmfmt"))
     (bean-format . ("bean-format"))
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
@@ -50,11 +51,14 @@
     (dart-format . ("dart" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
+    (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
     (gofmt . ("gofmt"))
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
     (isort . ("isort" "-"))
+    (jq "jq" "."
+        (apheleia-formatters-js-indent "--tab" "--indent"))
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
@@ -188,6 +192,8 @@ rather than using this system."
     (json-mode . prettier-json)
     (json-ts-mode . prettier-json)
     ;; rest are alphabetical
+    (asm-mode . asmfmt)
+    (awk-mode . gawk)
     (bash-ts-mode . shfmt)
     (beancount-mode . bean-format)
     (c++-ts-mode . clang-format)
@@ -222,6 +228,7 @@ rather than using this system."
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
+    (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (purescript-mode . purs-tidy)
     (python-mode . black)
