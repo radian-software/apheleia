@@ -15,10 +15,17 @@ The format is based on [Keep a Changelog].
 ### Formatters
 
 * [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
+* [`jq`](https://stedolan.github.io/jq/) for
+  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
+  ([#174]).
+* [`gawk`](https://www.gnu.org/software/gawk/) for
+  [awk](https://en.wikipedia.org/wiki/AWK) ([#187]).
 * [`asmfmt`](https://github.com/klauspost/asmfmt) for assembly ([#168]).
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
+[#174]: https://github.com/radian-software/apheleia/pull/174
 [#182]: https://github.com/radian-software/apheleia/pull/182
+[#187]: https://github.com/radian-software/apheleia/pull/187
 
 
 ## 3.2 (released 2023-02-25)
