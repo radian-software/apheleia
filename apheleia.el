@@ -32,7 +32,8 @@
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
 
 (defcustom apheleia-formatters
-  '((bean-format . ("bean-format"))
+  '((asmfmt . ("asmfmt"))
+    (bean-format . ("bean-format"))
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
               (apheleia-formatters-fill-column "--line-length")
@@ -189,6 +190,7 @@ rather than using this system."
     (json-mode . prettier-json)
     (json-ts-mode . prettier-json)
     ;; rest are alphabetical
+    (asm-mode . asmfmt)
     (awk-mode . gawk)
     (bash-ts-mode . shfmt)
     (beancount-mode . bean-format)
@@ -224,6 +226,7 @@ rather than using this system."
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
+    (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (purescript-mode . purs-tidy)
     (python-mode . black)
