@@ -36,6 +36,10 @@
                          "--options" ".astylerc")))
     (asmfmt . ("asmfmt"))
     (bean-format . ("bean-format"))
+    (beautysh . ("beautysh"
+                 (apheleia-formatters-indent
+                  "--tab" "--indent-size" 'sh-basic-offset)
+                 "-"))
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
               (apheleia-formatters-fill-column "--line-length")

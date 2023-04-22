@@ -22,9 +22,12 @@ The format is based on [Keep a Changelog].
   [awk](https://en.wikipedia.org/wiki/AWK) ([#187]).
 * [`asmfmt`](https://github.com/klauspost/asmfmt) for assembly ([#168]).
 * [`astyle`](https://github.com/steinwurf/astyle) for C ([#169]).
+* [`beautysh`](https://github.com/lovesegfault/beautysh) for shell
+  scripts ([#170])
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
+[#170]: https://github.com/radian-software/apheleia/pull/170
 [#174]: https://github.com/radian-software/apheleia/pull/174
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
