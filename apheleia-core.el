@@ -995,8 +995,18 @@ function: %s" command)))
 (defvar-local apheleia-formatter nil
   "Name of formatter to use in current buffer, a symbol or nil.
 If non-nil, then `apheleia-formatters' should have a matching
-entry. This overrides `apheleia-mode-alist'.")
-(put 'apheleia-formatter 'safe-local-variable 'symbolp)
+entry. This overrides `apheleia-mode-alist'.
+
+The value can also be a list of symbols to apply multiple
+formatters in sequence.")
+
+(defun apheleia--formatter-safe-p (val)
+  "Return non-nil if VAL is a good value for `apheleia-formatter'."
+  (or (symbolp val)
+      (and (listp val)
+           (cl-every #'symbolp val))))
+
+(put 'apheleia-formatter 'safe-local-variable #'apheleia--formatter-safe-p)
 
 (defun apheleia--ensure-list (arg)
   "Ensure ARG is a list of length at least 1.
