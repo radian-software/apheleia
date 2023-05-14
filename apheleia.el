@@ -144,7 +144,8 @@
     (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
-    (terraform . ("terraform" "fmt" "-")))
+    (terraform . ("terraform" "fmt" "-"))
+    (yapf . ("yapf")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell
 commands, lists of strings and symbols, or a function symbol.
