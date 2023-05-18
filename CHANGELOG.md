@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog].
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
+* [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
@@ -49,6 +50,7 @@ The format is based on [Keep a Changelog].
 [#177]: https://github.com/radian-software/apheleia/pull/177
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
+[#196]: https://github.com/radian-software/apheleia/pull/196
 
 ## 3.2 (released 2023-02-25)
 ### Features
