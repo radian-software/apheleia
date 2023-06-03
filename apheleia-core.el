@@ -187,9 +187,13 @@ contains the patch."
         (point-list nil)
         (window-line-list nil))
     (with-current-buffer content-buffer
-      (push (cons nil (point)) point-list)
+      (push (cons 'set-point (cons nil (point))) point-list)
+      (when (mark-marker)
+        (push (cons 'set-marker (cons nil (mark-marker))) point-list))
+      (dolist (m mark-ring)
+        (push (cons 'set-marker (cons nil m)) point-list))
       (dolist (w (get-buffer-window-list nil nil t))
-        (push (cons w (window-point w)) point-list)
+        (push (cons 'set-point (cons w (window-point w))) point-list)
         (push (cons w (count-lines (window-start w) (point)))
               window-line-list)))
     (with-current-buffer patch-buffer
@@ -240,7 +244,9 @@ contains the patch."
                      (dolist (entry point-list)
                        ;; Check if the (window) point is within the
                        ;; replaced region.
-                       (cl-destructuring-bind (w . p) entry
+                       (cl-destructuring-bind (c . (w . p)) entry
+                         ;; markers pretend to be numbers, so we can run this
+                         ;; whether or not p is a number or marker
                          (when (and (< text-start p)
                                     (< p text-end))
                            (let* ((old-text (buffer-substring-no-properties
@@ -255,13 +261,17 @@ contains the patch."
                                      (apheleia--align-point
                                       old-text new-text old-relative-point))))
                              (goto-char text-start)
+                             ;; we abuse original-point to store the
+                             ;; original marker for marks
                              (push `((marker . ,(point-marker))
-                                     (command . set-point)
+                                     (original-point . ,p)
+                                     (command . ,c)
                                      (window . ,w)
                                      (relative-point . ,new-relative-point))
                                    commands))))))))))))))
     (with-current-buffer content-buffer
-      (let ((move-to nil))
+      (let ((move-to nil)
+            (move-marks nil))
         (save-excursion
           (dolist (command (nreverse commands))
             (goto-char (alist-get 'marker command))
@@ -277,9 +287,17 @@ contains the patch."
                       (+ (point) (alist-get 'relative-point command))))
                  (if-let ((w (alist-get 'window command)))
                      (set-window-point w new-point)
-                   (setq move-to new-point)))))))
+                   (setq move-to new-point))))
+              (`set-marker
+               (let* ((old-mark (alist-get 'original-point command))
+                      (new-mark
+                       (+ old-mark (alist-get 'relative-point command))))
+                 (push (cons old-mark new-mark) move-marks))))))
         (when move-to
-          (goto-char move-to))))
+          (goto-char move-to))
+        (dolist (entry move-marks)
+          (cl-destructuring-bind (old-mark . new-mark) entry
+            (set-marker old-mark new-mark)))))
     ;; Restore the scroll position of each window displaying the
     ;; buffer.
     (dolist (entry window-line-list)
