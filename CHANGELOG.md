@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog].
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
+* All marks (the current `(mark)`, and the `mark-ring`) are now
+  adjusted, alongside `(point)`.
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
