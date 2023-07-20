@@ -157,6 +157,10 @@ variables:
       of `file` in general.
 * `apheleia-formatter`: Optional buffer-local variable specifying the
   formatter to use in this buffer. Overrides `apheleia-mode-alist`.
+  You can set this in a local variables list, or in `.dir-locals.el`
+  (e.g. `((python-mode . ((apheleia-formatter . (isort black)))))`),
+  or in a custom hook of your own that sets the local variable
+  conditionally.
 * `apheleia-inhibit`: Optional buffer-local variable, if set to
   non-nil then Apheleia does not turn on automatically even if
   `apheleia-global-mode` is on.
