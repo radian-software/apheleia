@@ -772,13 +772,16 @@ cmd is to be run."
         (when (locate-dominating-file default-directory ".pnp.cjs")
           (if-let (yarn-executable (executable-find "yarn"))
               (let* ((yarn-version-string
-                      (shell-command-to-string (concat yarn-executable "  --version")))
+                      (shell-command-to-string
+                       (concat yarn-executable "  --version")))
                      (yarn-major-version-string
                       (car (split-string yarn-version-string "\\." t)))
-                     (yarn-major-version (string-to-number yarn-major-version-string)))
+                     (yarn-major-version
+                      (string-to-number yarn-major-version-string)))
                 (if (>= yarn-major-version 2)
                     (push yarn-executable command)
-                  (message "apheleia: found .pnp.cjs but yarn is older than version 2")))
+                  (message "apheleia: found .pnp.cjs but yarn is older than \
+version 2")))
             (message "apheleia: .pnp.cjs found but yarn is not installed"))))
       (when (or (memq 'file command) (memq 'filepath command))
         ;; Fail when using file but not as the first formatter in this
