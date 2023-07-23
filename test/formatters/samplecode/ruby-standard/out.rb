@@ -8,9 +8,9 @@ s.each_byte { |b|
 }
 a.transpose.each { |a|
   a.join.each_byte { |i|
-    print (i == 49) ?
-               ($*[1] || "#") \
-                 :32.chr
+    print (i == 49) ? \
+             ($*[1] || "#") \
+               :32.chr
   }
   puts
 }
