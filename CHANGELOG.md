@@ -34,6 +34,8 @@ The format is based on [Keep a Changelog].
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
+* [`ruby-standard`](https://github.com/standardrb/standard) for
+  [ruby](https://www.ruby-lang.org/en/) ([#201])
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
