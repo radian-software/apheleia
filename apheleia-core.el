@@ -992,6 +992,7 @@ function: %s" command)))
      stdin
      (car formatters))))
 
+;;;###autoload
 (defvar-local apheleia-formatter nil
   "Name of formatter to use in current buffer, a symbol or nil.
 If non-nil, then `apheleia-formatters' should have a matching
