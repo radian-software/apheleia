@@ -47,7 +47,7 @@ The approach is as follows:
 
 Apheleia is available on [MELPA](https://melpa.org/). It is easiest
 to install it using
-[`straight.el`](https://github.com/raxod502/straight.el):
+[`straight.el`](https://github.com/radian-software/straight.el):
 
     (straight-use-package 'apheleia)
 
@@ -228,13 +228,14 @@ Apheleia exposes some hooks for advanced customization:
   size greater than 65,536 characters. There is no known workaround
   besides disabling `apheleia-mode` for the affected buffer, or
   upgrading to a more recent version of Emacs. See
-  [#20](https://github.com/raxod502/apheleia/issues/20).
+  [#20](https://github.com/radian-software/apheleia/issues/20).
 
 ## Contributing
 
 Please see [the contributor guide for my
-projects](https://github.com/raxod502/contributor-guide) for general
-information, and the following sections for Apheleia-specific details.
+projects](https://github.com/radian-software/contributor-guide) for
+general information, and the following sections for Apheleia-specific
+details.
 
 There's also a [wiki](https://github.com/radian-software/apheleia/wiki) that could do with additions/clarity. Any
 improvement suggestions should be submitted as an issue.

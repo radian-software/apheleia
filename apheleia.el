@@ -4,7 +4,7 @@
 
 ;; Author: Radian LLC <contact+apheleia@radian.codes>
 ;; Created: 7 Jul 2019
-;; Homepage: https://github.com/raxod502/apheleia
+;; Homepage: https://github.com/radian-software/apheleia
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26"))
 ;; SPDX-License-Identifier: MIT
@@ -19,7 +19,7 @@
 ;; maintains the position of point relative to its surrounding text
 ;; even if the buffer is modified by the reformatting.
 
-;; Please see https://github.com/raxod502/apheleia for more information.
+;; Please see https://github.com/radian-software/apheleia for more information.
 
 ;;; Code:
 
@@ -28,7 +28,7 @@
 (defgroup apheleia nil
   "Reformat buffer without moving point."
   :group 'external
-  :link '(url-link :tag "GitHub" "https://github.com/raxod502/apheleia")
+  :link '(url-link :tag "GitHub" "https://github.com/radian-software/apheleia")
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
 
 (defcustom apheleia-formatters
