@@ -946,8 +946,8 @@ For more implementation detail, see
       (indent-region (point-min) (point-max)))
     (funcall callback)))
 
-(defun apheleia--run-formatters
-    (formatters buffer remote callback &optional stdin)
+(cl-defun apheleia--run-formatters
+    (formatters buffer remote callback &optional stdin &key on-error)
   "Run one or more code formatters on the current buffer.
 FORMATTERS is a list of symbols that appear as keys in
 `apheleia-formatters'. BUFFER is the `current-buffer' when this
@@ -965,7 +965,11 @@ STDIN is a buffer containing the standard input for the first
 formatter in COMMANDS. This should not be supplied by the caller
 and instead is supplied by this command when invoked recursively.
 The stdout of the previous formatter becomes the stdin of the
-next formatter."
+next formatter.
+
+ON-ERROR, if provided, is invoked with an error string as
+argument if the formatting failed, or if CALLBACK is not invoked
+for some other reason."
   (let ((command (alist-get (car formatters) apheleia-formatters)))
     (funcall
      (cond
@@ -987,7 +991,8 @@ function: %s" command)))
              ;; the current callback and using the current formatters output
              ;; as stdin.
              (apheleia--run-formatters
-              (cdr formatters) buffer remote callback stdout)
+              (cdr formatters) buffer remote callback stdout
+              :on-error on-error)
            (funcall callback stdout))))
      stdin
      (car formatters))))
@@ -1067,8 +1072,19 @@ even if a formatter is configured."
              (eq apheleia-remote-algorithm 'cancel))
     "Apheleia refused to run formatter due to `apheleia-remote-algorithm'"))
 
+(defmacro apheleia--with-on-error (on-error &rest body)
+  "Call ON-ERROR with an error string if BODY throws an error.
+Still throw the error. Otherwise, just behave as `progn'."
+  (declare (indent 1))
+  (let ((e (make-symbol "e")))
+    `(condition-case ,e
+         (progn ,@body)
+       (error
+        (funcall (or ,on-error #'ignore) (error-message-string ,e))
+        (signal (car ,e) (cdr ,e))))))
+
 ;;;###autoload
-(defun apheleia-format-buffer (formatter &optional callback)
+(cl-defun apheleia-format-buffer (formatter &optional callback &key on-error)
   "Run code formatter asynchronously on current buffer, preserving point.
 
 FORMATTER is a symbol appearing as a key in
@@ -1088,7 +1104,10 @@ however, the operation is aborted.
 
 If the formatter actually finishes running and the buffer is
 successfully updated (even if the formatter has not made any
-changes), CALLBACK, if provided, is invoked with no arguments."
+changes), CALLBACK, if provided, is invoked with no arguments.
+
+If there is an error such that CALLBACK is not invoked, then
+ON-ERROR will be invoked with an error string as argument."
   (interactive (progn
                  (when-let ((err (apheleia--disallowed-p)))
                    (user-error err))
@@ -1107,7 +1126,8 @@ changes), CALLBACK, if provided, is invoked with no arguments."
     ;; Fail silently if disallowed, since we don't want to throw an
     ;; error on `post-command-hook'. We already took care of throwing
     ;; `user-error' on interactive usage above.
-    (unless (apheleia--disallowed-p)
+    (if-let ((errmsg (apheleia--disallowed-p)))
+        (funcall on-error errmsg)
       (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
       (let ((cur-buffer (current-buffer))
             (remote (file-remote-p (or buffer-file-name

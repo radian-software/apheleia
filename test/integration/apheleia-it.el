@@ -23,14 +23,45 @@
   "List of unit tests, an alist.")
 (setq apheleia-it-tests nil)
 
-(cl-defmacro apheleia-it-deftest (name desc &rest kws &key mode before keys after)
+(cl-defmacro apheleia-it-deftest (name desc &rest kws &key scripts formatters steps)
   "Declare a unit test."
   (declare (indent defun) (doc-string 2))
-  (ignore mode before keys after)
+  (ignore scripts formatters steps)
   `(progn
      (when (alist-get ',name apheleia-it-tests)
        (message "Overwriting existing test: %S" ',name))
      (setf (alist-get ',name apheleia-it-tests) '(:desc ,desc ,@kws))))
+
+(defvar apheleia-it-workdir
+  (file-name-directory (or load-file-name buffer-file-name))
+  "Directory that this variable is defined in.")
+
+(defun apheleia-it--run-test-steps (steps callback bindings)
+  "Run STEPS from defined integration test.
+This is a list that can appear in `:steps'. For supported steps,
+see the implementation below, or example tests. CALLBACK will be
+invoked, with no arguments, after the steps are run. This could
+be synchronous or asynchronous. BINDINGS is a `let'-style list of
+lexical bindings that will be available for `eval' steps."
+  (pcase steps
+    (`nil (funcall callback))
+    (`((insert ,str) . ,rest)
+     (insert str)
+     (apheleia-it--run-test-steps rest callback bindings))
+    (`((with-callback ,callback . ,body) . ,rest)
+     (apheleia-it--run-test-steps
+      body
+      #'ignore
+      (cons
+       (list callback (lambda ()
+                        (apheleia-it--run-test-steps
+                         rest callback bindings)))
+       bindings)))
+    (`((eval ,form))
+     (eval
+      `(let (,@bindings)
+         ,form))
+     (funcall callback))))
 
 (defun apheleia-it-run-test (name)
   "Run a single unit test. Return non-nil if passed, nil if failed."
@@ -50,10 +81,18 @@
     (cl-block nil
       (save-window-excursion
         (pop-to-buffer bufname)
+        (setq-local default-directory apheleia-it-workdir)
         (fundamental-mode)
         (apheleia-it-mode +1)
-        (save-excursion
-          (insert (plist-get test :before)))
+        (ignore-errors
+          (delete-directory ".tmp" 'recursive))
+        (make-directory ".tmp")
+        (dolist (script (plist-get test :scripts))
+          (with-temp-buffer
+            (insert (cdr script))
+            (write-file (format ".tmp/%s") (car script))))
+        (setq-local apheleia-formatters (plist-get test :formatters))
+        (apheleia-it--run-test-steps (plist-get test :steps) FIXME)
         (search-forward "|")
         (delete-region (match-beginning 0) (match-end 0))
         (condition-case e
@@ -120,7 +159,7 @@ input=\"$(cat)\"
          "expected_input=%s
 expected_output=%s
 if [[ \"${input}\" == \"${expected_input}\" ]]; then
-    printf '%s' \"${expected_output}\"
+    printf '%%s' \"${expected_output}\"
     exit 0
 fi
 "
