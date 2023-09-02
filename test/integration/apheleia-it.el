@@ -40,14 +40,12 @@
   "Run STEPS from defined integration test.
 This is a list that can appear in `:steps'. For supported steps,
 see the implementation below, or example tests. CALLBACK will be
-invoked, with no arguments, after the steps are run. This could
-be synchronous or asynchronous. BINDINGS is a `let'-style list of
-lexical bindings that will be available for `eval' steps."
+invoked, with nil or an error, after the steps are run. This
+could be synchronous or asynchronous. BINDINGS is a `let'-style
+list of lexical bindings that will be available for `eval'
+steps."
   (pcase steps
     (`nil (funcall callback))
-    (`((insert ,str) . ,rest)
-     (insert str)
-     (apheleia-it--run-test-steps rest callback bindings))
     (`((with-callback ,callback . ,body) . ,rest)
      (apheleia-it--run-test-steps
       body
@@ -61,7 +59,12 @@ lexical bindings that will be available for `eval' steps."
      (eval
       `(let (,@bindings)
          ,form))
-     (funcall callback))))
+     (funcall callback))
+    (`((insert ,str) . ,rest)
+     (insert str)
+     (apheleia-it--run-test-steps rest callback bindings))
+    (`((expect ,str) . ,rest)
+     )))
 
 (defun apheleia-it-run-test (name)
   "Run a single unit test. Return non-nil if passed, nil if failed."
