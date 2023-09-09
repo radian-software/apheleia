@@ -215,12 +215,7 @@ rather than using this system."
   :group 'apheleia)
 
 (defcustom apheleia-mode-alist
-  '(;; php-mode has to come before cc-mode
-    (php-mode . phpcs)
-    ;; json-mode has to come before javascript-mode (aka js-mode)
-    (json-mode . prettier-json)
-    (json-ts-mode . prettier-json)
-    ;; rest are alphabetical
+  '(;; Alphabetical please
     (asm-mode . asmfmt)
     (awk-mode . gawk)
     (bash-ts-mode . shfmt)
@@ -257,6 +252,8 @@ rather than using this system."
     (js3-mode . prettier-javascript)
     (js-mode . prettier-javascript)
     (js-ts-mode . prettier-javascript)
+    (json-mode . prettier-json)
+    (json-ts-mode . prettier-json)
     (kotlin-mode . ktlint)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
@@ -265,6 +262,7 @@ rather than using this system."
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (perl-mode . perltidy)
+    (php-mode . phpcs)
     (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
@@ -302,8 +300,10 @@ Be careful when writing regexps to include \"\\'\" and to escape
 to match \".jsx\" files you might use \"\\.jsx\\'\".
 
 If a given mode derives from another mode (e.g. `php-mode' and
-`cc-mode'), then ensure that the deriving mode comes before the mode
-to derive from, as the list is interpreted sequentially."
+`cc-mode'), then whichever entry in the alist is more specific
+will apply. In the case that multiple modes match
+`derived-mode-p' for the current buffer but neither derives from
+the other, whichever entry comes first will be used."
   :type '(alist
           :key-type
           (choice (symbol :tag "Major mode")

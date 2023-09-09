@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Breaking changes
+* The order of entries in `apheleia-mode-alist` is no longer as
+  important. Specifically, if two different mode entries in
+  `apheleia-mode-alist` match the current buffer, then the more
+  specific one is used, even if it comes later. This is generally
+  speaking what you would expect to happen. For other cases, such as
+  ordering of regex entries, or modes versus regexes, order is
+  respected as before ([#206]).
+
 ### Enhancements
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to

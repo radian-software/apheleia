@@ -1016,6 +1016,15 @@ When ARG is not a list its turned into a list."
       arg
     (list arg)))
 
+(defun apheleia--get-mode-chain ()
+  "Return list of major modes in current buffer.
+This is a list starting with `major-mode' and followed by its
+parents, if any."
+  (let ((modes (list major-mode)))
+    (while (get (car modes) 'derived-mode-parent)
+      (push (get (car modes) 'derived-mode-parent) modes))
+    (nreverse modes)))
+
 (defun apheleia--get-formatters (&optional interactive)
   "Return the list of formatters to use for the current buffer.
 This is a list of symbols that may appear as cars in
@@ -1032,14 +1041,45 @@ even if a formatter is configured."
   (or (and (not (eq interactive 'prompt))
            (apheleia--ensure-list
             (or apheleia-formatter
-                (cl-dolist (entry apheleia-mode-alist)
-                  (when (or (and (symbolp (car entry))
-                                 (derived-mode-p (car entry)))
-                            (and (stringp (car entry))
-                                 buffer-file-name
-                                 (string-match-p
-                                  (car entry) buffer-file-name)))
-                    (cl-return (cdr entry)))))))
+                ;; Go through the mode alist. There are two types of
+                ;; entries, mode and regex. We should return whichever
+                ;; entry matches first in the list. However, if two
+                ;; modes match, then we should return the entry for
+                ;; the more specific mode.
+                ;;
+                ;; Implementation: Iterate once. If we match a regex,
+                ;; immediately return, unless we already matched a
+                ;; mode (setting the `formatters' variable), in which
+                ;; case do not return, but also keep going to see if
+                ;; there is a more specific mode later in the list. If
+                ;; we match a mode, save the entry for later
+                ;; reference, as well as the mode that matched it.
+                ;; Update that saved entry only when we find a more
+                ;; specific mode (i.e., a mode that is derived from
+                ;; but not equal to the previously saved mode). Return
+                ;; at the end of the loop the saved entry, if we
+                ;; didn't exit early.
+                (let* ((unset (make-symbol "gensym-unset"))
+                       (matched-mode nil)
+                       (formatters unset))
+                  (cl-dolist (entry apheleia-mode-alist
+                                    (unless (eq formatters unset)
+                                      formatters))
+                    (when (and (stringp (car entry))
+                               buffer-file-name
+                               (string-match-p
+                                (car entry) buffer-file-name)
+                               (eq formatters unset))
+                      (cl-return (cdr entry)))
+                    (when (and (symbolp (car entry))
+                               (derived-mode-p (car entry))
+                               (or (eq formatters unset)
+                                   (and
+                                    (not (eq (car entry) matched-mode))
+                                    (provided-mode-derived-p
+                                     (car entry) matched-mode))))
+                      (setq matched-mode (car entry))
+                      (setq formatters (cdr entry))))))))
       (and interactive
            (list
             (intern
