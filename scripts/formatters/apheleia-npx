@@ -67,6 +67,7 @@ $(< .pnp.js)
        .packageLocation)
 
     .forEach((dir) => console.log(dir))
+)
 EOF
 
 # Read the list of files into a variable which we are going to split
