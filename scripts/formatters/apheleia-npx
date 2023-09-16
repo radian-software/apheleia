@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+# This script is like npx but also works for yarn pnp projects, and
+# never tries to install anything. It is very fast.
+#
+# The script takes as arguments a command to execute and the arguments
+# to pass to it. If the command is installed as a binary by an npm
+# module in the current project, then that binary is used. Otherwise,
+# the script is execed as normal from $PATH. In either case, the
+# working directory is preserved.
+
+if (( "$#" == 0 )); then
+    echo >&2 "usage: apheleia-npmx CMD [ARG...]"
+    exit 1
+fi
+
+# This function prints the name of the current directory if it
+# contains a file or directory named after the first argument, or the
+# parent directory if it contains such a file, or the parent's parent,
+# and so on. If no such file is found it returns nonzero.
+# https://unix.stackexchange.com/a/22215
+find_upwards() {
+    fname="$1"
+
+    path="${PWD}"
+    while [[ -n "${path}" && ! -e "${path}/${fname}" ]]; do
+        path="${path%/*}"
+    done
+    [[ -n "${path}" ]] && echo "${path}"
+}
+
+# No containing package.json: not an npm project, exec as normal.
+if ! dir="$(find_upwards package.json)"; then
+    exec "$@"
+fi
+
+# node_modules directory has the binary directly: use that one.
+if [[ -x "${dir}/node_modules/.bin/$1" ]]; then
+    exec "${dir}/node_modules/.bin/$1" "${@:2}"
+fi
+
+# No pnp configuration found: exec as normal.
+if [[ ! -f "${dir}/.pnp.js" ]]; then
+    exec "$@"
+fi
+
+# Assuming pnp: get a list of all the installed module locations from
+# the pnp module loader script. There doesn't appear to be a public
+# interface for this but all the dependency information is hardcoded
+# into the generated module script and we can just ask for it to be
+# printed.
+read -r -d '' script <<EOF
+$(< .pnp.js)
+
+[...packageInformationStores.get(null).get(null).packageDependencies.entries()].
+  map(([pkg, ver]) => packageInformationStores.get(pkg).get(ver).packageLocation).
+  forEach((dir) => console.log(dir))
+EOF
+
+# Read the list of files into a variable which we are going to split
+# on newlines to loop through it without messing up stdin.
+mods="$(node -e "${script}")"
+
+# Iterate through the direct dependencies and see if the requested
+# binary exists in any of them.
+OLD_IFS="${IFS}" IFS=$'\n'
+for mod in ${mods}; do
+    if [[ -x "${mod}/.bin/$1" ]]; then
+        exec env NODE_OPTIONS="--require ${dir}/.pnp.js" "${mod}/.bin/$1" "${@:2}"
+    fi
+done
+IFS="${OLD_IFS}"
+
+# If not then default to executing globally.
+exec "$@"

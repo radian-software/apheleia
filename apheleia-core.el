@@ -768,11 +768,7 @@ cmd is to be run."
                     "node_modules"
                     project-dir)))))
             (when (file-executable-p binary)
-              (setcar command binary))))
-        (when (locate-dominating-file default-directory ".pnp.cjs")
-          (if-let (yarn-executable (executable-find "yarn"))
-              (push yarn-executable command)
-            (message "apheleia: .pnp.cjs found but yarn is not installed"))))
+              (setcar command binary)))))
       (when (or (memq 'file command) (memq 'filepath command))
         ;; Fail when using file but not as the first formatter in this
         ;; sequence. (But filepath is okay, since it indicates content

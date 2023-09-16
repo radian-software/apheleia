@@ -8,6 +8,10 @@ The format is based on [Keep a Changelog].
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
+* Built-in formatters now use a new `"apheleia-npx"` built-in script
+  instead of the legacy `npx` keyword. The effect of the new script is
+  the same, except that it also works with Yarn PNP projects as well
+  as `node_modules` style projects ([#200]).
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
@@ -51,6 +55,7 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
+[#200]: https://github.com/radian-software/apheleia/pull/200
 
 ## 3.2 (released 2023-02-25)
 ### Features

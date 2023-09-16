@@ -91,42 +91,42 @@
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
     (phpcs . ("apheleia-phpcs"))
     (prettier
-     . (npx "prettier" "--stdin-filepath" filepath
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-css
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=css"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=css"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-html
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=html"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=html"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-graphql
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=graphql"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-javascript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=babel-flow"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-json
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=json"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=json"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=markdown"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-ruby
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=ruby"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-scss
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=scss"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-svelte
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=svelte"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=svelte"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-typescript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=typescript"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-yaml
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=yaml"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
-    (purs-tidy . (npx "purs-tidy" "format"))
+    (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
     (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (shfmt . ("shfmt"
@@ -185,6 +185,11 @@ If you use the symbol `npx' as one of the elements of commands,
 then the first string element of the command list is resolved
 inside node_modules/.bin if such a directory exists anywhere
 above the current `default-directory'.
+
+\(However, instead of using `npx', consider using
+\"apheleia-npx\", which is a built-in script that will replicate
+the effect, but will also work with Yarn PNP projects and other
+npm project types that may exist in the future.)
 
 Any list elements that are not strings and not any of the special
 symbols mentioned above will be evaluated when the formatter is
