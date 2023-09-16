@@ -4,7 +4,7 @@
 
 ;; Author: Radian LLC <contact+apheleia@radian.codes>
 ;; Created: 7 Jul 2019
-;; Homepage: https://github.com/raxod502/apheleia
+;; Homepage: https://github.com/radian-software/apheleia
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "26"))
 ;; SPDX-License-Identifier: MIT
@@ -19,7 +19,7 @@
 ;; maintains the position of point relative to its surrounding text
 ;; even if the buffer is modified by the reformatting.
 
-;; Please see https://github.com/raxod502/apheleia for more information.
+;; Please see https://github.com/radian-software/apheleia for more information.
 
 ;;; Code:
 
@@ -28,7 +28,7 @@
 (defgroup apheleia nil
   "Reformat buffer without moving point."
   :group 'external
-  :link '(url-link :tag "GitHub" "https://github.com/raxod502/apheleia")
+  :link '(url-link :tag "GitHub" "https://github.com/radian-software/apheleia")
   :link '(emacs-commentary-link :tag "Commentary" "apheleia"))
 
 (defcustom apheleia-formatters
@@ -91,44 +91,57 @@
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
     (phpcs . ("apheleia-phpcs"))
     (prettier
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-css
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=css"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath "--parser=css"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-html
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=html"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath "--parser=html"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-graphql
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=graphql"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath "--parser=graphql"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-javascript
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=babel-flow"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath"
+        filepath "--parser=babel-flow"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-json
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=json"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=markdown"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath "--parser=markdown"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-ruby
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=ruby"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath "--parser=ruby"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-scss
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=scss"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath "--parser=scss"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-svelte
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=svelte"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath "--parser=svelte"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-typescript
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=typescript"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath "--parser=typescript"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-yaml
-     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath "--parser=yaml"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier"
+        "--stdin-filepath" filepath "--parser=yaml"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
     (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
+    (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
+                      "--format" "quiet" "--fail-level" "fatal"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
@@ -218,12 +231,7 @@ rather than using this system."
   :group 'apheleia)
 
 (defcustom apheleia-mode-alist
-  '(;; php-mode has to come before cc-mode
-    (php-mode . phpcs)
-    ;; json-mode has to come before javascript-mode (aka js-mode)
-    (json-mode . prettier-json)
-    (json-ts-mode . prettier-json)
-    ;; rest are alphabetical
+  '(;; Alphabetical please
     (asm-mode . asmfmt)
     (awk-mode . gawk)
     (bash-ts-mode . shfmt)
@@ -260,6 +268,8 @@ rather than using this system."
     (js3-mode . prettier-javascript)
     (js-mode . prettier-javascript)
     (js-ts-mode . prettier-javascript)
+    (json-mode . prettier-json)
+    (json-ts-mode . prettier-json)
     (kotlin-mode . ktlint)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
@@ -268,6 +278,7 @@ rather than using this system."
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (perl-mode . perltidy)
+    (php-mode . phpcs)
     (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
@@ -305,8 +316,10 @@ Be careful when writing regexps to include \"\\'\" and to escape
 to match \".jsx\" files you might use \"\\.jsx\\'\".
 
 If a given mode derives from another mode (e.g. `php-mode' and
-`cc-mode'), then ensure that the deriving mode comes before the mode
-to derive from, as the list is interpreted sequentially."
+`cc-mode'), then whichever entry in the alist is more specific
+will apply. In the case that multiple modes match
+`derived-mode-p' for the current buffer but neither derives from
+the other, whichever entry comes first will be used."
   :type '(alist
           :key-type
           (choice (symbol :tag "Major mode")

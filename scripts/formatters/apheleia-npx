@@ -52,9 +52,21 @@ fi
 read -r -d '' script <<EOF
 $(< .pnp.js)
 
-[...packageInformationStores.get(null).get(null).packageDependencies.entries()].
-  map(([pkg, ver]) => packageInformationStores.get(pkg).get(ver).packageLocation).
-  forEach((dir) => console.log(dir))
+(
+  [...packageInformationStores
+    .get(null)
+    .get(null)
+    .packageDependencies
+    .entries()
+  ]
+
+    .map(([pkg, ver]) =>
+       packageInformationStores
+       .get(pkg)
+       .get(ver)
+       .packageLocation)
+
+    .forEach((dir) => console.log(dir))
 EOF
 
 # Read the list of files into a variable which we are going to split
@@ -66,7 +78,8 @@ mods="$(node -e "${script}")"
 OLD_IFS="${IFS}" IFS=$'\n'
 for mod in ${mods}; do
     if [[ -x "${mod}/.bin/$1" ]]; then
-        exec env NODE_OPTIONS="--require ${dir}/.pnp.js" "${mod}/.bin/$1" "${@:2}"
+        export NODE_OPTIONS="--require ${dir}/.pnp.js"
+        exec "${mod}/.bin/$1" "${@:2}"
     fi
 done
 IFS="${OLD_IFS}"

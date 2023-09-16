@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Breaking changes
+* The order of entries in `apheleia-mode-alist` is no longer as
+  important. Specifically, if two different mode entries in
+  `apheleia-mode-alist` match the current buffer, then the more
+  specific one is used, even if it comes later. This is generally
+  speaking what you would expect to happen. For other cases, such as
+  ordering of regex entries, or modes versus regexes, order is
+  respected as before ([#206]).
+
 ### Enhancements
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
@@ -38,6 +47,8 @@ The format is based on [Keep a Changelog].
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
+* [`ruby-standard`](https://github.com/standardrb/standard) for
+  [ruby](https://www.ruby-lang.org/en/) ([#201])
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
