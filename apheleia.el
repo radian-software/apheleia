@@ -136,12 +136,14 @@
               "-ln" (cl-case (bound-and-true-p sh-shell)
                       (sh "posix")
                       (t "bash"))
-              "-i" (number-to-string
-                    (cond
-                     (indent-tabs-mode 0)
-                     ((boundp 'sh-basic-offset)
-                      sh-basic-offset)
-                     (t 4)))
+              (when apheleia-formatters-respect-indent-level
+                (list
+                 "-i" (number-to-string
+                       (cond
+                        (indent-tabs-mode 0)
+                        ((boundp 'sh-basic-offset)
+                         sh-basic-offset)
+                        (t 4)))))
               "-"))
     (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (stylua . ("stylua" "-"))

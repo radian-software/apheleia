@@ -14,6 +14,10 @@ The format is based on [Keep a Changelog].
   respected as before ([#206]).
 
 ### Enhancements
+* New user option `apheleia-formatters-respect-indent-level`,
+  defaulting to `t`. You can set this to `nil` to disable Apheleia
+  configuring formatters to use the same indent settings as the Emacs
+  major mode is using ([#208]).
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
@@ -62,6 +66,7 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
+[#208]: https://github.com/radian-software/apheleia/discussions/208
 
 ## 3.2 (released 2023-02-25)
 ### Features
