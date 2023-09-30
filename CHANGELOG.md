@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog].
   `apheleia-mode-alist` ([#191]).
 * Refactored the organisation of the apheleia package for ease of
   understanding and usability ([#215]).
+* Autoload the apheleia-goto-error command ([#215]).
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,

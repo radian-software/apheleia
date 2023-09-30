@@ -29,6 +29,7 @@ if it is successful."
   "Marker for the last error message for any formatter.
 This points into a log buffer.")
 
+;;;###autoload
 (defun apheleia-goto-error ()
   "Go to the most recently reported formatter error message."
   (interactive)
