@@ -8,7 +8,12 @@ EMACS ?= emacs
 TAG ?= latest
 
 # The order is important for compilation.
-for_compile := apheleia-utils.el apheleia.el apheleia-core.el
+for_compile := \
+    apheleia-formatters.el \
+    apheleia-log.el \
+    apheleia-rcs.el \
+    apheleia-utils.el \
+    apheleia.el
 for_checkdoc := *.el
 for_checkindent := *.el
 

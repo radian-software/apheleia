@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog].
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
+* Refactored the organisation of the apheleia package for ease of
+  understanding and usability ([#215]).
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
@@ -69,6 +71,7 @@ The format is based on [Keep a Changelog].
 [#209]: https://github.com/radian-software/apheleia/pull/209
 [#213]: https://github.com/radian-software/apheleia/pull/213
 [#214]: https://github.com/radian-software/apheleia/pull/214
+[#215]: https://github.com/radian-software/apheleia/pull/215
 
 ## 3.2 (released 2023-02-25)
 ### Features
