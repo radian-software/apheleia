@@ -505,11 +505,7 @@ spawned on remote machines."
                   (format " *apheleia-%s-stdout*" name)))
          (stderr (generate-new-buffer
                   (format " *apheleia-%s-stderr*" name)))
-         (log-name (format "%s*apheleia-%s-log*"
-                           (if apheleia-hide-log-buffers
-                               " "
-                             "")
-                           name)))
+         (log-name (apheliea-log--buffer-name name)))
     (condition-case-unless-debug e
         (progn
           (setq apheleia--current-process

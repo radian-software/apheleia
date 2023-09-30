@@ -38,6 +38,14 @@ This points into a log buffer.")
   (pop-to-buffer (marker-buffer apheleia--last-error-marker))
   (goto-char apheleia--last-error-marker))
 
+(defun apheliea-log--buffer-name (formatter)
+  "Get the name of the log buffer for FORMATTER."
+  (format "%s*apheleia-%s-log*"
+          (if apheleia-hide-log-buffers
+              " "
+            "")
+          formatter))
+
 (provide 'apheleia-log)
 
 ;;; apheleia-log.el ends here
