@@ -445,7 +445,8 @@ NO-QUERY, and CONNECTION-TYPE."
                             (mapconcat #'shell-quote-argument command " ")
                             " < "
                             (shell-quote-argument
-                             (apheleia--strip-remote remote-stdin)))))
+                             (apheleia-formatters-local-buffer-file-name
+                              remote-stdin)))))
                      (unwind-protect
                          (progn
                            (with-current-buffer stdin
@@ -660,13 +661,6 @@ as in `write-region'. WRITE-REGION is used instead of the actual
                   (apply run-hooks args)))))
     (save-buffer)))
 
-(defun apheleia--strip-remote (file-name)
-  "Return FILE-NAME with any TRAMP prefix removed.
-If FILE-NAME is not remote, return it unchanged."
-  (if-let ((remote (file-remote-p file-name)))
-      (substring file-name (length remote))
-    file-name))
-
 (defun apheleia--make-temp-file (remote prefix &optional dir-flag suffix)
   "Create a temporary file optionally on a remote machine.
 This function calls `make-temp-file' or `make-nearby-temp-file' depending on
@@ -714,7 +708,7 @@ See `apheleia--run-formatters' for a description of REMOTE."
                      (with-current-buffer buffer
                        (apheleia--write-region-silently
                         (point-min) (point-max) fname)))
-                   (apheleia--strip-remote fname))))
+                   (apheleia-formatters-local-buffer-file-name fname))))
       ;; Ensure file is on target right machine, or create a copy of it.
       (when old-fname
         (setq old-fname
@@ -821,7 +815,7 @@ machine from the machine file is available on"))
           (when (and (buffer-modified-p) buffer-file-name)
             (cl-return)))
         ;; We always strip out the remote-path prefix for file/filepath.
-        (let ((file-name (apheleia--strip-remote
+        (let ((file-name (apheleia-formatters-local-buffer-file-name
                           (or buffer-file-name
                               (concat default-directory
                                       (apheleia--safe-buffer-name))))))
@@ -839,7 +833,8 @@ machine from the machine file is available on"))
                              (file-name-extension file-name 'period))))
         (with-current-buffer stdin
           (apheleia--write-region-silently nil nil input-fname))
-        (let ((input-fname (apheleia--strip-remote input-fname)))
+        (let ((input-fname (apheleia-formatters-local-buffer-file-name
+                            input-fname)))
           (setq command (mapcar (lambda (arg)
                                   (if (memq arg '(input inplace))
                                       (progn
@@ -849,7 +844,8 @@ machine from the machine file is available on"))
                                 command))))
       (when (memq 'output command)
         (setq output-fname (apheleia--make-temp-file run-on-remote "apheleia"))
-        (let ((output-fname (apheleia--strip-remote output-fname)))
+        (let ((output-fname (apheleia-formatters-local-buffer-file-name
+                             output-fname)))
           (setq command (mapcar (lambda (arg)
                                   (if (eq arg 'output)
                                       output-fname

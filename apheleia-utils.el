@@ -89,13 +89,13 @@ Otherwise return the extension only."
         (list flag ext)
       ext)))
 
-(defun apheleia-formatters-local-buffer-file-name ()
-  "Get variable `buffer-file-name' without any remote components."
-  (when-let ((name buffer-file-name))
-    (let ((remote (file-remote-p name)))
-      (if remote
-          (substring name (length remote))
-        name))))
+(defun apheleia-formatters-local-buffer-file-name (&optional file-name)
+  "Get FILE-NAME without any remote components.
+FILE-NAME defaults to variable `buffer-file-name'."
+  (when-let ((file-name (or file-name buffer-file-name)))
+    (if-let ((remote (file-remote-p file-name)))
+        (substring file-name (length remote))
+      file-name)))
 
 (provide 'apheleia-utils)
 
