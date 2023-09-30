@@ -79,7 +79,7 @@
                   'web-mode-indent-style)))
                (apheleia-formatters-fill-column "-wrap"))
     (isort . ("isort" "-"))
-    (jq "jq" "."
+    (jq "jq" "." "-M"
         (apheleia-formatters-js-indent "--tab" "--indent"))
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
