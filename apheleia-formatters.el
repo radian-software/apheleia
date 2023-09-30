@@ -35,7 +35,7 @@
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
-                     (or (buffer-file-name)
+                     (or (apheleia-formatters-local-buffer-file-name)
                          (apheleia-formatters-mode-extension)
                          ".c")))
     (cmake-format . ("cmake-format" "-"))

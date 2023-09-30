@@ -28,6 +28,10 @@ The format is based on [Keep a Changelog].
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
 * Disable colorized output with the jq formatter ([#213]).
+* Fixed apheleia skipped running a formatter on a remote when it isn't
+  installed locally ([#215]).
+* Fixed clang-format formatter did not respect remote file-name component for
+  the assumed file-name ([#215]).
 
 ### Formatters
 
