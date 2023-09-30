@@ -241,7 +241,6 @@ rather than using this system."
     (elm-mode . elm-format)
     (fish-mode . fish-indent)
     (go-mode . gofmt)
-    (go-mod-ts-mode . gofmt)
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
     (haskell-mode . brittany)
