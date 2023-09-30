@@ -906,11 +906,18 @@ being run, for diagnostic purposes."
       ;; with it.
       (insert-buffer-substring (or stdin buffer))
       (funcall func
-               ;; Original buffer being formatted.
+               ;; Original buffer being formatted. This shouldn't be
+               ;; modified. You can use it to check things like the
+               ;; current major mode, or the buffer filename. If you
+               ;; use it as input for the formatter, your formatter
+               ;; won't work when chained after another formatter.
                :buffer buffer
-               ;; Buffer the formatter should modify.
+               ;; Buffer the formatter should modify. This starts out
+               ;; containing the original file contents, which will be
+               ;; the same a `buffer' except it has already been
+               ;; transformed by any formatters that ran previously.
                :scratch scratch
-               ;; Name of the current formatter symbol.
+               ;; Name of the current formatter symbol, e.g. `black'.
                :formatter formatter
                ;; Callback after succesfully formatting.
                :callback
