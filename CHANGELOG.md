@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog].
 * `ktlint` would emit log messages into its stdout when formatting,
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
+* Disable colorized output with the jq formatter ([#213]).
 
 ### Formatters
 
@@ -62,6 +63,7 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
+[#213]: https://github.com/radian-software/apheleia/pull/213
 
 ## 3.2 (released 2023-02-25)
 ### Features
