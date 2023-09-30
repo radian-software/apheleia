@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog].
   speaking what you would expect to happen. For other cases, such as
   ordering of regex entries, or modes versus regexes, order is
   respected as before ([#206]).
+* Disable formatting of go module files with gofmt. This was never supported
+  ([#214]).
 
 ### Enhancements
 * New user option `apheleia-formatters-respect-indent-level`,
@@ -26,6 +28,7 @@ The format is based on [Keep a Changelog].
 * `ktlint` would emit log messages into its stdout when formatting,
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
+* Disable colorized output with the jq formatter ([#213]).
 
 ### Formatters
 
@@ -67,6 +70,8 @@ The format is based on [Keep a Changelog].
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
 [#208]: https://github.com/radian-software/apheleia/discussions/208
+[#213]: https://github.com/radian-software/apheleia/pull/213
+[#214]: https://github.com/radian-software/apheleia/pull/214
 
 ## 3.2 (released 2023-02-25)
 ### Features

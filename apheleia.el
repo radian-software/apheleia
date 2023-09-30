@@ -79,7 +79,7 @@
                   'web-mode-indent-style)))
                (apheleia-formatters-fill-column "-wrap"))
     (isort . ("isort" "-"))
-    (jq "jq" "."
+    (jq "jq" "." "-M"
         (apheleia-formatters-js-indent "--tab" "--indent"))
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
@@ -243,7 +243,6 @@ rather than using this system."
     (elm-mode . elm-format)
     (fish-mode . fish-indent)
     (go-mode . gofmt)
-    (go-mod-ts-mode . gofmt)
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
     (haskell-mode . brittany)
