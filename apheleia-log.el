@@ -46,6 +46,58 @@ This points into a log buffer.")
             "")
           formatter))
 
+(defun apheleia-log--formatter-result
+    (log-buffer command proc-exit-status exit-ok directory stderr-string)
+  "Log the result of a formatter process.
+LOG-BUFFER is the name of the log-buffer.
+COMMAND is the list of arguments forming the formatter command line.
+PROC-EXIT-STATUS is the exit code of the formatter.
+EXIT-OK is true when the formatter exited sucesfully.
+DIRECTORY is the directory in which the formatter ran.
+STDERR-STRING is the stderr output of the formatter."
+  (with-current-buffer (get-buffer-create log-buffer)
+    (special-mode)
+    (save-restriction
+      (widen)
+      (let ((inhibit-read-only t)
+            (orig-point (point))
+            (keep-at-end (eobp)))
+        (goto-char (point-max))
+        (skip-chars-backward "\n")
+        (delete-region (point) (point-max))
+        (unless (bobp)
+          (insert "\n\n\C-l\n"))
+
+        (unless exit-ok
+          (unless apheleia--last-error-marker
+            (setq apheleia--last-error-marker (make-marker)))
+          (move-marker apheleia--last-error-marker (point)))
+
+        (insert
+         (current-time-string)
+         " :: "
+         directory
+         "\n$ "
+         (mapconcat #'shell-quote-argument command " ")
+         "\n\n"
+         (if (string-empty-p stderr-string)
+             "(no output on stderr)"
+           stderr-string)
+         "\n\n"
+         "Command "
+         (if exit-ok "succeeded" "failed")
+         " with exit code "
+         (number-to-string proc-exit-status)
+         ".\n")
+        ;; Known issue: this does not actually work; point is left at the end
+        ;; of the previous command output, instead of being moved to the end of
+        ;; the buffer for some reason.
+        (goto-char
+         (if keep-at-end
+             (point-max)
+           (min (point-max) orig-point)))
+        (goto-char (point-max))))))
+
 (provide 'apheleia-log)
 
 ;;; apheleia-log.el ends here

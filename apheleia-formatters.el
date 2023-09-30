@@ -532,56 +532,14 @@ spawned on remote machines."
                      ;; formatter failed. Every process output is
                      ;; delimited by a line-feed character.
                      (unless (and exit-ok apheleia-log-only-errors)
-                       (with-current-buffer (get-buffer-create log-name)
-                         (special-mode)
-                         (save-restriction
-                           (widen)
-                           (let ((inhibit-read-only t)
-                                 (orig-point (point))
-                                 (keep-at-end (eobp))
-                                 (stderr-string
-                                  (with-current-buffer stderr
-                                    (string-trim (buffer-string)))))
-                             (goto-char (point-max))
-                             (skip-chars-backward "\n")
-                             (delete-region (point) (point-max))
-                             (unless (bobp)
-                               (insert
-                                "\n\n\C-l\n"))
-                             (unless exit-ok
-                               (unless apheleia--last-error-marker
-                                 (setq apheleia--last-error-marker
-                                       (make-marker))
-                                 (move-marker
-                                  apheleia--last-error-marker (point))))
-                             (insert
-                              (current-time-string)
-                              " :: "
-                              (buffer-local-value 'default-directory stdout)
-                              "\n$ "
-                              (mapconcat #'shell-quote-argument command " ")
-                              "\n\n"
-                              (if (string-empty-p stderr-string)
-                                  "(no output on stderr)"
-                                stderr-string)
-                              "\n\n"
-                              "Command "
-                              (if exit-ok "succeeded" "failed")
-                              " with exit code "
-                              (number-to-string proc-exit-status)
-                              ".\n")
-                             ;; Known issue: this does not actually
-                             ;; work; point is left at the end of
-                             ;; the previous command output, instead
-                             ;; of being moved to the end of the
-                             ;; buffer for some reason.
-                             (goto-char
-                              (if keep-at-end
-                                  (point-max)
-                                (min
-                                 (point-max)
-                                 orig-point)))
-                             (goto-char (point-max))))))
+                       (apheleia-log--formatter-result
+                        log-name
+                        command
+                        proc-exit-status
+                        exit-ok
+                        (buffer-local-value 'default-directory stdout)
+                        (with-current-buffer stderr
+                          (string-trim (buffer-string)))))
                      (when formatter
                        (run-hook-with-args
                         'apheleia-formatter-exited-hook
