@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog].
   ([#214]).
 
 ### Enhancements
-* Use the `prettier-json` formatter for `js-json-mode`.
+* Use the `prettier-json` formatter for `js-json-mode` ([#209]).
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
@@ -66,6 +66,7 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
+[#209]: https://github.com/radian-software/apheleia/pull/209
 [#213]: https://github.com/radian-software/apheleia/pull/213
 [#214]: https://github.com/radian-software/apheleia/pull/214
 
