@@ -863,7 +863,8 @@ purposes."
                               (let ((load-suffixes '(".el")))
                                 (locate-library "apheleia"))))))
                         exec-path)))
-      (when (executable-find (apheleia-formatter--arg1 ctx))
+      (when (executable-find (apheleia-formatter--arg1 ctx)
+                             (eq apheleia-remote-algorithm 'remote))
         (apheleia--execute-formatter-process
          :ctx ctx
          :callback
