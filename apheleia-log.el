@@ -47,11 +47,10 @@ This points into a log buffer.")
           formatter))
 
 (defun apheleia-log--formatter-result
-    (log-buffer command proc-exit-status exit-ok directory stderr-string)
+    (ctx log-buffer exit-ok directory stderr-string)
   "Log the result of a formatter process.
+CTX The formatter process context (see `apheleia-formatter--context').
 LOG-BUFFER is the name of the log-buffer.
-COMMAND is the list of arguments forming the formatter command line.
-PROC-EXIT-STATUS is the exit code of the formatter.
 EXIT-OK is true when the formatter exited sucesfully.
 DIRECTORY is the directory in which the formatter ran.
 STDERR-STRING is the stderr output of the formatter."
@@ -78,7 +77,10 @@ STDERR-STRING is the stderr output of the formatter."
          " :: "
          directory
          "\n$ "
-         (mapconcat #'shell-quote-argument command " ")
+         (mapconcat #'shell-quote-argument
+                    `(,(apheleia-formatter--arg1 ctx)
+                      ,@(apheleia-formatter--argv ctx))
+                    " ")
          "\n\n"
          (if (string-empty-p stderr-string)
              "(no output on stderr)"
@@ -87,7 +89,7 @@ STDERR-STRING is the stderr output of the formatter."
          "Command "
          (if exit-ok "succeeded" "failed")
          " with exit code "
-         (number-to-string proc-exit-status)
+         (number-to-string (apheleia-formatter--exit-status ctx))
          ".\n")
         ;; Known issue: this does not actually work; point is left at the end
         ;; of the previous command output, instead of being moved to the end of

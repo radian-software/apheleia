@@ -247,10 +247,12 @@ environment variable, defaulting to all formatters."
                 (copy-to-buffer stdout-buffer (point-min) (point-max))))
           (progn
 
-            (let ((result (apheleia--format-command command nil nil)))
-              (setq command (nthcdr 3 result)
-                    in-temp-real-file (nth 0 result)
-                    out-temp-file (nth 1 result)))
+            (let ((ctx (apheleia--formatter-context
+                        (intern formatter) command nil nil)))
+              (setq command `(,(apheleia-formatter--arg1 ctx)
+                              ,@(apheleia-formatter--argv ctx))
+                    in-temp-real-file (apheleia-formatter--input-fname ctx)
+                    out-temp-file (apheleia-formatter--output-fname ctx)))
 
             (with-current-buffer stdout-buffer
               (erase-buffer))

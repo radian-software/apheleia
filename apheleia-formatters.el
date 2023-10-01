@@ -7,6 +7,7 @@
 
 ;;; Code:
 
+(require 'apheleia-formatter-context)
 (require 'apheleia-log)
 (require 'apheleia-utils)
 
@@ -193,6 +194,7 @@ rather than using this system."
             (choice
              (string :tag "Argument")
              (const :tag "Look for command in node_modules/.bin" npx)
+             (const :tag "TODO: docstring" inplace)
              (const :tag "Name of file being formatted" filepath)
              (const :tag "Name of real file used for input" file)
              (const :tag "Name of temporary file used for input" input)
@@ -477,22 +479,16 @@ NO-QUERY, and CONNECTION-TYPE."
       (delete-file stderr-file))))
 
 (cl-defun apheleia--execute-formatter-process
-    (&key command stdin remote callback ensure exit-status formatter)
+    (&key ctx callback ensure exit-status)
   "Wrapper for `make-process' that behaves a bit more nicely.
-COMMAND is as in `make-process'. STDIN, if given, is a buffer
-whose contents are fed to the process on stdin. CALLBACK is
-invoked with one argument, the buffer containing the text from
-stdout, when the process terminates (if it succeeds). ENSURE is a
-callback that's invoked whether the process exited sucessfully or
+CTX is a formatter process context (see `apheleia-formatter--context').
+CALLBACK is invoked with one argument, the buffer containing the text
+from stdout, when the process terminates (if it succeeds). ENSURE is a
+callback that's invoked whether the process exited successfully or
 not. EXIT-STATUS is a function which is called with the exit
 status of the command; it should return non-nil to indicate that
 the command succeeded. If EXIT-STATUS is omitted, then the
-command succeeds provided that its exit status is 0. FORMATTER is
-the symbol of the formatter that is being run, for diagnostic
-purposes. FORMATTER is nil if the command being run does not
-correspond to a formatter. REMOTE if non-nil will use the
-formatter buffers file-handler, allowing the process to be
-spawned on remote machines."
+command succeeds provided that its exit status is 0."
   (when (process-live-p apheleia--current-process)
     (message "Interrupting %s" apheleia--current-process)
     (process-put apheleia--current-process :interrupted t)
@@ -500,7 +496,7 @@ spawned on remote machines."
     (accept-process-output apheleia--current-process 0.1 nil 'just-this-one)
     (when (process-live-p apheleia--current-process)
       (kill-process apheleia--current-process)))
-  (let* ((name (file-name-nondirectory (car command)))
+  (let* ((name (file-name-nondirectory (apheleia-formatter--arg1 ctx)))
          (stdout (generate-new-buffer
                   (format " *apheleia-%s-stdout*" name)))
          (stderr (generate-new-buffer
@@ -510,22 +506,27 @@ spawned on remote machines."
         (progn
           (setq apheleia--current-process
                 (funcall
-                 (if remote #'apheleia--call-process #'apheleia--make-process)
+                 (if (apheleia-formatter--remote ctx)
+                     #'apheleia--call-process
+                   #'apheleia--make-process)
                  :name (format "apheleia-%s" name)
-                 :stdin stdin
+                 :stdin (apheleia-formatter--stdin ctx)
                  :stdout stdout
                  :stderr stderr
-                 :command command
-                 :remote remote
+                 :command `(,(apheleia-formatter--arg1 ctx)
+                            ,@(apheleia-formatter--argv ctx))
+                 :remote (apheleia-formatter--remote ctx)
                  :connection-type 'pipe
                  :noquery t
                  :callback
                  (lambda (proc-exit-status proc-interrupted)
+                   (setf (apheleia-formatter--exit-status ctx)
+                         proc-exit-status)
                    (let ((exit-ok (and
                                    (not proc-interrupted)
                                    (funcall
                                     (or exit-status #'zerop)
-                                    proc-exit-status))))
+                                    (apheleia-formatter--exit-status ctx)))))
                      ;; Append standard-error from current formatter
                      ;; to log buffer when
                      ;; `apheleia-log-only-errors' is nil or the
@@ -533,17 +534,16 @@ spawned on remote machines."
                      ;; delimited by a line-feed character.
                      (unless (and exit-ok apheleia-log-only-errors)
                        (apheleia-log--formatter-result
+                        ctx
                         log-name
-                        command
-                        proc-exit-status
-                        exit-ok
+                        (apheleia-formatter--exit-status ctx)
                         (buffer-local-value 'default-directory stdout)
                         (with-current-buffer stderr
                           (string-trim (buffer-string)))))
-                     (when formatter
+                     (when (apheleia-formatter--name ctx)
                        (run-hook-with-args
                         'apheleia-formatter-exited-hook
-                        :formatter formatter
+                        :formatter (apheleia-formatter--name ctx)
                         :error (not exit-ok)
                         :log (get-buffer log-name)))
                      (unwind-protect
@@ -554,7 +554,7 @@ spawned on remote machines."
                             (concat
                              "Failed to run %s: exit status %s "
                              "(see %s %s)")
-                            (car command)
+                            (apheleia-formatter--arg1 ctx)
                             proc-exit-status
                             (if (string-prefix-p " " log-name)
                                 "hidden buffer"
@@ -674,22 +674,27 @@ See `apheleia--run-formatters' for a description of REMOTE."
       (unless (or old-fname new-fname)
         (setq new-fname (apheleia--make-temp-file-for-rcs-patch new-buffer))))
 
-    (apheleia--execute-formatter-process
-     :command `("diff" "--rcs" "--strip-trailing-cr" "--"
-                ,(or old-fname "-")
-                ,(or new-fname "-"))
-     :stdin (if new-fname old-buffer new-buffer)
-     :callback callback
-     :remote remote
-     :ensure
-     (lambda ()
-       (dolist (file clear-files)
-         (ignore-errors
-           (delete-file file))))
-     :exit-status (lambda (status)
-                    ;; Exit status is 0 if no changes, 1 if some
-                    ;; changes, and 2 if error.
-                    (memq status '(0 1))))))
+    (let ((ctx (apheleia-formatter--context)))
+      (setf (apheleia-formatter--name ctx) nil ; Skip logging on failure
+            (apheleia-formatter--arg1 ctx) "diff"
+            (apheleia-formatter--argv ctx) `("--rcs" "--strip-trailing-cr" "--"
+                                             ,(or old-fname "-")
+                                             ,(or new-fname "-"))
+            (apheleia-formatter--remote ctx) remote
+            (apheleia-formatter--stdin ctx)
+            (if new-fname old-buffer new-buffer))
+
+      (apheleia--execute-formatter-process
+       :ctx ctx
+       :callback callback
+       :ensure
+       (lambda ()
+         (dolist (file clear-files)
+           (ignore-errors
+             (delete-file file))))
+       ;; Exit status is 0 if no changes, 1 if some changes, and 2 if
+       ;; error.
+       :exit-status (lambda (status) (memq status '(0 1)))))))
 
 (defun apheleia--safe-buffer-name ()
   "Return `buffer-name' without special file-system characters."
@@ -700,12 +705,22 @@ See `apheleia--run-formatters' for a description of REMOTE."
    ""
    (buffer-name)))
 
-(defun apheleia--format-command (command remote &optional stdin-buffer)
-  "Format COMMAND into a shell command and list of file paths.
-Returns a list with the car being the optional input file-name, the
-cadr being the optional output file-name, the caddr is the buffer to
-send as stdin to the formatter (when the input-fname is not used),
-and the cdddr being the cmd to run.
+(defun apheleia--replq (dest in out)
+  "Replace all references to IN with OUT in DEST.
+This function does not modify DEST in place, it returns a copy."
+  (setq in (apheleia--ensure-list in))
+  (mapcar (lambda (arg)
+            (if (memq arg in)
+                out
+              arg))
+          dest))
+
+(defun apheleia--formatter-context (name command remote &optional stdin-buffer)
+  "Construct a formatter context for the formatter with NAME and COMMAND.
+Returns a `apheleia-formatter--context' object on success and nil if
+the formatter is not executable. The returned formatter context may
+have some state such as temporary files that the caller is expected
+to cleanup.
 
 STDIN-BUFFER is the optional buffer to use when creating a temporary
 file for the formatters standard input. REMOTE asserts whether the
@@ -716,14 +731,10 @@ If COMMAND uses the symbol `file' and the current buffer is modified
 from what is written to disk, then return nil meaning meaning no
 cmd is to be run."
   (cl-block nil
-    (let* ((input-fname nil)
-           (output-fname nil)
-           ;; Either we're running remotely and the buffer is
-           ;; remote, or we're not running remotely and the
-           ;; buffer isn't remote.
+    (let* ((context (apheleia-formatter--context))
            (run-on-remote
-            (and (eq apheleia-remote-algorithm 'remote)
-                 remote))
+            (when (eq apheleia-remote-algorithm 'remote)
+              remote))
            ;; Whether the machine the process will run on matches
            ;; the machine the buffer/file is currently on. Either
            ;; we're running remotely and the buffer is remote or
@@ -731,26 +742,26 @@ cmd is to be run."
            ;; remote.
            (remote-match (equal run-on-remote remote))
            (stdin (or stdin-buffer (current-buffer)))
-           (npx nil)
            (command (apply #'list command)))
+      (setf (apheleia-formatter--name context) name)
+      (setf (apheleia-formatter--stdin context) stdin)
+      (setf (apheleia-formatter--remote context) remote)
       ;; TODO: Support arbitrary package managers, not just NPM.
       (when (memq 'npx command)
-        (setq npx t)
-        (setq command (remq 'npx command)))
-      (when (and npx remote-match)
-        (when-let ((project-dir
-                    (locate-dominating-file
-                     default-directory "node_modules")))
-          (let ((binary
-                 (expand-file-name
-                  (car command)
-                  (expand-file-name
-                   ".bin"
+        (setq command (remq 'npx command))
+        (when remote-match
+          (when-let ((project-dir
+                      (locate-dominating-file default-directory
+                                              "node_modules")))
+            (let ((binary
                    (expand-file-name
-                    "node_modules"
-                    project-dir)))))
-            (when (file-executable-p binary)
-              (setcar command binary)))))
+                    (car command)
+                    (expand-file-name
+                     ".bin"
+                     (expand-file-name "node_modules" project-dir)))))
+              (when (file-executable-p binary)
+                (setcar command binary))))))
+
       (when (or (memq 'file command) (memq 'filepath command))
         ;; Fail when using file but not as the first formatter in this
         ;; sequence. (But filepath is okay, since it indicates content
@@ -773,38 +784,37 @@ machine from the machine file is available on"))
                           (or buffer-file-name
                               (concat default-directory
                                       (apheleia--safe-buffer-name))))))
-          (setq command (mapcar (lambda (arg)
-                                  (if (memq arg '(file filepath))
-                                      file-name
-                                    arg))
-                                command))))
+          (setq command (apheleia--replq '(file filepath) file-name command))))
+
       (when (or (memq 'input command) (memq 'inplace command))
-        (setq input-fname (apheleia--make-temp-file
-                           run-on-remote "apheleia" nil
-                           (when-let ((file-name
-                                       (or buffer-file-name
-                                           (apheleia--safe-buffer-name))))
-                             (file-name-extension file-name 'period))))
-        (with-current-buffer stdin
-          (apheleia--write-region-silently nil nil input-fname))
-        (let ((input-fname (apheleia-formatters-local-buffer-file-name
-                            input-fname)))
-          (setq command (mapcar (lambda (arg)
-                                  (if (memq arg '(input inplace))
-                                      (progn
-                                        (setq output-fname input-fname)
-                                        input-fname)
-                                    arg))
-                                command))))
+        (let ((input-fname (apheleia--make-temp-file
+                            run-on-remote "apheleia" nil
+                            (when-let ((file-name
+                                        (or buffer-file-name
+                                            (apheleia--safe-buffer-name))))
+                              (file-name-extension file-name 'period)))))
+          (with-current-buffer stdin
+            (apheleia--write-region-silently nil nil input-fname))
+          (setf (apheleia-formatter--input-fname context) input-fname
+                (apheleia-formatter--stdin context) nil)
+          ;; Inplace is the same as input but the output file is the
+          ;; input file.
+          (when (memq 'inplace command)
+            (setf (apheleia-formatter--output-fname context) input-fname))
+          (setq command (apheleia--replq
+                         command '(input inplace)
+                         (apheleia-formatters-local-buffer-file-name
+                          input-fname)))))
+
       (when (memq 'output command)
-        (setq output-fname (apheleia--make-temp-file run-on-remote "apheleia"))
-        (let ((output-fname (apheleia-formatters-local-buffer-file-name
-                             output-fname)))
-          (setq command (mapcar (lambda (arg)
-                                  (if (eq arg 'output)
-                                      output-fname
-                                    arg))
-                                command))))
+        (let ((output-fname (apheleia--make-temp-file
+                             run-on-remote "apheleia")))
+          (setf (apheleia-formatter--output-fname context) output-fname)
+          (setq command (apheleia--replq
+                         command 'output
+                         (apheleia-formatters-local-buffer-file-name
+                          output-fname)))))
+
       ;; Evaluate each element of arg that isn't a string and replace
       ;; it with the evaluated value. The result of an evaluation should
       ;; be a string or a list of strings. If the former its replaced as
@@ -825,7 +835,9 @@ machine from the machine file is available on"))
              collect val
              else do (error "Result of command evaluation must be a string \
 or list of strings: %S" arg)))
-      `(,input-fname ,output-fname ,stdin ,@command))))
+      (setf (apheleia-formatter--arg1 context) (car command)
+            (apheleia-formatter--argv context) (cdr command))
+      context)))
 
 (defun apheleia--run-formatter-process
     (command buffer remote callback stdin formatter)
@@ -840,7 +852,8 @@ purposes."
   ;; resolve for the whole formatting process (for example
   ;; `apheleia--current-process').
   (with-current-buffer buffer
-    (when-let ((ret (apheleia--format-command command remote stdin))
+    (when-let ((ctx
+                (apheleia--formatter-context formatter command remote stdin))
                (exec-path
                 (append `(,(expand-file-name
                             "scripts/formatters"
@@ -850,29 +863,23 @@ purposes."
                               (let ((load-suffixes '(".el")))
                                 (locate-library "apheleia"))))))
                         exec-path)))
-      (cl-destructuring-bind (input-fname output-fname stdin &rest command) ret
-        (when (executable-find (car command))
-          (apheleia--execute-formatter-process
-           :command command
-           :stdin (unless input-fname
-                    stdin)
-           :callback
-           (lambda (stdout)
-             (when output-fname
-               ;; Load output-fname contents into the stdout buffer.
-               (with-current-buffer stdout
-                 (erase-buffer)
-                 (insert-file-contents-literally output-fname)))
-             (funcall callback stdout))
-           :ensure
-           (lambda ()
-             (ignore-errors
-               (when input-fname
-                 (delete-file input-fname))
-               (when output-fname
-                 (delete-file output-fname))))
-           :remote remote
-           :formatter formatter))))))
+      (when (executable-find (apheleia-formatter--arg1 ctx))
+        (apheleia--execute-formatter-process
+         :ctx ctx
+         :callback
+         (lambda (stdout)
+           (when-let ((output-fname (apheleia-formatter--output-fname ctx)))
+             ;; Load output-fname contents into the stdout buffer.
+             (with-current-buffer stdout
+               (erase-buffer)
+               (insert-file-contents-literally output-fname)))
+           (funcall callback stdout))
+         :ensure
+         (lambda ()
+           (dolist (fname (list (apheleia-formatter--input-fname ctx)
+                                (apheleia-formatter--output-fname ctx)))
+             (when fname
+               (ignore-errors (delete-file fname))))))))))
 
 (defun apheleia--run-formatter-function
     (func buffer remote callback stdin formatter)
