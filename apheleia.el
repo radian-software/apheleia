@@ -249,6 +249,7 @@ rather than using this system."
     (java-mode . google-java-format)
     (java-ts-mode . google-java-format)
     (js3-mode . prettier-javascript)
+    (js-json-mode . prettier-json)
     (js-mode . prettier-javascript)
     (js-ts-mode . prettier-javascript)
     (json-mode . prettier-json)

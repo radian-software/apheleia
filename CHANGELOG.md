@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog].
   ([#214]).
 
 ### Enhancements
+* Use the `prettier-json` formatter for `js-json-mode`.
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
