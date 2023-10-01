@@ -6,7 +6,7 @@
 ;; Created: 7 Jul 2019
 ;; Homepage: https://github.com/radian-software/apheleia
 ;; Keywords: tools
-;; Package-Requires: ((emacs "26"))
+;; Package-Requires: ((emacs "27"))
 ;; SPDX-License-Identifier: MIT
 ;; Version: 3.2
 
