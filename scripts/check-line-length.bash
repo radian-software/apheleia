@@ -7,6 +7,9 @@ find=(
     find .
     -name .git -prune -o
     -name .log -prune -o
+    -path ./pnp-bin/.yarn -prune -o
+    -path ./pnp-bin/.pnp.cjs -prune -o
+    -path ./pnp-bin/yarn.lock -prune -o
     -path ./test/formatters -prune -o
     -name "*.elc" -o
     -type f -print
