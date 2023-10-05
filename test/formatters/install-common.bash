@@ -28,9 +28,6 @@ nodejs
 sudo
 unzip
 wget
-sudo
-unzip
-wget
 
 "
 
