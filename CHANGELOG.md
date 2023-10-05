@@ -12,8 +12,11 @@ The format is based on [Keep a Changelog].
   speaking what you would expect to happen. For other cases, such as
   ordering of regex entries, or modes versus regexes, order is
   respected as before ([#206]).
+* Disable formatting of go module files with gofmt. This was never supported
+  ([#214]).
 
 ### Enhancements
+* Use the `prettier-json` formatter for `js-json-mode` ([#209]).
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
@@ -26,6 +29,7 @@ The format is based on [Keep a Changelog].
 * `ktlint` would emit log messages into its stdout when formatting,
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
+* Disable colorized output with the jq formatter ([#213]).
 
 ### Formatters
 
@@ -66,7 +70,9 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
-[#200]: https://github.com/radian-software/apheleia/pull/200
+[#209]: https://github.com/radian-software/apheleia/pull/209
+[#213]: https://github.com/radian-software/apheleia/pull/213
+[#214]: https://github.com/radian-software/apheleia/pull/214
 
 ## 3.2 (released 2023-02-25)
 ### Features
