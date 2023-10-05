@@ -10,7 +10,7 @@
 # working directory is preserved.
 
 if (( "$#" == 0 )); then
-    echo >&2 "usage: apheleia-npmx CMD [ARG...]"
+    echo >&2 "usage: apheleia-npx CMD [ARG...]"
     exit 1
 fi
 
@@ -39,51 +39,24 @@ if [[ -x "${dir}/node_modules/.bin/$1" ]]; then
     exec "${dir}/node_modules/.bin/$1" "${@:2}"
 fi
 
-# No pnp configuration found: exec as normal.
-if [[ ! -f "${dir}/.pnp.js" ]]; then
-    exec "$@"
-fi
+pnp_path="${dir}/.pnp.cjs"
 
-# Assuming pnp: get a list of all the installed module locations from
-# the pnp module loader script. There doesn't appear to be a public
-# interface for this but all the dependency information is hardcoded
-# into the generated module script and we can just ask for it to be
-# printed.
-read -r -d '' script <<EOF
-$(< .pnp.js)
-
-(
-  [...packageInformationStores
-    .get(null)
-    .get(null)
-    .packageDependencies
-    .entries()
-  ]
-
-    .map(([pkg, ver]) =>
-       packageInformationStores
-       .get(pkg)
-       .get(ver)
-       .packageLocation)
-
-    .forEach((dir) => console.log(dir))
-)
-EOF
-
-# Read the list of files into a variable which we are going to split
-# on newlines to loop through it without messing up stdin.
-mods="$(node -e "${script}")"
-
-# Iterate through the direct dependencies and see if the requested
-# binary exists in any of them.
-OLD_IFS="${IFS}" IFS=$'\n'
-for mod in ${mods}; do
-    if [[ -x "${mod}/.bin/$1" ]]; then
-        export NODE_OPTIONS="--require ${dir}/.pnp.js"
-        exec "${mod}/.bin/$1" "${@:2}"
+# Pnp configuration found
+if [[ -f "${pnp_path}" ]]; then
+    apheleia_dir="$(cd $(dirname ${BASH_SOURCE[0]})/../.. &>/dev/null && pwd)"
+    find_pnp="${apheleia_dir}/pnp-bin/pnp-bin.cjs"
+    bin="$(${find_pnp} ${pnp_path} $1)"
+    node=$(which node)
+    # note: $bin might not be on the real filesystem, might be in a zip or virtual
+    if [[ -n $bin && -x $node ]]; then
+        if [[ -f "${dir}/.pnp.loader.mjs" ]]; then
+           loader_opt="--loader ${dir}/.pnp.loader.mjs"
+        fi
+        command="${node} --require ${pnp_path} ${loader_opt} ${bin} ${@:2}"
+        echo $command 1>&2
+        exec ${command}
     fi
-done
-IFS="${OLD_IFS}"
+fi
 
 # If not then default to executing globally.
 exec "$@"
