@@ -1,9 +1,6 @@
 # Need ruby for gem, need gcc and ruby headers for native gem deps
 apt-get install -y ruby ruby-dev gcc
 
-# Install the plugin
-npm install -g prettier @prettier/plugin-ruby
-
 # Apparently rubygems does not know how to do dependency resolution.
 # So we have to manually install an old version of this dependency to
 # avoid the latest version getting installed and then failing to build
@@ -13,3 +10,7 @@ gem install rbs -v 3.1.3
 # These are required dependencies documented at
 # https://www.npmjs.com/package/@prettier/plugin-ruby
 gem install prettier_print syntax_tree syntax_tree-haml syntax_tree-rbs
+
+# Install the plugin
+cd /tmp
+npm install --save-dev prettier @prettier/plugin-ruby
