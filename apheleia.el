@@ -44,6 +44,7 @@
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
               (apheleia-formatters-fill-column "--line-length")
               "-"))
+    (brittany . ("brittany"))
     (buildifier . ("buildifier"))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
