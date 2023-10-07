@@ -21,9 +21,3 @@ jobs:
           if [[ -n "${FORMATTERS}" ]]; then
               make fmt-build fmt-docker CMD="make fmt-test"
           fi
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        if: ${{ failure() }}
-        with:
-          limit-access-to-users: raxod502
-          wait-timeout-minutes: 5
