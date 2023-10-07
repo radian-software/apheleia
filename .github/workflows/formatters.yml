@@ -8,9 +8,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
-      - name: Fetch master
-        run: |
-          git fetch
+          # No shallow clone, we want to be able to compare PR branch
+          # to main.
+          fetch-depth: 0
       - name: Test changed formatters
         run: |
           set -euo pipefail
