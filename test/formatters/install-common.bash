@@ -15,7 +15,7 @@ tee -a /etc/apt/sources.list.d/nodejs.list >/dev/null <<EOF
 deb [arch=amd64] https://deb.nodesource.com/${node_repo} ${ubuntu_name} main
 EOF
 
-add-apt-repository ppa:longsleep/golang-backports
+add-apt-repository -n ppa:longsleep/golang-backports
 
 apt-get update
 
