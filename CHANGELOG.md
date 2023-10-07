@@ -54,8 +54,6 @@ The format is based on [Keep a Changelog].
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
-* **REMOVED** [`brittany`](https://github.com/lspitzner/brittany/) for haskell,
-  default formatter for haskell-mode is now `ormolu`
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169

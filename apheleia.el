@@ -244,7 +244,7 @@ rather than using this system."
     (go-mode . gofmt)
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
-    (haskell-mode . ormolu)
+    (haskell-mode . brittany)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
     (java-mode . google-java-format)
