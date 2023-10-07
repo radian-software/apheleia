@@ -43,7 +43,9 @@ The format is based on [Keep a Changelog].
   for [Bazel Build](https://bazel.build/) ([#171]).
 * [`cmake-format`](https://github.com/cheshirekow/cmake_format)
   for [CMake](https://cmake.org/) ([#172]).
+* [`fourmolu`](https://github.com/fourmolu/fourmolu) for haskell
 * [`html-tidy`](https://www.html-tidy.org/) for HTML/XML ([#173]).
+* [`ormolu`](https://github.com/tweag/ormolu) for haskell.
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
@@ -52,6 +54,8 @@ The format is based on [Keep a Changelog].
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
+* **REMOVED** [`brittany`](https://github.com/lspitzner/brittany/) for haskell,
+  default formatter for haskell-mode is now `ormolu`
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169

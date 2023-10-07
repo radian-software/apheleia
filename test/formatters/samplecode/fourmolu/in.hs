@@ -1,4 +1,4 @@
--- | Foo performs foo and sometimes bar.
+-- Foo performs foo and sometimes bar.
 
 foo :: Thoroughness
   -> Int -> Int
