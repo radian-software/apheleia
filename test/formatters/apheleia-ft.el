@@ -79,6 +79,9 @@ already in memory on the current branch."
               "git" nil (list (current-buffer) stderr-file) nil
               "diff" "--name-only" "--diff-filter=d" (format "%s..." ref))))
         (unless (zerop exit-status)
+          (with-temp-buffer
+            (insert-file-contents stderr-file)
+            (princ (buffer-string)))
           (error "Failed to 'git diff', got exit status %S" exit-status)))
       (split-string (buffer-string)))))
 
