@@ -8,4 +8,5 @@ set -euo pipefail
 cd "$(dirname "$0")"
 repo="$(cd ../.. && pwd)"
 
-exec emacs --batch -L "${repo}" -L . -l apheleia-ft -f "$1"
+exec emacs --batch -L "${repo}" -L . -l apheleia-ft \
+     --eval "(setq debug-on-error t)" -f "$1"
