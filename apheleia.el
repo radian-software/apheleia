@@ -115,7 +115,7 @@
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-ruby
      . ("apheleia-npx" "prettier" "--plugin=@prettier/plugin-ruby"
-        "--stdin-filepath" filepath
+        "--stdin-filepath" "dummy.rb"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-scss
      . ("apheleia-npx" "prettier" "--parser=scss"
