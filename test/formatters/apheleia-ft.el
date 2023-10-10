@@ -106,7 +106,7 @@ relative to repo root, as returned by git diff --name-only."
                 (map-keys
                  (map-filter
                   (lambda (fmt def)
-                    (member script def))
+                    (and (listp def) (member script def)))
                   apheleia-formatters))))))))
 
 (defun apheleia-ft--get-formatters-for-pull-request ()
