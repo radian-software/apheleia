@@ -241,6 +241,7 @@ rather than using this system."
     (elixir-mode . mix-format)
     (elixir-ts-mode . mix-format)
     (elm-mode . elm-format)
+    (emacs-lisp-mode . lisp-indent)
     (fish-mode . fish-indent)
     (go-mode . gofmt)
     (go-ts-mode . gofmt)
