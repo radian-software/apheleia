@@ -63,25 +63,26 @@
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
-    (html-tidy "tidy"
-               "--quiet" "yes"
-               "--tidy-mark" "no"
-               "--vertical-space" "yes"
-               "-indent"
-               (when (derived-mode-p 'nxml-mode)
-                 "-xml")
-               (apheleia-formatters-indent
-                "--indent-with-tabs"
-                "--indent-spaces"
-                (cond
-                 ((derived-mode-p 'nxml-mode)
-                  'nxml-child-indent)
-                 ((derived-mode-p 'web-mode)
-                  'web-mode-indent-style)))
-               (apheleia-formatters-fill-column "-wrap"))
+    (html-tidy .
+               ("tidy"
+                "--quiet" "yes"
+                "--tidy-mark" "no"
+                "--vertical-space" "yes"
+                "-indent"
+                (when (derived-mode-p 'nxml-mode)
+                  "-xml")
+                (apheleia-formatters-indent
+                 "--indent-with-tabs"
+                 "--indent-spaces"
+                 (cond
+                  ((derived-mode-p 'nxml-mode)
+                   'nxml-child-indent)
+                  ((derived-mode-p 'web-mode)
+                   'web-mode-indent-style)))
+                (apheleia-formatters-fill-column "-wrap")))
     (isort . ("isort" "-"))
-    (jq "jq" "." "-M"
-        (apheleia-formatters-js-indent "--tab" "--indent"))
+    (jq . ("jq" "." "-M"
+           (apheleia-formatters-js-indent "--tab" "--indent")))
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
