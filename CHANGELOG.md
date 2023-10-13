@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog].
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
+* Use `lisp-indent` as default formatter for `emacs-lisp-mode` ([#223])
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
