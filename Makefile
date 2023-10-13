@@ -80,7 +80,11 @@ docker: ## Start a Docker shell; e.g. make docker VERSION=25.3
 
 .PHONY: fmt-build  # env vars: FORMATTERS, TAG
 fmt-build: ## Build a Docker image with formatters installed
-	@test/formatters/build-image.bash
+	@COMMON=0 test/formatters/build-image.bash
+
+.PHONY: fmt-build-common  # env var: TAG
+fmt-build-common: ## Build a Docker image with just the common base
+	@COMMON=1 test/formatters/build-image.bash
 
 .PHONY: fmt-docker  # env var: TAG
 fmt-docker: ## Start a Docker shell for testing formatters

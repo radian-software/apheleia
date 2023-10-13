@@ -57,6 +57,7 @@
     (dart-format . ("dart" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
+    (fourmolu . ("fourmolu"))
     (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
     (gofmt . ("gofmt"))
     (gofumpt . ("gofumpt"))
@@ -88,6 +89,7 @@
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
+    (ormolu . ("ormolu"))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
     (phpcs . ("apheleia-phpcs"))
     (prettier
@@ -251,6 +253,7 @@ rather than using this system."
     (java-mode . google-java-format)
     (java-ts-mode . google-java-format)
     (js3-mode . prettier-javascript)
+    (js-json-mode . prettier-json)
     (js-mode . prettier-javascript)
     (js-ts-mode . prettier-javascript)
     (json-mode . prettier-json)
