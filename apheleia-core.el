@@ -914,7 +914,7 @@ being run, for diagnostic purposes."
                :buffer buffer
                ;; Buffer the formatter should modify. This starts out
                ;; containing the original file contents, which will be
-               ;; the same a `buffer' except it has already been
+               ;; the same as `buffer' except it has already been
                ;; transformed by any formatters that ran previously.
                :scratch scratch
                ;; Name of the current formatter symbol, e.g. `black'.
