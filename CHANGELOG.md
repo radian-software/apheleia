@@ -14,16 +14,18 @@ The format is based on [Keep a Changelog].
   respected as before ([#206]).
 * Disable formatting of go module files with gofmt. This was never supported
   ([#214]).
-* Remove support for Emacs 26.0 ([#215]).
+* Remove support for Emacs 26 ([#215]).
 
 ### Enhancements
 * Use the `prettier-json` formatter for `js-json-mode` ([#209]).
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
+* Autoload the apheleia-goto-error command ([#215]).
+
+### Internal Changes
 * Refactored the organisation of the apheleia package for ease of
   understanding and usability ([#215]).
-* Autoload the apheleia-goto-error command ([#215]).
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
