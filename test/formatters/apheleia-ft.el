@@ -8,11 +8,25 @@
 
 (require 'cl-lib)
 (require 'map)
+(require 'subr-x)
 
 (defvar apheleia-ft--test-dir
   (file-name-directory
    (or load-file-name buffer-file-name))
   "Directory containing this module.")
+
+(defvar apheleia-ft--repo-dir
+  (expand-file-name (locate-dominating-file apheleia-ft--test-dir ".git"))
+  "Root directory of the Git repository.
+Guaranteed to be absolute and expanded.")
+
+(defun apheleia-ft--relative-truename (path)
+  "Given PATH relative to repo root, resolve symlinks.
+Return another path relative to repo root."
+  (string-remove-prefix
+   apheleia-ft--repo-dir
+   (file-truename
+    (expand-file-name path apheleia-ft--repo-dir))))
 
 (defun apheleia-ft--get-formatters (&optional all)
   "Return list of strings naming the formatters to run.
@@ -55,6 +69,44 @@ already in memory on the current branch."
       (goto-char (point-min))
       (read (current-buffer)))))
 
+(defun apheleia-ft--files-changed-since (ref)
+  "Get a list of the files changed between REF and HEAD."
+  (let ((stderr-file (make-temp-file "apheleia-ft-stderr-")))
+    (with-temp-buffer
+      (let ((exit-status
+             (call-process
+              "git" nil (list (current-buffer) stderr-file) nil
+              "diff" "--name-only" "--diff-filter=d" (format "%s..." ref))))
+        (unless (zerop exit-status)
+          (with-temp-buffer
+            (insert-file-contents stderr-file)
+            (princ (buffer-string)))
+          (error "Failed to 'git diff', got exit status %S" exit-status)))
+      (split-string (buffer-string)))))
+
+(defun apheleia-ft--formatters-depending-on-file (changed-file)
+  "Given CHANGED-FILE, return list of formatters affected by it.
+Return formatters as string names. This is used to determine
+which formatters need tests to be run. CHANGED-FILE should be
+relative to repo root, as returned by git diff --name-only."
+  (setq changed-file (apheleia-ft--relative-truename changed-file))
+  (save-match-data
+    (cond
+     ((string-match
+       "^test/formatters/installers/\\([^/]+\\)\\.bash$" changed-file)
+      (list (match-string 1 changed-file)))
+     ((string-match
+       "^test/formatters/samplecode/\\([^/]+\\)/[^/]+$" changed-file)
+      (list (match-string 1 changed-file)))
+     ((string-match
+       "^scripts/formatters/\\([^/]+\\)$" changed-file)
+      (let ((script (match-string 1 changed-file)))
+        (map-keys
+         (map-filter
+          (lambda (fmt def)
+            (member script def))
+          apheleia-formatters)))))))
+
 (defun apheleia-ft--get-formatters-for-pull-request ()
   "Return list of formatter string names that were touched in this PR.
 This means their commands in `apheleia-formatters' are different
@@ -68,6 +120,13 @@ main."
        (unless (equal command (alist-get formatter old-formatters))
          (push (symbol-name formatter) touched-formatters)))
      new-formatters)
+    (mapc
+     (lambda (changed-file)
+       (setq touched-formatters
+             (nconc
+              (apheleia-ft--formatters-depending-on-file changed-file)
+              touched-formatters)))
+     (apheleia-ft--files-changed-since "origin/main"))
     touched-formatters))
 
 (defun apheleia-ft-changed ()

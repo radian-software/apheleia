@@ -16,6 +16,12 @@ The format is based on [Keep a Changelog].
   ([#214]).
 * Remove support for Emacs 26 ([#215]).
 
+### Features
+* New user option `apheleia-formatters-respect-indent-level`,
+  defaulting to `t`. You can set this to `nil` to disable Apheleia
+  configuring formatters to use the same indent settings as the Emacs
+  major mode is using ([#208]).
+
 ### Enhancements
 * Use the `prettier-json` formatter for `js-json-mode` ([#209]).
 * Prettier is now enabled in `svelte-mode`.
@@ -53,7 +59,9 @@ The format is based on [Keep a Changelog].
   for [Bazel Build](https://bazel.build/) ([#171]).
 * [`cmake-format`](https://github.com/cheshirekow/cmake_format)
   for [CMake](https://cmake.org/) ([#172]).
+* [`fourmolu`](https://github.com/fourmolu/fourmolu) for haskell
 * [`html-tidy`](https://www.html-tidy.org/) for HTML/XML ([#173]).
+* [`ormolu`](https://github.com/tweag/ormolu) for haskell.
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
@@ -76,6 +84,7 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
+[#208]: https://github.com/radian-software/apheleia/discussions/208
 [#209]: https://github.com/radian-software/apheleia/pull/209
 [#213]: https://github.com/radian-software/apheleia/pull/213
 [#214]: https://github.com/radian-software/apheleia/pull/214

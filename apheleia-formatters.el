@@ -44,6 +44,7 @@
     (dart-format . ("dart" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
+    (fourmolu . ("fourmolu"))
     (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
     (gofmt . ("gofmt"))
     (gofumpt . ("gofumpt"))
@@ -75,6 +76,7 @@
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
+    (ormolu . ("ormolu"))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
     (phpcs . ("apheleia-phpcs"))
     (prettier
@@ -123,12 +125,14 @@
               "-ln" (cl-case (bound-and-true-p sh-shell)
                       (sh "posix")
                       (t "bash"))
-              "-i" (number-to-string
-                    (cond
-                     (indent-tabs-mode 0)
-                     ((boundp 'sh-basic-offset)
-                      sh-basic-offset)
-                     (t 4)))
+              (when apheleia-formatters-respect-indent-level
+                (list
+                 "-i" (number-to-string
+                       (cond
+                        (indent-tabs-mode 0)
+                        ((boundp 'sh-basic-offset)
+                         sh-basic-offset)
+                        (t 4)))))
               "-"))
     (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (stylua . ("stylua" "-"))
@@ -898,11 +902,18 @@ being run, for diagnostic purposes."
       ;; with it.
       (insert-buffer-substring (or stdin buffer))
       (funcall func
-               ;; Original buffer being formatted.
+               ;; Original buffer being formatted. This shouldn't be
+               ;; modified. You can use it to check things like the
+               ;; current major mode, or the buffer filename. If you
+               ;; use it as input for the formatter, your formatter
+               ;; won't work when chained after another formatter.
                :buffer buffer
-               ;; Buffer the formatter should modify.
+               ;; Buffer the formatter should modify. This starts out
+               ;; containing the original file contents, which will be
+               ;; the same as `buffer' except it has already been
+               ;; transformed by any formatters that ran previously.
                :scratch scratch
-               ;; Name of the current formatter symbol.
+               ;; Name of the current formatter symbol, e.g. `black'.
                :formatter formatter
                ;; Callback after succesfully formatting.
                :callback

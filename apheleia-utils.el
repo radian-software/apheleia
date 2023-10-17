@@ -9,14 +9,23 @@
 (require 'cl-lib)
 (require 'subr-x)
 
+(defcustom apheleia-formatters-respect-indent-level t
+  "Whether formatters should respect Emacs' indent configuration."
+  :type 'boolean
+  :group 'apheleia)
+
 (defun apheleia-formatters-indent (tab-flag indent-flag indent-var)
   "Set flag for indentation.
 Helper function for `apheleia-formatters' which allows you to supply
 alternating flags based on the current buffers indent configuration. If the
 buffer is indented with tabs then returns TAB-FLAG. Otherwise if INDENT-VAR
 is set in the buffer return INDENT-FLAG and the value of INDENT-VAR. Use this
-to easily configure the indentation level of a formatter."
+to easily configure the indentation level of a formatter.
+
+If `apheleia-formatters-respect-indent-level' is nil then this
+always returns nil to defer to the formatter."
   (cond
+   ((not apheleia-formatters-respect-indent-level) nil)
    (indent-tabs-mode tab-flag)
    (indent-var
     (when-let ((indent (and (boundp indent-var)
