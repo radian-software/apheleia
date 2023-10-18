@@ -788,7 +788,7 @@ machine from the machine file is available on"))
                           (or buffer-file-name
                               (concat default-directory
                                       (apheleia--safe-buffer-name))))))
-          (setq command (apheleia--replq '(file filepath) file-name command))))
+          (setq command (apheleia--replq command '(file filepath) file-name))))
 
       (when (or (memq 'input command) (memq 'inplace command))
         (let ((input-fname (apheleia--make-temp-file
