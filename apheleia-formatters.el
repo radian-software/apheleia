@@ -121,6 +121,8 @@
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
                       "--format" "quiet" "--fail-level" "fatal"))
+    (ruby-syntax-tree . ("stree" "format" filepath
+                         (apheleia-formatters-args-from-file ".streerc")))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
