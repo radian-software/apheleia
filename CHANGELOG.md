@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog].
   respected as before ([#206]).
 * Disable formatting of go module files with gofmt. This was never supported
   ([#214]).
+* Remove support for Emacs 26 ([#215]).
 
 ### Features
 * New user option `apheleia-formatters-respect-indent-level`,
@@ -26,13 +27,22 @@ The format is based on [Keep a Changelog].
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
+* Autoload the apheleia-goto-error command ([#215]).
 * Use `lisp-indent` as default formatter for `emacs-lisp-mode` ([#223])
+
+### Internal Changes
+* Refactored the organisation of the apheleia package for ease of
+  understanding and usability ([#215]).
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
 * Disable colorized output with the jq formatter ([#213]).
+* Fixed apheleia skipped running a formatter on a remote when it isn't
+  installed locally ([#215]).
+* Fixed clang-format formatter did not respect remote file-name component for
+  the assumed file-name ([#215]).
 
 ### Formatters
 
@@ -79,6 +89,8 @@ The format is based on [Keep a Changelog].
 [#209]: https://github.com/radian-software/apheleia/pull/209
 [#213]: https://github.com/radian-software/apheleia/pull/213
 [#214]: https://github.com/radian-software/apheleia/pull/214
+[#215]: https://github.com/radian-software/apheleia/pull/215
+[#223]: https://github.com/radian-software/apheleia/pull/223
 
 ## 3.2 (released 2023-02-25)
 ### Features
