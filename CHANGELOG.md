@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog].
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
 * Autoload the apheleia-goto-error command ([#215]).
+* Use `lisp-indent` as default formatter for `emacs-lisp-mode` ([#223])
 
 ### Internal Changes
 * Refactored the organisation of the apheleia package for ease of
@@ -89,6 +90,7 @@ The format is based on [Keep a Changelog].
 [#213]: https://github.com/radian-software/apheleia/pull/213
 [#214]: https://github.com/radian-software/apheleia/pull/214
 [#215]: https://github.com/radian-software/apheleia/pull/215
+[#223]: https://github.com/radian-software/apheleia/pull/223
 
 ## 3.2 (released 2023-02-25)
 ### Features
