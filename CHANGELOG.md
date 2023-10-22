@@ -71,6 +71,12 @@ The format is based on [Keep a Changelog].
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
+* [`js-beautify`](https://github.com/beautify-web/js-beautify) for
+  [JavaScript](https://www.javascript.com/),
+  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON),
+  [HTML](https://en.wikipedia.org/wiki/HTML) and
+  [CSS](https://www.google.com/search?q=css)
+  ([#229])
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
@@ -91,6 +97,7 @@ The format is based on [Keep a Changelog].
 [#214]: https://github.com/radian-software/apheleia/pull/214
 [#215]: https://github.com/radian-software/apheleia/pull/215
 [#223]: https://github.com/radian-software/apheleia/pull/223
+[#229]: https://github.com/radian-software/apheleia/pull/229
 
 ## 3.2 (released 2023-02-25)
 ### Features

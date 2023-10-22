@@ -41,6 +41,9 @@
                          ".c")))
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
+    (css-beautify "css-beautify" "--file" "-" "--end-with-newline"
+                  (apheleia-formatters-indent
+                   "--indent-with-tabs" "--indent-size"))
     (dart-format . ("dart" "format"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
@@ -50,6 +53,9 @@
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
+    (html-beautify "html-beautify" "--file" "-" "--end-with-newline"
+                   (apheleia-formatters-indent
+                    "--indent-with-tabs" "--indent-size"))
     (html-tidy "tidy"
                "--quiet" "yes"
                "--tidy-mark" "no"
@@ -61,6 +67,9 @@
                 "--indent-with-tabs" "--indent-spaces")
                (apheleia-formatters-fill-column "-wrap"))
     (isort . ("isort" "-"))
+    (js-beautify "js-beautify" "--file" "-" "--end-with-newline"
+                 (apheleia-formatters-indent
+                  "--indent-with-tabs" "--indent-size"))
     (jq "jq" "." "-M"
         (apheleia-formatters-indent "--tab" "--indent"))
     (lisp-indent . apheleia-indent-lisp-buffer)
