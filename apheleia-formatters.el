@@ -50,6 +50,7 @@
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
+    (hclfmt . ("hclfmt"))
     (html-tidy "tidy"
                "--quiet" "yes"
                "--tidy-mark" "no"
@@ -237,6 +238,7 @@ rather than using this system."
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
     (haskell-mode . brittany)
+    (hcl-mode . hclfmt)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
     (java-mode . google-java-format)
