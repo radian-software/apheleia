@@ -44,9 +44,6 @@
       (buffer-hash)
     (md5 (current-buffer))))
 
-(defvar apheleia--buffer-hash nil
-  "Return value of `buffer-hash' when formatter started running.")
-
 (defun apheleia--disallowed-p ()
   "Return an error message if Apheleia cannot be run, else nil."
   (when (and buffer-file-name
@@ -96,33 +93,41 @@ changes), CALLBACK, if provided, is invoked with no arguments."
     ;; error on `post-command-hook'. We already took care of throwing
     ;; `user-error' on interactive usage above.
     (unless (apheleia--disallowed-p)
-      (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
-      (let ((cur-buffer (current-buffer))
-            (remote (file-remote-p (or buffer-file-name
-                                       default-directory))))
-        (apheleia--run-formatters
-         formatters
-         cur-buffer
-         remote
-         (lambda (formatted-buffer)
-           (when (buffer-live-p cur-buffer)
-             (with-current-buffer cur-buffer
-               ;; Short-circuit.
-               (when
-                   (equal
-                    apheleia--buffer-hash (apheleia--buffer-hash))
-                 (apheleia--create-rcs-patch
-                  cur-buffer formatted-buffer remote
-                  (lambda (patch-buffer)
-                    (when (buffer-live-p cur-buffer)
-                      (with-current-buffer cur-buffer
-                        (when
-                            (equal
-                             apheleia--buffer-hash (apheleia--buffer-hash))
-                          (apheleia--apply-rcs-patch
-                           (current-buffer) patch-buffer)
-                          (when callback
-                            (funcall callback))))))))))))))))
+      ;; It's important to store the saved buffer hash in a lexical
+      ;; variable rather than a dynamic (global) one, else multiple
+      ;; concurrent invocations of `apheleia-format-buffer' can
+      ;; overwrite each other, and get the wrong results about whether
+      ;; the buffer was actually modified since the formatting
+      ;; operation started, leading to data loss.
+      ;;
+      ;; https://github.com/radian-software/apheleia/issues/226
+      (let ((saved-buffer-hash (apheleia--buffer-hash)))
+        (let ((cur-buffer (current-buffer))
+              (remote (file-remote-p (or buffer-file-name
+                                         default-directory))))
+          (apheleia--run-formatters
+           formatters
+           cur-buffer
+           remote
+           (lambda (formatted-buffer)
+             (when (buffer-live-p cur-buffer)
+               (with-current-buffer cur-buffer
+                 ;; Short-circuit.
+                 (when
+                     (equal
+                      saved-buffer-hash (apheleia--buffer-hash))
+                   (apheleia--create-rcs-patch
+                    cur-buffer formatted-buffer remote
+                    (lambda (patch-buffer)
+                      (when (buffer-live-p cur-buffer)
+                        (with-current-buffer cur-buffer
+                          (when
+                              (equal
+                               saved-buffer-hash (apheleia--buffer-hash))
+                            (apheleia--apply-rcs-patch
+                             (current-buffer) patch-buffer)
+                            (when callback
+                              (funcall callback)))))))))))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."
