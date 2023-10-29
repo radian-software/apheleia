@@ -366,7 +366,10 @@ saying whether the process was interrupted before completion.
 REMOTE if supplied will be passed as the FILE-HANDLER argument to
 `make-process'.
 
-See `make-process' for a description of the NAME and NOQUERY arguments."
+See `make-process' for a description of the NAME and NOQUERY
+arguments."
+  (apheleia--log
+   'process "Using make-process to create process %s with %S" name command)
   (let ((proc
          (make-process
           :name name
@@ -385,6 +388,9 @@ See `make-process' for a description of the NAME and NOQUERY arguments."
                (process-get proc :interrupted)))))))
     (set-process-sentinel (get-buffer-process stderr) #'ignore)
     (when stdin
+      (apheleia--log
+       'process
+       "Sending %d bytes to stdin of process %s" (buffer-size stdin) name)
       (set-process-coding-system
        proc
        nil
@@ -429,6 +435,9 @@ NO-QUERY, and CONNECTION-TYPE."
             nil)
            ;; argv[1:]
            (cdr command))))
+    (apheleia--log
+     'process "Sending stderr for process %s to tempfile %s"
+     name stderr-file)
     (unwind-protect
         (let ((exit-status
                (cl-letf* ((message (symbol-function #'message))
@@ -461,17 +470,32 @@ NO-QUERY, and CONNECTION-TYPE."
                            (with-current-buffer stdin
                              (apheleia--write-region-silently
                               nil nil remote-stdin))
-
+                           (apheleia--log
+                            'process
+                            "Using process-file to create process %s with %S"
+                            name (list shell "-c" shell-command))
                            (process-file
                             shell nil (nth 2 args) nil "-c" shell-command))
                        (delete-file remote-stdin))))
                   (stdin
+                   (apheleia--log
+                    'process
+                    "Using call-process-region to create process %s with %S"
+                    name command)
                    (with-current-buffer stdin
                      (apply #'call-process-region
                             (point-min) (point-max) args)))
                   (run-on-remote
+                   (apheleia--log
+                    'process
+                    "Using process-file to create process %s with %S"
+                    name command)
                    (apply #'process-file args))
                   (t
+                   (apheleia--log
+                    'process
+                    "Using process-file to create process %s with %S"
+                    name command)
                    (apply #'call-process args))))))
           ;; Save stderr from STDERR-FILE back into the STDERR buffer.
           (with-current-buffer stderr
@@ -496,7 +520,14 @@ not. EXIT-STATUS is a function which is called with the exit
 status of the command; it should return non-nil to indicate that
 the command succeeded. If EXIT-STATUS is omitted, then the
 command succeeds provided that its exit status is 0."
+  (apheleia--log
+   'process "Trying to execute formatter process %s with %S"
+   (apheleia-formatter--name ctx)
+   `(,(apheleia-formatter--arg1 ctx)
+     ,@(apheleia-formatter--argv ctx)))
   (when (process-live-p apheleia--current-process)
+    (apheleia--log
+     'process "Interrupting an existing process %S" apheleia--current-process)
     (message "Interrupting %s" apheleia--current-process)
     (process-put apheleia--current-process :interrupted t)
     (interrupt-process apheleia--current-process)
@@ -527,6 +558,14 @@ command succeeds provided that its exit status is 0."
                  :noquery t
                  :callback
                  (lambda (proc-exit-status proc-interrupted)
+                   (apheleia--log
+                    'process
+                    "Process %s exited with status %S%s"
+                    name
+                    proc-exit-status
+                    (if proc-interrupted
+                        " (interrupted)"
+                      " (not interrupted)"))
                    (setf (apheleia-formatter--exit-status ctx)
                          proc-exit-status)
                    (let ((exit-ok (and
@@ -548,6 +587,9 @@ command succeeds provided that its exit status is 0."
                         (with-current-buffer stderr
                           (string-trim (buffer-string)))))
                      (when (apheleia-formatter--name ctx)
+                       (apheleia--log
+                        'hook
+                        "Invoking apheleia-formatter-exited-hook")
                        (run-hook-with-args
                         'apheleia-formatter-exited-hook
                         :formatter (apheleia-formatter--name ctx)
@@ -556,6 +598,10 @@ command succeeds provided that its exit status is 0."
                      (unwind-protect
                          (if exit-ok
                              (when callback
+                               (apheleia--log
+                                'process
+                                (concat "Invoking process callback due "
+                                        "to successful exit status"))
                                (funcall callback stdout))
                            (message
                             (concat
@@ -640,6 +686,9 @@ Once finished, invoke CALLBACK with a buffer containing the patch
 as its sole argument.
 
 See `apheleia--run-formatters' for a description of REMOTE."
+  (apheleia--log
+   'rcs "Creating RCS patch between buffers with %d and %d bytes"
+   (buffer-size old-buffer) (buffer-size new-buffer))
   ;; Make sure at least one of the two buffers is saved to a file. The
   ;; other one we can feed on stdin.
   (let ((old-fname
@@ -972,6 +1021,9 @@ formatter in COMMANDS. This should not be supplied by the caller
 and instead is supplied by this command when invoked recursively.
 The stdout of the previous formatter becomes the stdin of the
 next formatter."
+  (apheleia--log
+   'run-formatter
+   "Running formatters %S on buffer %S" formatters buffer)
   (let ((command (alist-get (car formatters) apheleia-formatters)))
     (funcall
      (cond

@@ -25,6 +25,19 @@ if it is successful."
   :type 'boolean
   :group 'apheleia)
 
+(defcustom apheleia-debug-info-buffer "*apheleia-debug-log*"
+  "Name of logging buffer when `apheleia-log-debug-info' is non-nil."
+  :type 'string
+  :group 'apheleia)
+
+(defcustom apheleia-log-debug-info nil
+  "Non-nil means to log debugging info to `apheleia-debug-info-buffer'.
+This may be useful in understanding what commands Apheleia is
+running, in what order, and at what times, or for filing a bug
+report."
+  :type 'boolean
+  :group 'apheleia)
+
 (defvar apheleia--last-error-marker nil
   "Marker for the last error message for any formatter.
 This points into a log buffer.")
@@ -99,6 +112,42 @@ STDERR-STRING is the stderr output of the formatter."
              (point-max)
            (min (point-max) orig-point)))
         (goto-char (point-max))))))
+
+;; Cribbed this from myself in straight.el
+(defun apheleia--log (category message &rest args)
+  "Log diagnostic message to `apheleia-debug-info-buffer'.
+If `apheleia-log-debug-info' is nil, this does nothing. CATEGORY
+is a symbol that can help in filtering the resulting log output.
+MESSAGE and ARGS are interpreted as in `message', except that any
+of ARGS can also be a function of no arguments which will be
+invoked to get the real value. This is helpful because the
+function won't be evaluated if logging is disabled. Only lambda
+functions are accepted, to avoid symbols being interpreted as
+callables by accident."
+  (when apheleia-log-debug-info
+    (with-current-buffer (get-buffer-create apheleia-debug-info-buffer)
+      (unless (derived-mode-p 'special-mode) (special-mode))
+      (save-excursion
+        (goto-char (point-max))
+        (let ((inhibit-read-only t)
+              (body nil))
+          (condition-case err
+              (let ((args (mapcar
+                           (lambda (arg)
+                             (if (and (listp arg)
+                                      (functionp arg))
+                                 (funcall arg)
+                               arg))
+                           args)))
+                (setq body (apply #'format message args)))
+            (error (setq body (format "Got error formatting log line %S: %s"
+                                      message
+                                      (error-message-string err)))))
+          (insert
+           (format
+            "%s <%S>: %s\n"
+            (format-time-string "%Y-%m-%d %H:%M:%S.%3N" (current-time))
+            category body)))))))
 
 (provide 'apheleia-log)
 
