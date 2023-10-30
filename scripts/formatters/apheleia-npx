@@ -44,11 +44,11 @@ pnp_path="${dir}/.pnp.cjs"
 # Pnp configuration found
 if [[ -f "${pnp_path}" ]]; then
     apheleia_dir="$(cd $(dirname ${BASH_SOURCE[0]})/../.. &>/dev/null && pwd)"
-    find_pnp="${apheleia_dir}/pnp-bin/pnp-bin.cjs"
+    find_pnp="${apheleia_dir}/scripts/pnp-bin.js"
     bin="$(${find_pnp} ${pnp_path} $1)"
     node=$(which node)
     # note: $bin might not be on the real filesystem,
-    #   might be virtual or in a zip archive
+    #   might be in a zip archive
     if [[ -n $bin && -x $node ]]; then
         if [[ -f "${dir}/.pnp.loader.mjs" ]]; then
            loader_opt="--loader ${dir}/.pnp.loader.mjs"

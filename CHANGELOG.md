@@ -37,6 +37,9 @@ The format is based on [Keep a Changelog].
 ### Internal Changes
 * Refactored the organisation of the apheleia package for ease of
   understanding and usability ([#215]).
+* The new `scripts/pnp-bin.js` script is standalone minified nodejs built
+  from the [`pnp-bin`](https://github.com/PuddleByteComputing/pnp-bin) repo,
+  extracted from apheleia PR [#200].
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,

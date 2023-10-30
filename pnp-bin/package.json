@@ -1,9 +1,0 @@
-{
-  "name": "pnp-bin",
-  "packageManager": "yarn@3.6.3",
-  "bin": "./pnp-bin.cjs",
-  "dependencies": {
-    "@yarnpkg/fslib": "^3.0.0-rc.51",
-    "@yarnpkg/libzip": "^3.0.0-rc.51"
-  }
-}
