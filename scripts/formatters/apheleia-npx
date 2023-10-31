@@ -14,6 +14,10 @@ if (( "$#" == 0 )); then
     exit 1
 fi
 
+# location of this script
+apheleia_dir="$(cd $(dirname ${BASH_SOURCE[0]})/../.. &>/dev/null && pwd)"
+pnp_bin="${apheleia_dir}/scripts/pnp-bin.js"
+
 # This function prints the name of the current directory if it
 # contains a file or directory named after the first argument, or the
 # parent directory if it contains such a file, or the parent's parent,
@@ -29,35 +33,39 @@ find_upwards() {
     [[ -n "${path}" ]] && echo "${path}"
 }
 
-# No containing package.json: not an npm project, exec as normal.
-if ! dir="$(find_upwards package.json)"; then
-    exec "$@"
-fi
+dir="$(find_upwards package.json)"
 
-# node_modules directory has the binary directly: use that one.
-if [[ -x "${dir}/node_modules/.bin/$1" ]]; then
-    exec "${dir}/node_modules/.bin/$1" "${@:2}"
-fi
+if [[ -d $dir ]]; then
+    cd $dir
 
-pnp_path="${dir}/.pnp.cjs"
+    pnp_root=$(find_upwards '.pnp.cjs')
+    npm_root=$(find_upwards 'node_modules')
 
-# Pnp configuration found
-if [[ -f "${pnp_path}" ]]; then
-    apheleia_dir="$(cd $(dirname ${BASH_SOURCE[0]})/../.. &>/dev/null && pwd)"
-    find_pnp="${apheleia_dir}/scripts/pnp-bin.js"
-    bin="$(${find_pnp} ${pnp_path} $1)"
-    node=$(which node)
-    # note: $bin might not be on the real filesystem,
-    #   might be in a zip archive
-    if [[ -n $bin && -x $node ]]; then
-        if [[ -f "${dir}/.pnp.loader.mjs" ]]; then
-           loader_opt="--loader ${dir}/.pnp.loader.mjs"
+    if [[ -n ${pnp_root} && ${#pnp_root} -gt ${#npm_root} ]]; then
+        # trying pnp
+        pnp_path="${pnp_root}/.pnp.cjs"
+        bin="$(${pnp_bin} ${pnp_path} $1)"
+        # note: $bin might not be on the real filesystem,
+        #   might be in a zip archive
+        if [[ -n $bin ]]; then
+            if [[ -f "${pnp_path}/.pnp.loader.mjs" ]]; then
+                loader_opt="--loader ${pnp_path}/.pnp.loader.mjs"
+            fi
+            node=$(which node)
+            command="${node} --require ${pnp_path} ${loader_opt} ${bin} ${@:2}"
+            exec ${command}
         fi
-        command="${node} --require ${pnp_path} ${loader_opt} ${bin} ${@:2}"
-        echo $command 1>&2
-        exec ${command}
+    elif [[ -n ${npm_root} ]]; then
+        # trying npm
+        node_modules_paths=(\
+            $(node -e 'console.log(require.resolve.paths("").join("\n"))'))
+        for path in ${node_modules_paths[@]}; do
+            if [[ -x "${path}/.bin/$1" ]]; then
+                exec "${path}/.bin/$1" "${@:2}"
+            fi
+        done
     fi
 fi
 
-# If not then default to executing globally.
+# Fall back to executing the command if it's installed and on the user's $PATH
 exec "$@"
