@@ -24,6 +24,7 @@
 ;;; Code:
 
 (require 'apheleia-formatters)
+(require 'apheleia-log)
 (require 'apheleia-rcs)
 
 (defgroup apheleia nil
@@ -43,9 +44,6 @@
   (if (fboundp 'buffer-hash)
       (buffer-hash)
     (md5 (current-buffer))))
-
-(defvar apheleia--buffer-hash nil
-  "Return value of `buffer-hash' when formatter started running.")
 
 (defun apheleia--disallowed-p ()
   "Return an error message if Apheleia cannot be run, else nil."
@@ -84,6 +82,11 @@ changes), CALLBACK, if provided, is invoked with no arguments."
                         (if current-prefix-arg
                             'prompt
                           'interactive)))))
+  (apheleia--log
+   'format-buffer
+   "Invoking apheleia-format-buffer on %S with formatter %S"
+   (current-buffer)
+   formatter)
   (let ((formatters (apheleia--ensure-list formatter)))
     ;; Check for this error ahead of time so we don't have to deal
     ;; with it anywhere in the internal machinery of Apheleia.
@@ -95,34 +98,64 @@ changes), CALLBACK, if provided, is invoked with no arguments."
     ;; Fail silently if disallowed, since we don't want to throw an
     ;; error on `post-command-hook'. We already took care of throwing
     ;; `user-error' on interactive usage above.
-    (unless (apheleia--disallowed-p)
-      (setq-local apheleia--buffer-hash (apheleia--buffer-hash))
-      (let ((cur-buffer (current-buffer))
-            (remote (file-remote-p (or buffer-file-name
-                                       default-directory))))
-        (apheleia--run-formatters
-         formatters
-         cur-buffer
-         remote
-         (lambda (formatted-buffer)
-           (when (buffer-live-p cur-buffer)
-             (with-current-buffer cur-buffer
-               ;; Short-circuit.
-               (when
-                   (equal
-                    apheleia--buffer-hash (apheleia--buffer-hash))
-                 (apheleia--create-rcs-patch
-                  cur-buffer formatted-buffer remote
-                  (lambda (patch-buffer)
-                    (when (buffer-live-p cur-buffer)
-                      (with-current-buffer cur-buffer
-                        (when
-                            (equal
-                             apheleia--buffer-hash (apheleia--buffer-hash))
-                          (apheleia--apply-rcs-patch
-                           (current-buffer) patch-buffer)
-                          (when callback
-                            (funcall callback))))))))))))))))
+    (if-let ((err (apheleia--disallowed-p)))
+        (apheleia--log
+         'format-buffer
+         "Aborting in %S due to apheleia--disallowed-p: %s"
+         (buffer-name (current-buffer))
+         err)
+      ;; It's important to store the saved buffer hash in a lexical
+      ;; variable rather than a dynamic (global) one, else multiple
+      ;; concurrent invocations of `apheleia-format-buffer' can
+      ;; overwrite each other, and get the wrong results about whether
+      ;; the buffer was actually modified since the formatting
+      ;; operation started, leading to data loss.
+      ;;
+      ;; https://github.com/radian-software/apheleia/issues/226
+      (let ((saved-buffer-hash (apheleia--buffer-hash)))
+        (let ((cur-buffer (current-buffer))
+              (remote (file-remote-p (or buffer-file-name
+                                         default-directory))))
+          (apheleia--run-formatters
+           formatters
+           cur-buffer
+           remote
+           (lambda (formatted-buffer)
+             (if (not (buffer-live-p cur-buffer))
+                 (apheleia--log
+                  'format-buffer
+                  "Aborting in %S because buffer has died"
+                  (buffer-name cur-buffer))
+               (with-current-buffer cur-buffer
+                 ;; Short-circuit.
+                 (if (not (equal saved-buffer-hash (apheleia--buffer-hash)))
+                     (apheleia--log
+                      'format-buffer
+                      "Aborting in %S because contents have changed"
+                      (buffer-name cur-buffer))
+                   (apheleia--create-rcs-patch
+                    cur-buffer formatted-buffer remote
+                    (lambda (patch-buffer)
+                      (when (buffer-live-p cur-buffer)
+                        (with-current-buffer cur-buffer
+                          (if (not (equal
+                                    saved-buffer-hash
+                                    (apheleia--buffer-hash)))
+                              (apheleia--log
+                               'format-buffer
+                               "Aborting in %S because contents have changed"
+                               (buffer-name cur-buffer))
+                            (apheleia--apply-rcs-patch
+                             (current-buffer) patch-buffer)
+                            (if (not callback)
+                                (apheleia--log
+                                 'format-buffer
+                                 (concat
+                                  "Skipping callback because "
+                                  "none was provided"))
+                              (apheleia--log
+                               'format-buffer "Invoking callback")
+                              (funcall callback)))))))))))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."

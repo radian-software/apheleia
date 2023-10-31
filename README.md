@@ -221,7 +221,18 @@ Apheleia exposes some hooks for advanced customization:
   one of these returns non-nil then `apheleia-mode` is not enabled in
   the buffer.
 
-## Known issues
+## Troubleshooting
+
+Try running your formatter outside of Emacs to verify it works there.
+Check what command-line options it is configured with in
+`apheleia-formatters`.
+
+To debug internal bugs, race conditions, or performance issues, try
+setting `apheleia-log-debug-info` to non-nil and check the contents of
+`*apheleia-debug-log*`. It will have detailed trace information about
+most operations performed by Apheleia.
+
+### Known issues
 
 * `process aphelieia-whatever no longer connected to pipe; closed it`:
   This happens on older Emacs versions when formatting a buffer with

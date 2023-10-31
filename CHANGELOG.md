@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog].
   as `node_modules` style projects ([#200]).
 * Autoload the apheleia-goto-error command ([#215]).
 * Use `lisp-indent` as default formatter for `emacs-lisp-mode` ([#223])
+* Use `hclfmt` for formatting hashicorp HCL files ([#231])
 
 ### Internal Changes
 * Refactored the organisation of the apheleia package for ease of
@@ -78,6 +79,7 @@ The format is based on [Keep a Changelog].
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
+* [`hclfmt`](https://github.com/hashicorp/hcl/tree/main/cmd/hclfmt) for [HCL](https://github.com/hashicorp/hcl) ([#231])
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
@@ -98,6 +100,7 @@ The format is based on [Keep a Changelog].
 [#214]: https://github.com/radian-software/apheleia/pull/214
 [#215]: https://github.com/radian-software/apheleia/pull/215
 [#223]: https://github.com/radian-software/apheleia/pull/223
+[#231]: https://github.com/radian-software/apheleia/pull/231
 
 ## 3.2 (released 2023-02-25)
 ### Features

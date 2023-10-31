@@ -7,6 +7,8 @@
 
 ;;; Code:
 
+(require 'apheleia-log)
+
 (require 'cl-lib)
 (require 'subr-x)
 
@@ -113,6 +115,8 @@ point correctly."
   "Apply RCS patch.
 CONTENT-BUFFER contains the text to be patched, and PATCH-BUFFER
 contains the patch."
+  (apheleia--log
+   'rcs "Applying RCS patch from %S to %S" patch-buffer content-buffer)
   (let ((commands nil)
         (point-list nil)
         (window-line-list nil))
