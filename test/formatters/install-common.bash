@@ -6,14 +6,10 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y ca-certificates curl gnupg lsb-release software-properties-common
 
-curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-
-ubuntu_name="$(lsb_release -cs)"
-node_repo="$(curl -fsSL https://deb.nodesource.com/setup_current.x | grep NODEREPO= | grep -Eo 'node_[0-9]+\.x' | head -n1)"
-
-tee -a /etc/apt/sources.list.d/nodejs.list >/dev/null <<EOF
-deb [arch=amd64] https://deb.nodesource.com/${node_repo} ${ubuntu_name} main
-EOF
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+NODE_MAJOR=20
+echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list
 
 add-apt-repository -n ppa:longsleep/golang-backports
 
