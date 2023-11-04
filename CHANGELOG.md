@@ -69,6 +69,8 @@ The format is based on [Keep a Changelog].
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
 * [`ruby-standard`](https://github.com/standardrb/standard) for
   [ruby](https://www.ruby-lang.org/en/) ([#201])
+* [`ruff`](https://github.com/astral-sh/ruff) for 
+  [python](https://python.org) ([#236])
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
