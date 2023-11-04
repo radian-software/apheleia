@@ -121,6 +121,11 @@
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
                       "--format" "quiet" "--fail-level" "fatal"))
+    (ruff . ("ruff" "format"
+             "--silent"
+             (apheleia-formatters-fill-column "--line-length")
+             "--stdin-filename" filepath
+             "-"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
