@@ -201,36 +201,36 @@ contains the patch."
                                        (command . ,c)
                                        (window . ,w)
                                        (relative-point . ,new-relative-point))
-                                     commands)))))))))))))))
-    (with-current-buffer content-buffer
-      (let ((move-to nil)
-            (move-marks nil))
-        (save-excursion
-          (dolist (command (nreverse commands))
-            (goto-char (alist-get 'marker command))
-            (pcase (alist-get 'command command)
-              (`addition
-               (insert (alist-get 'text command)))
-              (`deletion
-               (let ((text-start (point)))
-                 (forward-line (alist-get 'lines command))
-                 (delete-region text-start (point))))
-              (`set-point
-               (let ((new-point
-                      (+ (point) (alist-get 'relative-point command))))
-                 (if-let ((w (alist-get 'window command)))
-                     (set-window-point w new-point)
-                   (setq move-to new-point))))
-              (`set-marker
-               (let* ((old-mark (alist-get 'original-point command))
-                      (new-mark
-                       (+ old-mark (alist-get 'relative-point command))))
-                 (push (cons old-mark new-mark) move-marks))))))
-        (when move-to
-          (goto-char move-to))
-        (dolist (entry move-marks)
-          (cl-destructuring-bind (old-mark . new-mark) entry
-            (set-marker old-mark new-mark)))))
+                                     commands))))))))))))))
+      (with-current-buffer content-buffer
+        (let ((move-to nil)
+              (move-marks nil))
+          (save-excursion
+            (dolist (command (nreverse commands))
+              (goto-char (alist-get 'marker command))
+              (pcase (alist-get 'command command)
+                (`addition
+                 (insert (alist-get 'text command)))
+                (`deletion
+                 (let ((text-start (point)))
+                   (forward-line (alist-get 'lines command))
+                   (delete-region text-start (point))))
+                (`set-point
+                 (let ((new-point
+                        (+ (point) (alist-get 'relative-point command))))
+                   (if-let ((w (alist-get 'window command)))
+                       (set-window-point w new-point)
+                     (setq move-to new-point))))
+                (`set-marker
+                 (let* ((old-mark (alist-get 'original-point command))
+                        (new-mark
+                         (+ old-mark (alist-get 'relative-point command))))
+                   (push (cons old-mark new-mark) move-marks))))))
+          (when move-to
+            (goto-char move-to))
+          (dolist (entry move-marks)
+            (cl-destructuring-bind (old-mark . new-mark) entry
+              (set-marker old-mark new-mark))))))
     ;; Restore the scroll position of each window displaying the
     ;; buffer.
     (dolist (entry window-line-list)
