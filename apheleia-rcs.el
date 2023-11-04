@@ -179,29 +179,28 @@ contains the patch."
                        (cl-destructuring-bind (c . (w . p)) entry
                          ;; markers pretend to be numbers, so we can run this
                          ;; whether or not p is a number or marker
-                         (cl-destructuring-bind (w . p) entry
-                           (when (and (< text-start p)
-                                      (< p text-end))
-                             (let* ((old-text (buffer-substring-no-properties
-                                               text-start text-end))
-                                    (new-text (alist-get 'text addition))
-                                    (old-relative-point (- p text-start))
-                                    (new-relative-point
-                                     (if (> (max (length old-text)
-                                                 (length new-text))
-                                            apheleia-max-alignment-size)
-                                         old-relative-point
-                                       (apheleia--align-point
-                                        old-text new-text old-relative-point))))
-                               (goto-char text-start)
-                               ;; we abuse original-point to store the
-                               ;; original marker for marks
-                               (push `((marker . ,(point-marker))
-                                       (original-point . ,p)
-                                       (command . ,c)
-                                       (window . ,w)
-                                       (relative-point . ,new-relative-point))
-                                     commands))))))))))))))
+                         (when (and (< text-start p)
+                                    (< p text-end))
+                           (let* ((old-text (buffer-substring-no-properties
+                                             text-start text-end))
+                                  (new-text (alist-get 'text addition))
+                                  (old-relative-point (- p text-start))
+                                  (new-relative-point
+                                   (if (> (max (length old-text)
+                                               (length new-text))
+                                          apheleia-max-alignment-size)
+                                       old-relative-point
+                                     (apheleia--align-point
+                                      old-text new-text old-relative-point))))
+                             (goto-char text-start)
+                             ;; we abuse original-point to store the
+                             ;; original marker for marks
+                             (push `((marker . ,(point-marker))
+                                     (original-point . ,p)
+                                     (command . ,c)
+                                     (window . ,w)
+                                     (relative-point . ,new-relative-point))
+                                   commands)))))))))))))
       (with-current-buffer content-buffer
         (let ((move-to nil)
               (move-marks nil))
