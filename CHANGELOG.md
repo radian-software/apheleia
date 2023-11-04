@@ -96,6 +96,7 @@ The format is based on [Keep a Changelog].
 [#215]: https://github.com/radian-software/apheleia/pull/215
 [#223]: https://github.com/radian-software/apheleia/pull/223
 [#231]: https://github.com/radian-software/apheleia/pull/231
+[#236]: https://github.com/radian-software/apheleia/pull/236
 
 ## 3.2 (released 2023-02-25)
 ### Features
