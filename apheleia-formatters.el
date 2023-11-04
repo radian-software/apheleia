@@ -102,13 +102,15 @@
      . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-ruby
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"
+     . (npx "prettier" "--stdin-filepath" "dummy.rb"
+            "--plugin=@prettier/plugin-ruby"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-scss
      . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-svelte
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=svelte"
+     . (npx "prettier" "--stdin-filepath" filepath
+            "--plugin=prettier-plugin-svelte"
             (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-typescript
      . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"
@@ -829,7 +831,7 @@ it's first in the sequence"))
           (unless remote-match
             (error "Formatter uses `file' but process will run on different \
 machine from the machine file is available on"))
-	  (setq stdin nil)
+          (setq stdin nil)
           ;; If `buffer-file-name' is nil then there is no backing
           ;; file, so `buffer-modified-p' should be ignored (it always
           ;; returns non-nil).
