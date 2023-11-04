@@ -9,8 +9,8 @@ TAG ?= latest
 
 # The order is important for compilation.
 for_compile := \
-    apheleia-formatters.el \
     apheleia-log.el \
+    apheleia-formatters.el \
     apheleia-rcs.el \
     apheleia-utils.el \
     apheleia.el
