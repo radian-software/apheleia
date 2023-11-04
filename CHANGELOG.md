@@ -4,17 +4,48 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Breaking changes
+* The order of entries in `apheleia-mode-alist` is no longer as
+  important. Specifically, if two different mode entries in
+  `apheleia-mode-alist` match the current buffer, then the more
+  specific one is used, even if it comes later. This is generally
+  speaking what you would expect to happen. For other cases, such as
+  ordering of regex entries, or modes versus regexes, order is
+  respected as before ([#206]).
+* Disable formatting of go module files with gofmt. This was never supported
+  ([#214]).
+* Remove support for Emacs 26 ([#215]).
+
+### Features
+* New user option `apheleia-formatters-respect-indent-level`,
+  defaulting to `t`. You can set this to `nil` to disable Apheleia
+  configuring formatters to use the same indent settings as the Emacs
+  major mode is using ([#208]).
+
 ### Enhancements
+* Use the `prettier-json` formatter for `js-json-mode` ([#209]).
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
 * All marks (the current `(mark)`, and the `mark-ring`) are now
-  adjusted, alongside `(point)`.
+  adjusted, alongside `(point)` ([#197]).
+* Autoload the apheleia-goto-error command ([#215]).
+* Use `lisp-indent` as default formatter for `emacs-lisp-mode` ([#223])
+* Use `hclfmt` for formatting hashicorp HCL files ([#231])
+
+### Internal Changes
+* Refactored the organisation of the apheleia package for ease of
+  understanding and usability ([#215]).
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
   and these would get spliced into the source file. This has been fixed
   by suppressing all logs from `ktlint`.
+* Disable colorized output with the jq formatter ([#213]).
+* Fixed apheleia skipped running a formatter on a remote when it isn't
+  installed locally ([#215]).
+* Fixed clang-format formatter did not respect remote file-name component for
+  the assumed file-name ([#215]).
 
 ### Formatters
 
@@ -32,13 +63,20 @@ The format is based on [Keep a Changelog].
   for [Bazel Build](https://bazel.build/) ([#171]).
 * [`cmake-format`](https://github.com/cheshirekow/cmake_format)
   for [CMake](https://cmake.org/) ([#172]).
+* [`fourmolu`](https://github.com/fourmolu/fourmolu) for haskell
 * [`html-tidy`](https://www.html-tidy.org/) for HTML/XML ([#173]).
+* [`ormolu`](https://github.com/tweag/ormolu) for haskell.
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
+* [`ruby-standard`](https://github.com/standardrb/standard) for
+  [ruby](https://www.ruby-lang.org/en/) ([#201])
+* [`ruff`](https://github.com/astral-sh/ruff) for
+  [python](https://python.org) ([#236])
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
+* [`hclfmt`](https://github.com/hashicorp/hcl/tree/main/cmd/hclfmt) for [HCL](https://github.com/hashicorp/hcl) ([#231])
 
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
@@ -53,6 +91,15 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
+[#197]: https://github.com/radian-software/apheleia/issues/197
+[#208]: https://github.com/radian-software/apheleia/discussions/208
+[#209]: https://github.com/radian-software/apheleia/pull/209
+[#213]: https://github.com/radian-software/apheleia/pull/213
+[#214]: https://github.com/radian-software/apheleia/pull/214
+[#215]: https://github.com/radian-software/apheleia/pull/215
+[#223]: https://github.com/radian-software/apheleia/pull/223
+[#231]: https://github.com/radian-software/apheleia/pull/231
+[#236]: https://github.com/radian-software/apheleia/pull/236
 
 ## 3.2 (released 2023-02-25)
 ### Features

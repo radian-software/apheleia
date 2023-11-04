@@ -8,7 +8,12 @@ EMACS ?= emacs
 TAG ?= latest
 
 # The order is important for compilation.
-for_compile := *.el
+for_compile := \
+    apheleia-formatters.el \
+    apheleia-log.el \
+    apheleia-rcs.el \
+    apheleia-utils.el \
+    apheleia.el
 for_checkdoc := *.el
 for_checkindent := *.el
 
@@ -80,7 +85,11 @@ docker: ## Start a Docker shell; e.g. make docker VERSION=25.3
 
 .PHONY: fmt-build  # env vars: FORMATTERS, TAG
 fmt-build: ## Build a Docker image with formatters installed
-	@test/formatters/build-image.bash
+	@COMMON=0 test/formatters/build-image.bash
+
+.PHONY: fmt-build-common  # env var: TAG
+fmt-build-common: ## Build a Docker image with just the common base
+	@COMMON=1 test/formatters/build-image.bash
 
 .PHONY: fmt-docker  # env var: TAG
 fmt-docker: ## Start a Docker shell for testing formatters

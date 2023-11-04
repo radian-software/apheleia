@@ -47,7 +47,7 @@ The approach is as follows:
 
 Apheleia is available on [MELPA](https://melpa.org/). It is easiest
 to install it using
-[`straight.el`](https://github.com/raxod502/straight.el):
+[`straight.el`](https://github.com/radian-software/straight.el):
 
     (straight-use-package 'apheleia)
 
@@ -157,6 +157,10 @@ variables:
       of `file` in general.
 * `apheleia-formatter`: Optional buffer-local variable specifying the
   formatter to use in this buffer. Overrides `apheleia-mode-alist`.
+  You can set this in a local variables list, or in `.dir-locals.el`
+  (e.g. `((python-mode . ((apheleia-formatter . (isort black)))))`),
+  or in a custom hook of your own that sets the local variable
+  conditionally.
 * `apheleia-inhibit`: Optional buffer-local variable, if set to
   non-nil then Apheleia does not turn on automatically even if
   `apheleia-global-mode` is on.
@@ -217,20 +221,32 @@ Apheleia exposes some hooks for advanced customization:
   one of these returns non-nil then `apheleia-mode` is not enabled in
   the buffer.
 
-## Known issues
+## Troubleshooting
+
+Try running your formatter outside of Emacs to verify it works there.
+Check what command-line options it is configured with in
+`apheleia-formatters`.
+
+To debug internal bugs, race conditions, or performance issues, try
+setting `apheleia-log-debug-info` to non-nil and check the contents of
+`*apheleia-debug-log*`. It will have detailed trace information about
+most operations performed by Apheleia.
+
+### Known issues
 
 * `process aphelieia-whatever no longer connected to pipe; closed it`:
   This happens on older Emacs versions when formatting a buffer with
   size greater than 65,536 characters. There is no known workaround
   besides disabling `apheleia-mode` for the affected buffer, or
   upgrading to a more recent version of Emacs. See
-  [#20](https://github.com/raxod502/apheleia/issues/20).
+  [#20](https://github.com/radian-software/apheleia/issues/20).
 
 ## Contributing
 
 Please see [the contributor guide for my
-projects](https://github.com/raxod502/contributor-guide) for general
-information, and the following sections for Apheleia-specific details.
+projects](https://github.com/radian-software/contributor-guide) for
+general information, and the following sections for Apheleia-specific
+details.
 
 There's also a [wiki](https://github.com/radian-software/apheleia/wiki) that could do with additions/clarity. Any
 improvement suggestions should be submitted as an issue.

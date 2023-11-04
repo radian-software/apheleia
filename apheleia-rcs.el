@@ -1,0 +1,250 @@
+;;; apheleia-rcs.el --- Apply RCS patches -*- lexical-binding: t -*-
+
+;;; Commentary:
+
+;; A library to apply a RCS patch to an Emacs buffer while minimising the
+;; displacement of `point'.
+
+;;; Code:
+
+(require 'apheleia-log)
+
+(require 'cl-lib)
+(require 'subr-x)
+
+(cl-defun apheleia--edit-distance-table (s1 s2)
+  "Align strings S1 and S2 for minimum edit distance.
+Return the dynamic programming table as has table which maps cons
+of integers (I1 . I2) to the edit distance between the first I1
+characters of S1 and the first I2 characters of S2."
+  (let ((table (make-hash-table :test #'equal)))
+    (dotimes (i1 (1+ (length s1)))
+      (puthash (cons i1 0) i1 table))
+    (dotimes (i2 (1+ (length s2)))
+      (puthash (cons 0 i2) i2 table))
+    (dotimes (i1 (length s1))
+      ;; Iterate from 1 to length+1.
+      (cl-incf i1)
+      (dotimes (i2 (length s2))
+        (cl-incf i2)
+        (let ((ins (1+ (gethash (cons i1 (1- i2)) table)))
+              (del (1+ (gethash (cons (1- i1) i2) table)))
+              (sub (gethash (cons (1- i1) (1- i2)) table)))
+          (unless (= (aref s1 (1- i1)) (aref s2 (1- i2)))
+            (cl-incf sub))
+          (puthash (cons i1 i2) (min ins del sub) table))))
+    table))
+
+(defun apheleia--align-point (s1 s2 p1)
+  "Given strings S1 and S2 and index P1 in S1, return matching index P2 in S2.
+If S1 and S2 are the same, then P1 and P2 will also be the same.
+Otherwise, the text of S2 surrounding P2 is \"similar\" to the
+text of S1 surrounding P1."
+  (let* ((table (apheleia--edit-distance-table s1 s2))
+         (i1 (length s1))
+         (i2 (length s2)))
+    (while (> i1 p1)
+      (let ((ins (1+ (gethash (cons i1 (1- i2)) table)))
+            (del (1+ (gethash (cons (1- i1) i2) table)))
+            (sub (gethash (cons (1- i1) (1- i2)) table)))
+        (unless (= (aref s1 (1- i1)) (aref s2 (1- i2)))
+          (cl-incf sub))
+        (let ((cost (min ins del sub)))
+          (cond
+           ((= cost ins)
+            (cl-decf i2))
+           ((= cost del)
+            (cl-decf i1))
+           ((= cost sub)
+            (cl-decf i1)
+            (cl-decf i2))))))
+    i2))
+
+(defun apheleia--map-rcs-patch (func)
+  "Map over the RCS patch in the current buffer.
+For each RCS patch command, FUNC is called with an alist that has
+the following keys:
+
+- `command': either `addition' or `deletion'
+- `start': line number, an integer
+- `lines': number of lines to be inserted or removed
+- `text': the string to be inserted, only for `addition'
+
+See <https://tools.ietf.org/doc/tcllib/html/rcs.html#section4>
+for documentation on the RCS patch format."
+  (save-excursion
+    (goto-char (point-min))
+    (while (not (= (point) (point-max)))
+      (unless (looking-at "$\\|\\([ad]\\)\\([0-9]+\\) \\([0-9]+\\)")
+        (error "Malformed RCS patch: %S" (point)))
+      (forward-line)
+      (when-let ((command (match-string 1)))
+        (let ((start (string-to-number (match-string 2)))
+              (lines (string-to-number (match-string 3))))
+          (pcase command
+            ("a"
+             (let ((text-start (point)))
+               (forward-line lines)
+               (funcall
+                func
+                `((command . addition)
+                  (start . ,start)
+                  (lines . ,lines)
+                  (text . ,(buffer-substring-no-properties
+                            text-start (point)))))))
+            ("d"
+             (funcall
+              func
+              `((command . deletion)
+                (start . ,start)
+                (lines . ,lines))))))))))
+
+(defcustom apheleia-max-alignment-size 400
+  "Maximum size for diff regions that will have point aligned.
+Apheleia uses a dynamic programming algorithm to determine where
+point should be placed within a diff region, but this algorithm
+has quadratic runtime so it will lock up Emacs if it is run on a
+diff region that is too large. The value of this variable serves
+as a limit on the input size to the algorithm; larger diff
+regions will still be applied, but Apheleia won't try to move
+point correctly."
+  :type 'integer
+  :group 'apheleia)
+
+(defun apheleia--apply-rcs-patch (content-buffer patch-buffer)
+  "Apply RCS patch.
+CONTENT-BUFFER contains the text to be patched, and PATCH-BUFFER
+contains the patch."
+  (apheleia--log
+   'rcs "Applying RCS patch from %S to %S" patch-buffer content-buffer)
+  (let ((commands nil)
+        (point-list nil)
+        (window-line-list nil))
+    (with-current-buffer content-buffer
+      (push (cons 'set-point (cons nil (point))) point-list)
+      (when (mark-marker)
+        (push (cons 'set-marker (cons nil (mark-marker))) point-list))
+      (dolist (m mark-ring)
+        (push (cons 'set-marker (cons nil m)) point-list))
+      (dolist (w (get-buffer-window-list nil nil t))
+        (push (cons 'set-point (cons w (window-point w))) point-list)
+        (push (cons w (count-lines (window-start w) (point)))
+              window-line-list)))
+    (with-current-buffer patch-buffer
+      (apheleia--map-rcs-patch
+       (lambda (command)
+         (with-current-buffer content-buffer
+           ;; Could be optimized significantly by moving only as many
+           ;; lines as needed, rather than returning to the beginning
+           ;; of the buffer first.
+           (save-excursion
+             (goto-char (point-min))
+             (forward-line (1- (alist-get 'start command)))
+             ;; Account for the off-by-one error in the RCS patch spec
+             ;; (namely, text is added *after* the line mentioned in
+             ;; the patch).
+             (when (eq (alist-get 'command command) 'addition)
+               (forward-line))
+             (push `(marker . ,(point-marker)) command)
+             (push command commands)
+             ;; If we delete a region just before inserting new text
+             ;; at the same place, then it is a replacement. In this
+             ;; case, check if the replaced region includes the window
+             ;; point for any window currently displaying the content
+             ;; buffer. If so, figure out where that window point
+             ;; should be moved to, and record the information in an
+             ;; additional command.
+             ;;
+             ;; See <https://www.gnu.org/software/emacs/manual/html_node/elisp/Window-Point.html>.
+             ;;
+             ;; Note that the commands get pushed in reverse order
+             ;; because of how linked lists work.
+             (let ((deletion (nth 1 commands))
+                   (addition (nth 0 commands)))
+               (when (and (eq (alist-get 'command deletion) 'deletion)
+                          (eq (alist-get 'command addition) 'addition)
+                          ;; Again with the weird off-by-one
+                          ;; computations. For example, if you replace
+                          ;; lines 68 through 71 inclusive, then the
+                          ;; deletion is for line 68 and the addition
+                          ;; is for line 70. Blame RCS.
+                          (= (+ (alist-get 'start deletion)
+                                (alist-get 'lines deletion)
+                                -1)
+                             (alist-get 'start addition)))
+                 (let ((text-start (alist-get 'marker deletion)))
+                   (forward-line (alist-get 'lines deletion))
+                   (let ((text-end (point)))
+                     (dolist (entry point-list)
+                       (cl-destructuring-bind (c . (w . p)) entry
+                         ;; markers pretend to be numbers, so we can run this
+                         ;; whether or not p is a number or marker
+                         (cl-destructuring-bind (w . p) entry
+                           (when (and (< text-start p)
+                                      (< p text-end))
+                             (let* ((old-text (buffer-substring-no-properties
+                                               text-start text-end))
+                                    (new-text (alist-get 'text addition))
+                                    (old-relative-point (- p text-start))
+                                    (new-relative-point
+                                     (if (> (max (length old-text)
+                                                 (length new-text))
+                                            apheleia-max-alignment-size)
+                                         old-relative-point
+                                       (apheleia--align-point
+                                        old-text new-text old-relative-point))))
+                               (goto-char text-start)
+                               ;; we abuse original-point to store the
+                               ;; original marker for marks
+                               (push `((marker . ,(point-marker))
+                                       (original-point . ,p)
+                                       (command . ,c)
+                                       (window . ,w)
+                                       (relative-point . ,new-relative-point))
+                                     commands))))))))))))))
+      (with-current-buffer content-buffer
+        (let ((move-to nil)
+              (move-marks nil))
+          (save-excursion
+            (dolist (command (nreverse commands))
+              (goto-char (alist-get 'marker command))
+              (pcase (alist-get 'command command)
+                (`addition
+                 (insert (alist-get 'text command)))
+                (`deletion
+                 (let ((text-start (point)))
+                   (forward-line (alist-get 'lines command))
+                   (delete-region text-start (point))))
+                (`set-point
+                 (let ((new-point
+                        (+ (point) (alist-get 'relative-point command))))
+                   (if-let ((w (alist-get 'window command)))
+                       (set-window-point w new-point)
+                     (setq move-to new-point))))
+                (`set-marker
+                 (let* ((old-mark (alist-get 'original-point command))
+                        (new-mark
+                         (+ old-mark (alist-get 'relative-point command))))
+                   (push (cons old-mark new-mark) move-marks))))))
+          (when move-to
+            (goto-char move-to))
+          (dolist (entry move-marks)
+            (cl-destructuring-bind (old-mark . new-mark) entry
+              (set-marker old-mark new-mark)))))
+      ;; Restore the scroll position of each window displaying the
+      ;; buffer.
+      (dolist (entry window-line-list)
+        (cl-destructuring-bind (w . old-window-line) entry
+          (let ((new-window-line
+                 (count-lines (window-start w) (point))))
+            (with-selected-window w
+              ;; Sometimes if the text is less than a buffer long, and
+              ;; we do a deletion, it might not be possible to keep the
+              ;; vertical position of point the same by scrolling.
+              ;; That's okay. We just go as far as we can.
+              (ignore-errors
+                (scroll-down (- old-window-line new-window-line)))))))))
+
+  (provide 'apheleia-rcs)
+
+;;; apheleia-rcs.el ends here
