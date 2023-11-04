@@ -243,6 +243,7 @@ rather than using this system."
     (html-ts-mode . prettier-html)
     (java-mode . google-java-format)
     (java-ts-mode . google-java-format)
+    (jinja2-mode . nil)
     (js3-mode . prettier-javascript)
     (js-json-mode . prettier-json)
     (js-mode . prettier-javascript)
@@ -298,7 +299,13 @@ If a given mode derives from another mode (e.g. `php-mode' and
 `cc-mode'), then whichever entry in the alist is more specific
 will apply. In the case that multiple modes match
 `derived-mode-p' for the current buffer but neither derives from
-the other, whichever entry comes first will be used."
+the other, whichever entry comes first will be used.
+
+The value for a major mode can be nil (equivalently, an empty
+list). This means to use no formatter. This can be helpful in
+case your major mode derives from a more general one, but you
+don't want the more general formatter to apply to the derived
+mode."
   :type '(alist
           :key-type
           (choice (symbol :tag "Major mode")
