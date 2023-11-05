@@ -9,8 +9,3 @@ echo -e "\nln -s $HOME/.rustup \$HOME/.rustup" >>/etc/bash.bashrc
 echo -e "ln -s $HOME/.cargo \$HOME/.cargo" >>/etc/bash.bashrc
 echo -e "source \$HOME/.cargo/env" >>/etc/bash.bashrc
 source $HOME/.cargo/env
-echo $PATH
-ls -l $HOME
-ls -l $HOME/.cargo
-ls -l $HOME/.rustup
-which rustup
