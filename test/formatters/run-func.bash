@@ -7,7 +7,6 @@ set -euo pipefail
 
 whoami
 echo $PATH
-echo -e "CI: ${CI}"
 ls -la $HOME
 
 cd "$(dirname "$0")"
