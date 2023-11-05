@@ -9,4 +9,4 @@ echo -e "\nln -s $HOME/.rustup \$HOME/.rustup" >>/etc/bash.bashrc
 echo -e "ln -s $HOME/.cargo \$HOME/.cargo" >>/etc/bash.bashrc
 echo -e "source \$HOME/.cargo/env" >>/etc/bash.bashrc
 source $HOME/.cargo/env
-cat /etc/passwd | cut -d: -f 1
+cat /etc/passwd | cut -d: -f 1 1>&2
