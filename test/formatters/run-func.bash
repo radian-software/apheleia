@@ -7,9 +7,7 @@ set -euo pipefail
 
 whoami
 echo $PATH
-ls -l $HOME
-ls -l $HOME/.cargo
-ls -l $HOME/.rustup
+ls -la $HOME
 which rustup
 
 cd "$(dirname "$0")"
