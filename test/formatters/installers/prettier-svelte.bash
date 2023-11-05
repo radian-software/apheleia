@@ -1,1 +1,2 @@
-npm install -g prettier-plugin-svelte prettier
+cd /tmp
+npm install --save-dev prettier-plugin-svelte prettier
