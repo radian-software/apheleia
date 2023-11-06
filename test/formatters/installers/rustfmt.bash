@@ -1,1 +1,1 @@
-apt-get install rustfmt
+apt-get install rustfmt -y
