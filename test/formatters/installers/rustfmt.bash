@@ -5,8 +5,7 @@ chmod -R a+r $HOME/.cargo
 chmod -R a+rx $HOME/.cargo/bin
 chmod a+x $HOME/.rustup
 chmod -R a+rw $HOME/.rustup
-echo -e "\nln -s $HOME/.rustup \$HOME/.rustup" >>/etc/bash.bashrc
-echo -e "ln -s $HOME/.cargo \$HOME/.cargo" >>/etc/bash.bashrc
-echo -e "source \$HOME/.cargo/env" >>/etc/bash.bashrc
+echo -e "\nln -sf $HOME/.rustup \$HOME/.rustup" >>/etc/skel/.bashrc
+echo -e "ln -sf $HOME/.cargo \$HOME/.cargo" >>/etc/skel/.bashrc
+echo -e "source \$HOME/.cargo/env" >>/etc/skel/.bashrc
 source $HOME/.cargo/env
-cat /etc/passwd | cut -d: -f 1 1>&2
