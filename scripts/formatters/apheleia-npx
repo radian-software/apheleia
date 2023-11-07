@@ -15,8 +15,8 @@ if (( "$#" == 0 )); then
 fi
 
 # location of this script
-apheleia_dir="$(cd $(dirname ${BASH_SOURCE[0]})/../.. &>/dev/null && pwd)"
-pnp_bin="${apheleia_dir}/scripts/pnp-bin.js"
+scripts_dir="$(cd $(dirname ${BASH_SOURCE[0]}) &>/dev/null && pwd)"
+pnp_bin="${scripts_dir}/pnp-bin.js"
 
 # This function prints the name of the current directory if it
 # contains a file or directory named after the first argument, or the
