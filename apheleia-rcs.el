@@ -202,33 +202,32 @@ contains the patch."
                                 (relative-pos . ,new-relative-point))
                               commands))))))))))))))
     (with-current-buffer content-buffer
-      (save-excursion
-        (dolist (command (nreverse commands))
-          (pcase (alist-get 'command command)
-            (`addition
-             (save-excursion
-               (goto-char (alist-get 'marker command))
-               (insert (alist-get 'text command))))
-            (`deletion
-             (save-excursion
-               (goto-char (alist-get 'marker command))
-               (forward-line (alist-get 'lines command))
-               (delete-region (alist-get 'marker command) (point))))
-            (`move-cursor
-             (let ((cursor (alist-get 'cursor command))
-                   (offset (alist-get 'relative-pos command)))
-               (pcase (plist-get cursor :type)
-                 (`point
-                  (goto-char
-                   (+ (point) offset)))
-                 (`marker
-                  (set-marker
-                   (plist-get cursor :pos)
-                   (+ (plist-get cursor :pos) offset)))
-                 (`window-point
-                  (set-window-point
-                   (plist-get cursor :window)
-                   (+ (point) offset))))))))))
+      (dolist (command (nreverse commands))
+        (pcase (alist-get 'command command)
+          (`addition
+           (save-excursion
+             (goto-char (alist-get 'marker command))
+             (insert (alist-get 'text command))))
+          (`deletion
+           (save-excursion
+             (goto-char (alist-get 'marker command))
+             (forward-line (alist-get 'lines command))
+             (delete-region (alist-get 'marker command) (point))))
+          (`move-cursor
+           (let ((cursor (alist-get 'cursor command))
+                 (offset (alist-get 'relative-pos command)))
+             (pcase (plist-get cursor :type)
+               (`point
+                (goto-char
+                 (+ (point) offset)))
+               (`marker
+                (set-marker
+                 (plist-get cursor :pos)
+                 (+ (plist-get cursor :pos) offset)))
+               (`window-point
+                (set-window-point
+                 (plist-get cursor :window)
+                 (+ (point) offset)))))))))
     ;; Restore the scroll position of each window displaying the
     ;; buffer.
     (dolist (entry window-line-list)
