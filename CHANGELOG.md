@@ -29,6 +29,10 @@ The format is based on [Keep a Changelog].
   `apheleia-mode-alist` ([#191]).
 * All marks (the current `(mark)`, and the `mark-ring`) are now
   adjusted, alongside `(point)` ([#197]).
+* Built-in formatters now use a new `"apheleia-npx"` built-in script
+  instead of the legacy `npx` keyword. The effect of the new script is
+  the same, except that it also works with Yarn PNP projects as well
+  as `node_modules` style projects ([#200]).
 * Autoload the apheleia-goto-error command ([#215]).
 * Use `lisp-indent` as default formatter for `emacs-lisp-mode` ([#223])
 * Use `hclfmt` for formatting hashicorp HCL files ([#231])
@@ -36,6 +40,10 @@ The format is based on [Keep a Changelog].
 ### Internal Changes
 * Refactored the organisation of the apheleia package for ease of
   understanding and usability ([#215]).
+* The new `scripts/pnp-bin.js` script is standalone minified nodejs built
+  from the [`pnp-bin`](https://github.com/PuddleByteComputing/pnp-bin) repo,
+  extracted from apheleia PR [#200].
+* Test environment bumped from Ubuntu 20.04 to 22.04
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
