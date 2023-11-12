@@ -118,16 +118,17 @@ contains the patch."
   (apheleia--log
    'rcs "Applying RCS patch from %S to %S" patch-buffer content-buffer)
   (let ((commands nil)
-        (point-list nil)
+        (pos-list nil)
         (window-line-list nil))
     (with-current-buffer content-buffer
-      (push (cons 'set-point (cons nil (point))) point-list)
+      (push `(:type point :pos ,(point)) pos-list)
       (when (mark-marker)
-        (push (cons 'set-marker (cons nil (mark-marker))) point-list))
+        (push `(:type marker :pos ,(mark-marker)) pos-list))
       (dolist (m mark-ring)
-        (push (cons 'set-marker (cons nil m)) point-list))
+        (push `(:type marker :pos ,m) pos-list))
       (dolist (w (get-buffer-window-list nil nil t))
-        (push (cons 'set-point (cons w (window-point w))) point-list)
+        (push
+         `(:type window-point :pos ,(window-point w) :window ,w) pos-list)
         (push (cons w (count-lines (window-start w) (point)))
               window-line-list)))
     (with-current-buffer patch-buffer
@@ -175,8 +176,8 @@ contains the patch."
                  (let ((text-start (alist-get 'marker deletion)))
                    (forward-line (alist-get 'lines deletion))
                    (let ((text-end (point)))
-                     (dolist (entry point-list)
-                       (cl-destructuring-bind (c . (w . p)) entry
+                     (dolist (pos-spec pos-list)
+                       (let ((p (plist-get pos-spec :pos)))
                          ;; markers pretend to be numbers, so we can run this
                          ;; whether or not p is a number or marker
                          (when (and (< text-start p)
@@ -193,43 +194,39 @@ contains the patch."
                                      (apheleia--align-point
                                       old-text new-text old-relative-point))))
                              (goto-char text-start)
-                             ;; we abuse original-point to store the
-                             ;; original marker for marks
-                             (push `((marker . ,(point-marker))
-                                     (original-point . ,p)
-                                     (command . ,c)
-                                     (window . ,w)
-                                     (relative-point . ,new-relative-point))
-                                   commands)))))))))))))
-      (with-current-buffer content-buffer
-        (let ((move-to nil)
-              (move-marks nil))
-          (save-excursion
-            (dolist (command (nreverse commands))
-              (goto-char (alist-get 'marker command))
-              (pcase (alist-get 'command command)
-                (`addition
-                 (insert (alist-get 'text command)))
-                (`deletion
-                 (let ((text-start (point)))
-                   (forward-line (alist-get 'lines command))
-                   (delete-region text-start (point))))
-                (`set-point
-                 (let ((new-point
-                        (+ (point) (alist-get 'relative-point command))))
-                   (if-let ((w (alist-get 'window command)))
-                       (set-window-point w new-point)
-                     (setq move-to new-point))))
-                (`set-marker
-                 (let* ((old-mark (alist-get 'original-point command))
-                        (new-mark
-                         (+ old-mark (alist-get 'relative-point command))))
-                   (push (cons old-mark new-mark) move-marks))))))
-          (when move-to
-            (goto-char move-to))
-          (dolist (entry move-marks)
-            (cl-destructuring-bind (old-mark . new-mark) entry
-              (set-marker old-mark new-mark))))))
+                             (push
+                              `((command . move-cursor)
+                                (cursor . ,pos-spec)
+                                (relative-pos . ,new-relative-point))
+                              commands))))))))))))))
+    (with-current-buffer content-buffer
+      (save-excursion
+        (dolist (command (nreverse commands))
+          (pcase (alist-get 'command command)
+            (`addition
+             (save-excursion
+               (goto-char (alist-get 'marker command))
+               (insert (alist-get 'text command))))
+            (`deletion
+             (save-excursion
+               (goto-char (alist-get 'marker command))
+               (forward-line (alist-get 'lines command))
+               (delete-region (alist-get 'marker command) (point))))
+            (`move-cursor
+             (let ((cursor (alist-get 'cursor command))
+                   (offset (alist-get 'relative-pos command)))
+               (pcase (plist-get cursor :type)
+                 (`point
+                  (goto-char
+                   (+ (point) offset)))
+                 (`marker
+                  (set-marker
+                   (plist-get cursor :pos)
+                   (+ (plist-get cursor :pos) offset)))
+                 (`window-point
+                  (set-window-point
+                   (plist-get cursor :window)
+                   (+ (point) offset))))))))))
     ;; Restore the scroll position of each window displaying the
     ;; buffer.
     (dolist (entry window-line-list)
