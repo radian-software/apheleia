@@ -178,8 +178,10 @@ contains the patch."
                    (let ((text-end (point)))
                      (dolist (pos-spec pos-list)
                        (let ((p (plist-get pos-spec :pos)))
-                         ;; markers pretend to be numbers, so we can run this
-                         ;; whether or not p is a number or marker
+                         ;; Check if the point, or marker, or window
+                         ;; point, is within the replaced region.
+                         ;; Markers pretend to be numbers, so we can
+                         ;; run this in any of the three cases.
                          (when (and (< text-start p)
                                     (< p text-end))
                            (let* ((old-text (buffer-substring-no-properties
