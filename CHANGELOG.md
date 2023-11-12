@@ -34,6 +34,9 @@ The format is based on [Keep a Changelog].
 * Autoload the apheleia-goto-error command ([#215]).
 * Use `lisp-indent` as default formatter for `emacs-lisp-mode` ([#223])
 * Use `hclfmt` for formatting hashicorp HCL files ([#231])
+* The `mix format` formatter will respect `.formatter.exs` files even
+  if they are present in a parent directory rather than the same
+  directory as the file being formatted ([#232]).
 
 ### Internal Changes
 * Refactored the organisation of the apheleia package for ease of
@@ -104,6 +107,7 @@ The format is based on [Keep a Changelog].
 [#215]: https://github.com/radian-software/apheleia/pull/215
 [#223]: https://github.com/radian-software/apheleia/pull/223
 [#231]: https://github.com/radian-software/apheleia/pull/231
+[#232]: https://github.com/radian-software/apheleia/issues/232
 [#236]: https://github.com/radian-software/apheleia/pull/236
 [#242]: https://github.com/radian-software/apheleia/pull/242
 
