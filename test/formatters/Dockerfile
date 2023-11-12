@@ -1,4 +1,4 @@
-# Ubuntu 20.04 LTS supported until April 2025
+# Ubuntu 22.04 LTS supported until April 2027
 FROM ubuntu:22.04 AS common
 
 WORKDIR /build
