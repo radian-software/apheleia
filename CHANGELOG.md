@@ -41,7 +41,7 @@ The format is based on [Keep a Changelog].
 * The new `scripts/pnp-bin.js` script is standalone minified nodejs built
   from the [`pnp-bin`](https://github.com/PuddleByteComputing/pnp-bin) repo,
   extracted from apheleia PR [#200].
-* Test environment bumped from Ubuntu 20.04 to 22.04
+* Test environment bumped from Ubuntu 20.04 to 22.04 ([#242]).
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
@@ -105,6 +105,7 @@ The format is based on [Keep a Changelog].
 [#223]: https://github.com/radian-software/apheleia/pull/223
 [#231]: https://github.com/radian-software/apheleia/pull/231
 [#236]: https://github.com/radian-software/apheleia/pull/236
+[#242]: https://github.com/radian-software/apheleia/pull/242
 
 ## 3.2 (released 2023-02-25)
 ### Features
