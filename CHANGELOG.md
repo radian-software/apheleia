@@ -41,6 +41,7 @@ The format is based on [Keep a Changelog].
 * The new `scripts/pnp-bin.js` script is standalone minified nodejs built
   from the [`pnp-bin`](https://github.com/PuddleByteComputing/pnp-bin) repo,
   extracted from apheleia PR [#200].
+* Test environment bumped from Ubuntu 20.04 to 22.04
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
@@ -76,7 +77,7 @@ The format is based on [Keep a Changelog].
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
 * [`ruby-standard`](https://github.com/standardrb/standard) for
   [ruby](https://www.ruby-lang.org/en/) ([#201])
-* [`ruff`](https://github.com/astral-sh/ruff) for 
+* [`ruff`](https://github.com/astral-sh/ruff) for
   [python](https://python.org) ([#236])
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
