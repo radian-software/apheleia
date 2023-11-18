@@ -1,5 +1,7 @@
 ;;; apheleia-formatters.el --- Run formatters -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; This module defines a series of functions for running a formatter process
@@ -552,7 +554,7 @@ command succeeds provided that its exit status is 0."
                   (format " *apheleia-%s-stdout*" name)))
          (stderr (generate-new-buffer
                   (format " *apheleia-%s-stderr*" name)))
-         (log-name (apheliea-log--buffer-name name)))
+         (log-name (apheleia-log--buffer-name name)))
     (condition-case-unless-debug e
         (progn
           (setq apheleia--current-process

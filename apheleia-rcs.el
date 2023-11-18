@@ -1,5 +1,7 @@
 ;;; apheleia-rcs.el --- Apply RCS patches -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; A library to apply a RCS patch to an Emacs buffer while minimising the
@@ -74,7 +76,7 @@ See <https://tools.ietf.org/doc/tcllib/html/rcs.html#section4>
 for documentation on the RCS patch format."
   (save-excursion
     (goto-char (point-min))
-    (while (not (= (point) (point-max)))
+    (while (not (eobp))
       (unless (looking-at "$\\|\\([ad]\\)\\([0-9]+\\) \\([0-9]+\\)")
         (error "Malformed RCS patch: %S" (point)))
       (forward-line)
