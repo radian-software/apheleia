@@ -200,7 +200,8 @@ contains the patch."
                              (push
                               `((command . move-cursor)
                                 (cursor . ,pos-spec)
-                                (offset . ,(- new-relative-point old-relative-point)))
+                                (offset . ,(- new-relative-point
+                                              old-relative-point)))
                               commands))))))))))))))
     (with-current-buffer content-buffer
       ;; We run both `goto-char' and `set-window-point' to offset
