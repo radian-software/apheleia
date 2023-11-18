@@ -9,11 +9,11 @@ TAG ?= latest
 
 # The order is important for compilation.
 for_compile := \
+    apheleia-utils.el \
     apheleia-formatter-context.el \
     apheleia-log.el \
     apheleia-formatters.el \
     apheleia-rcs.el \
-    apheleia-utils.el \
     apheleia.el
 for_checkdoc := *.el
 for_checkindent := *.el
