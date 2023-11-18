@@ -122,10 +122,11 @@ contains the patch."
         (window-line-list nil))
     (with-current-buffer content-buffer
       (push `(:type point :pos ,(point)) pos-list)
-      (when (mark-marker)
+      (when (marker-position (mark-marker))
         (push `(:type marker :pos ,(mark-marker)) pos-list))
       (dolist (m mark-ring)
-        (push `(:type marker :pos ,m) pos-list))
+        (when (marker-position m)
+          (push `(:type marker :pos ,m) pos-list)))
       (dolist (w (get-buffer-window-list nil nil t))
         (push
          `(:type window-point :pos ,(window-point w) :window ,w) pos-list)
