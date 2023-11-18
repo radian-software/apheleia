@@ -1,5 +1,7 @@
 ;;; apheleia-rcs.el --- Apply RCS patches -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; A library to apply a RCS patch to an Emacs buffer while minimising the

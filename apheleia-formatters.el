@@ -1,5 +1,7 @@
 ;;; apheleia-formatters.el --- Run formatters -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; This module defines a series of functions for running a formatter process
