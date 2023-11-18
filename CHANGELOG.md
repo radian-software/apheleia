@@ -27,6 +27,8 @@ The format is based on [Keep a Changelog].
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
+* All marks (the current `(mark)`, and the `mark-ring`) are now
+  adjusted, alongside `(point)` ([#197]).
 * Built-in formatters now use a new `"apheleia-npx"` built-in script
   instead of the legacy `npx` keyword. The effect of the new script is
   the same, except that it also works with Yarn PNP projects as well
@@ -104,6 +106,7 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
+[#197]: https://github.com/radian-software/apheleia/issues/197
 [#208]: https://github.com/radian-software/apheleia/discussions/208
 [#209]: https://github.com/radian-software/apheleia/pull/209
 [#213]: https://github.com/radian-software/apheleia/pull/213
