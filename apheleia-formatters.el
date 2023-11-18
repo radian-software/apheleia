@@ -554,7 +554,7 @@ command succeeds provided that its exit status is 0."
                   (format " *apheleia-%s-stdout*" name)))
          (stderr (generate-new-buffer
                   (format " *apheleia-%s-stderr*" name)))
-         (log-name (apheliea-log--buffer-name name)))
+         (log-name (apheleia-log--buffer-name name)))
     (condition-case-unless-debug e
         (progn
           (setq apheleia--current-process
