@@ -200,35 +200,39 @@ contains the patch."
                              (push
                               `((command . move-cursor)
                                 (cursor . ,pos-spec)
-                                (relative-pos . ,new-relative-point))
+                                (offset . ,(- new-relative-point old-relative-point)))
                               commands))))))))))))))
     (with-current-buffer content-buffer
-      (dolist (command (nreverse commands))
-        (pcase (alist-get 'command command)
-          (`addition
-           (save-excursion
-             (goto-char (alist-get 'marker command))
-             (insert (alist-get 'text command))))
-          (`deletion
-           (save-excursion
-             (goto-char (alist-get 'marker command))
-             (forward-line (alist-get 'lines command))
-             (delete-region (alist-get 'marker command) (point))))
-          (`move-cursor
-           (let ((cursor (alist-get 'cursor command))
-                 (offset (alist-get 'relative-pos command)))
-             (pcase (plist-get cursor :type)
-               (`point
-                (goto-char
-                 (+ (point) offset)))
-               (`marker
-                (set-marker
-                 (plist-get cursor :pos)
-                 (+ (plist-get cursor :pos) offset)))
-               (`window-point
-                (set-window-point
-                 (plist-get cursor :window)
-                 (+ (point) offset)))))))))
+      ;; We run both `goto-char' and `set-window-point' to offset
+      ;; point and window point, don't want to chance that both
+      ;; changes will stack on top of each other.
+      (let ((orig-point (point)))
+        (dolist (command (nreverse commands))
+          (pcase (alist-get 'command command)
+            (`addition
+             (save-excursion
+               (goto-char (alist-get 'marker command))
+               (insert (alist-get 'text command))))
+            (`deletion
+             (save-excursion
+               (goto-char (alist-get 'marker command))
+               (forward-line (alist-get 'lines command))
+               (delete-region (alist-get 'marker command) (point))))
+            (`move-cursor
+             (let ((cursor (alist-get 'cursor command))
+                   (offset (alist-get 'offset command)))
+               (pcase (plist-get cursor :type)
+                 (`point
+                  (goto-char
+                   (+ orig-point offset)))
+                 (`marker
+                  (set-marker
+                   (plist-get cursor :pos)
+                   (+ (plist-get cursor :pos) offset)))
+                 (`window-point
+                  (set-window-point
+                   (plist-get cursor :window)
+                   (+ orig-point offset))))))))))
     ;; Restore the scroll position of each window displaying the
     ;; buffer.
     (dolist (entry window-line-list)
