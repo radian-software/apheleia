@@ -45,6 +45,10 @@ The format is based on [Keep a Changelog].
   from the [`pnp-bin`](https://github.com/PuddleByteComputing/pnp-bin) repo,
   extracted from apheleia PR [#200].
 * Test environment bumped from Ubuntu 20.04 to 22.04 ([#242]).
+* The function `apheleia--format-after-save` was renamed to
+  `apheleia-format-after-save`. This is only called out explicitly
+  because it was added to `after-save-hook` so customization that
+  assumed this behavior might break.
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
