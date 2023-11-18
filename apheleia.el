@@ -177,17 +177,17 @@ similar task."
 (defvar apheleia-mode)
 
 ;; Prevent infinite loop.
-(defvar apheleia--format-after-save-in-progress nil
-  "Prevent `apheleia--format-after-save' from being called recursively.
-This will be locally bound to t while `apheleia--format-after-save' is
+(defvar apheleia-format-after-save-in-progress nil
+  "Prevent `apheleia-format-after-save' from being called recursively.
+This will be locally bound to t while `apheleia-format-after-save' is
 operating, to prevent an infinite loop.")
 
 ;; Autoload because the user may enable `apheleia-mode' without
 ;; loading Apheleia; thus this function may be invoked as an autoload.
 ;;;###autoload
-(defun apheleia--format-after-save ()
+(defun apheleia-format-after-save ()
   "Run code formatter for current buffer if any configured, then save."
-  (unless apheleia--format-after-save-in-progress
+  (unless apheleia-format-after-save-in-progress
     (when (and apheleia-mode (not (buffer-narrowed-p)))
       (when-let ((formatters (apheleia--get-formatters)))
         (apheleia-format-buffer
@@ -195,7 +195,7 @@ operating, to prevent an infinite loop.")
          (lambda ()
            (with-demoted-errors "Apheleia: %s"
              (when buffer-file-name
-               (let ((apheleia--format-after-save-in-progress t))
+               (let ((apheleia-format-after-save-in-progress t))
                  (apheleia--save-buffer-silently)))
              (run-hooks 'apheleia-post-format-hook))))))))
 
@@ -211,8 +211,8 @@ It is customized by means of the variables `apheleia-mode-alist'
 and `apheleia-formatters'."
     :lighter apheleia-mode-lighter
     (if apheleia-mode
-        (add-hook 'after-save-hook #'apheleia--format-after-save nil 'local)
-      (remove-hook 'after-save-hook #'apheleia--format-after-save 'local)))
+        (add-hook 'after-save-hook #'apheleia-format-after-save nil 'local)
+      (remove-hook 'after-save-hook #'apheleia-format-after-save 'local)))
 
   (defvar-local apheleia-inhibit nil
     "Do not enable `apheleia-mode' automatically if non-nil.
