@@ -81,6 +81,9 @@
                     "--enable-outside-detected-project"))
     (ormolu . ("ormolu"))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
+    (pgformatter . ("pg_format"
+                    (apheleia-formatters-indent "--tabs" "--spaces" 'tab-width)
+                    (apheleia-formatters-fill-column "--wrap-limit")))
     (phpcs . ("apheleia-phpcs"))
     (prettier
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
@@ -306,6 +309,7 @@ rather than using this system."
     (rust-mode . rustfmt)
     (rust-ts-mode . rustfmt)
     (scss-mode . prettier-scss)
+    (sql-mode . pgformatter)
     (svelte-mode . prettier-svelte)
     (terraform-mode . terraform)
     (TeX-latex-mode . latexindent)
