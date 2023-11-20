@@ -301,7 +301,7 @@ strings (matched against value of variable `buffer-file-name'
 with `string-match-p'), and the values are symbols with entries
 in `apheleia-formatters' (or equivalently, they are allowed
 values for `apheleia-formatter'). Values can be a list of such
-symnols causing each formatter in the list to be called one after
+symbols causing each formatter in the list to be called one after
 the other (with the output of the previous formatter).
 Earlier entries in this variable take precedence over later ones.
 
@@ -446,7 +446,7 @@ NO-QUERY, and CONNECTION-TYPE."
             ;; capture stderr into a separate buffer, the best we can
             ;; do is save and read from a file.
             `(,stdout ,stderr-file)
-            ;; Do not re/display stdout as output is recieved.
+            ;; Do not re/display stdout as output is received.
             nil)
            ;; argv[1:]
            (cdr command))))
@@ -788,7 +788,7 @@ This function does not modify DEST in place, it returns a copy."
 
 (defun apheleia--formatter-context (name command remote &optional stdin-buffer)
   "Construct a formatter context for the formatter with NAME and COMMAND.
-Returns a `apheleia-formatter--context' object on success and nil if
+Returns an `apheleia-formatter--context' object on success and nil if
 the formatter is not executable. The returned formatter context may
 have some state such as temporary files that the caller is expected
 to cleanup.
@@ -982,7 +982,7 @@ being run, for diagnostic purposes."
                :scratch scratch
                ;; Name of the current formatter symbol, e.g. `black'.
                :formatter formatter
-               ;; Callback after succesfully formatting.
+               ;; Callback after successfully formatting.
                :callback
                (lambda ()
                  (unwind-protect
@@ -1022,7 +1022,7 @@ For more implementation detail, see
 FORMATTERS is a list of symbols that appear as keys in
 `apheleia-formatters'. BUFFER is the `current-buffer' when this
 function was first called. Once all the formatters in COMMANDS
-finish succesfully then invoke CALLBACK with one argument, a
+finish successfully then invoke CALLBACK with one argument, a
 buffer containing the output of all the formatters. REMOTE asserts
 whether the buffer being formatted is on a remote machine or the
 current machine. It should be the output of `file-remote-p' on the
