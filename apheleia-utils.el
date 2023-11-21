@@ -47,7 +47,10 @@ INDENT-FLAG."
      (js-jsx-mode 'js-indent-level)
      (js2-mode 'js2-basic-offset)
      (js2-jsx-mode 'js2-basic-offset)
-     (js3-mode 'js3-indent-level))))
+     (js3-mode 'js3-indent-level)
+     (tsx-ts-mode 'typescript-ts-mode-indent-offset)
+     (typescript-mode 'typescript-indent-level)
+     (typescript-ts-mode 'typescript-ts-mode-indent-offset))))
 
 (defcustom apheleia-formatters-respect-fill-column nil
   "Whether formatters should set `fill-column' related flags."
