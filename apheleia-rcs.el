@@ -1,11 +1,15 @@
 ;;; apheleia-rcs.el --- Apply RCS patches -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; A library to apply a RCS patch to an Emacs buffer while minimising the
 ;; displacement of `point'.
 
 ;;; Code:
+
+(require 'apheleia-log)
 
 (require 'cl-lib)
 (require 'subr-x)
@@ -72,7 +76,7 @@ See <https://tools.ietf.org/doc/tcllib/html/rcs.html#section4>
 for documentation on the RCS patch format."
   (save-excursion
     (goto-char (point-min))
-    (while (not (= (point) (point-max)))
+    (while (not (eobp))
       (unless (looking-at "$\\|\\([ad]\\)\\([0-9]+\\) \\([0-9]+\\)")
         (error "Malformed RCS patch: %S" (point)))
       (forward-line)
@@ -113,13 +117,21 @@ point correctly."
   "Apply RCS patch.
 CONTENT-BUFFER contains the text to be patched, and PATCH-BUFFER
 contains the patch."
+  (apheleia--log
+   'rcs "Applying RCS patch from %S to %S" patch-buffer content-buffer)
   (let ((commands nil)
-        (point-list nil)
+        (pos-list nil)
         (window-line-list nil))
     (with-current-buffer content-buffer
-      (push (cons nil (point)) point-list)
+      (push `(:type point :pos ,(point)) pos-list)
+      (when (marker-position (mark-marker))
+        (push `(:type marker :pos ,(mark-marker)) pos-list))
+      (dolist (m mark-ring)
+        (when (marker-position m)
+          (push `(:type marker :pos ,m) pos-list)))
       (dolist (w (get-buffer-window-list nil nil t))
-        (push (cons w (window-point w)) point-list)
+        (push
+         `(:type window-point :pos ,(window-point w) :window ,w) pos-list)
         (push (cons w (count-lines (window-start w) (point)))
               window-line-list)))
     (with-current-buffer patch-buffer
@@ -167,10 +179,12 @@ contains the patch."
                  (let ((text-start (alist-get 'marker deletion)))
                    (forward-line (alist-get 'lines deletion))
                    (let ((text-end (point)))
-                     (dolist (entry point-list)
-                       ;; Check if the (window) point is within the
-                       ;; replaced region.
-                       (cl-destructuring-bind (w . p) entry
+                     (dolist (pos-spec pos-list)
+                       (let ((p (plist-get pos-spec :pos)))
+                         ;; Check if the point, or marker, or window
+                         ;; point, is within the replaced region.
+                         ;; Markers pretend to be numbers, so we can
+                         ;; run this in any of the three cases.
                          (when (and (< text-start p)
                                     (< p text-end))
                            (let* ((old-text (buffer-substring-no-properties
@@ -185,31 +199,43 @@ contains the patch."
                                      (apheleia--align-point
                                       old-text new-text old-relative-point))))
                              (goto-char text-start)
-                             (push `((marker . ,(point-marker))
-                                     (command . set-point)
-                                     (window . ,w)
-                                     (relative-point . ,new-relative-point))
-                                   commands))))))))))))))
+                             (push
+                              `((command . move-cursor)
+                                (cursor . ,pos-spec)
+                                (offset . ,(- new-relative-point
+                                              old-relative-point)))
+                              commands))))))))))))))
     (with-current-buffer content-buffer
-      (let ((move-to nil))
-        (save-excursion
-          (dolist (command (nreverse commands))
-            (goto-char (alist-get 'marker command))
-            (pcase (alist-get 'command command)
-              (`addition
-               (insert (alist-get 'text command)))
-              (`deletion
-               (let ((text-start (point)))
-                 (forward-line (alist-get 'lines command))
-                 (delete-region text-start (point))))
-              (`set-point
-               (let ((new-point
-                      (+ (point) (alist-get 'relative-point command))))
-                 (if-let ((w (alist-get 'window command)))
-                     (set-window-point w new-point)
-                   (setq move-to new-point)))))))
-        (when move-to
-          (goto-char move-to))))
+      ;; We run both `goto-char' and `set-window-point' to offset
+      ;; point and window point, don't want to chance that both
+      ;; changes will stack on top of each other.
+      (let ((orig-point (point)))
+        (dolist (command (nreverse commands))
+          (pcase (alist-get 'command command)
+            (`addition
+             (save-excursion
+               (goto-char (alist-get 'marker command))
+               (insert (alist-get 'text command))))
+            (`deletion
+             (save-excursion
+               (goto-char (alist-get 'marker command))
+               (forward-line (alist-get 'lines command))
+               (delete-region (alist-get 'marker command) (point))))
+            (`move-cursor
+             (let ((cursor (alist-get 'cursor command))
+                   (offset (alist-get 'offset command)))
+               (pcase (plist-get cursor :type)
+                 (`point
+                  (goto-char
+                   (+ orig-point offset)))
+                 (`marker
+                  (set-marker
+                   (plist-get cursor :pos)
+                   (+ (plist-get cursor :pos) offset)))
+                 (`window-point
+                  (set-window-point
+                   (plist-get cursor :window)
+                   (+ orig-point offset))))))))))
     ;; Restore the scroll position of each window displaying the
     ;; buffer.
     (dolist (entry window-line-list)

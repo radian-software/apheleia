@@ -1,5 +1,7 @@
 ;;; apheleia-formatter-context.el --- Formatter ctx -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; This file defines a helper for encapsulating common state for a formatter

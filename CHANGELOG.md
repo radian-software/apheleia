@@ -27,12 +27,30 @@ The format is based on [Keep a Changelog].
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
+* All marks (the current `(mark)`, and the `mark-ring`) are now
+  adjusted, alongside `(point)` ([#197]).
+* Built-in formatters now use a new `"apheleia-npx"` built-in script
+  instead of the legacy `npx` keyword. The effect of the new script is
+  the same, except that it also works with Yarn PNP projects as well
+  as `node_modules` style projects ([#200]).
 * Autoload the apheleia-goto-error command ([#215]).
 * Use `lisp-indent` as default formatter for `emacs-lisp-mode` ([#223])
+* Use `hclfmt` for formatting hashicorp HCL files ([#231])
+* The `mix format` formatter will respect `.formatter.exs` files even
+  if they are present in a parent directory rather than the same
+  directory as the file being formatted ([#232]).
 
 ### Internal Changes
 * Refactored the organisation of the apheleia package for ease of
   understanding and usability ([#215]).
+* The new `scripts/pnp-bin.js` script is standalone minified nodejs built
+  from the [`pnp-bin`](https://github.com/PuddleByteComputing/pnp-bin) repo,
+  extracted from apheleia PR [#200].
+* Test environment bumped from Ubuntu 20.04 to 22.04 ([#242]).
+* The function `apheleia--format-after-save` was renamed to
+  `apheleia-format-after-save`. This is only called out explicitly
+  because it was added to `after-save-hook` so customization that
+  assumed this behavior might break.
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
@@ -68,9 +86,12 @@ The format is based on [Keep a Changelog].
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
 * [`ruby-standard`](https://github.com/standardrb/standard) for
   [ruby](https://www.ruby-lang.org/en/) ([#201])
+* [`ruff`](https://github.com/astral-sh/ruff) for
+  [python](https://python.org) ([#236])
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
+* [`hclfmt`](https://github.com/hashicorp/hcl/tree/main/cmd/hclfmt) for [HCL](https://github.com/hashicorp/hcl) ([#231])
 * [`js-beautify`](https://github.com/beautify-web/js-beautify) for
   [JavaScript](https://www.javascript.com/),
   [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON),
@@ -91,6 +112,7 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
+[#197]: https://github.com/radian-software/apheleia/issues/197
 [#208]: https://github.com/radian-software/apheleia/discussions/208
 [#209]: https://github.com/radian-software/apheleia/pull/209
 [#213]: https://github.com/radian-software/apheleia/pull/213
@@ -98,6 +120,10 @@ The format is based on [Keep a Changelog].
 [#215]: https://github.com/radian-software/apheleia/pull/215
 [#223]: https://github.com/radian-software/apheleia/pull/223
 [#229]: https://github.com/radian-software/apheleia/pull/229
+[#231]: https://github.com/radian-software/apheleia/pull/231
+[#232]: https://github.com/radian-software/apheleia/issues/232
+[#236]: https://github.com/radian-software/apheleia/pull/236
+[#242]: https://github.com/radian-software/apheleia/pull/242
 
 ## 3.2 (released 2023-02-25)
 ### Features

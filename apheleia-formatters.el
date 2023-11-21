@@ -1,5 +1,7 @@
 ;;; apheleia-formatters.el --- Run formatters -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; This module defines a series of functions for running a formatter process
@@ -53,6 +55,7 @@
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
+    (hclfmt . ("hclfmt"))
     (html-beautify "html-beautify" "--file" "-" "--end-with-newline"
                    (apheleia-formatters-indent
                     "--indent-with-tabs" "--indent-size"))
@@ -75,7 +78,7 @@
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
-    (mix-format . ("mix" "format" "-"))
+    (mix-format . ("apheleia-mix" "format" "-"))
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
@@ -83,46 +86,54 @@
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
     (phpcs . ("apheleia-phpcs"))
     (prettier
-     . (npx "prettier" "--stdin-filepath" filepath
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-css
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=css"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--parser=css"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-html
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=html"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--parser=html"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-graphql
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--parser=graphql"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-javascript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--parser=babel-flow"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-json
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=json"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--parser=json"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--parser=markdown"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-ruby
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" "dummy.rb"
+        "--plugin=@prettier/plugin-ruby"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-scss
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=scss"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-svelte
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=svelte"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--plugin=prettier-plugin-svelte"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-typescript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--parser=typescript"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-yaml
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"
-            (apheleia-formatters-indent "--use-tabs" "--tab-width")))
-    (purs-tidy . (npx "purs-tidy" "format"))
+     . ("apheleia-npx" "prettier" "--parser=yaml"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+    (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
     (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
                       "--format" "quiet" "--fail-level" "fatal"))
+    (ruff . ("ruff" "format"
+             "--silent"
+             (apheleia-formatters-fill-column "--line-length")
+             "--stdin-filename" filepath
+             "-"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
@@ -182,6 +193,11 @@ then the first string element of the command list is resolved
 inside node_modules/.bin if such a directory exists anywhere
 above the current `default-directory'.
 
+\(However, instead of using `npx', consider using
+\"apheleia-npx\", which is a built-in script that will replicate
+the effect, but will also work with Yarn PNP projects and other
+npm project types that may exist in the future.)
+
 Any list elements that are not strings and not any of the special
 symbols mentioned above will be evaluated when the formatter is
 invoked, and spliced into the list. A form can evaluate either to
@@ -240,6 +256,7 @@ rather than using this system."
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
     (haskell-mode . brittany)
+    (hcl-mode . hclfmt)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
     (java-mode . google-java-format)
@@ -367,7 +384,10 @@ saying whether the process was interrupted before completion.
 REMOTE if supplied will be passed as the FILE-HANDLER argument to
 `make-process'.
 
-See `make-process' for a description of the NAME and NOQUERY arguments."
+See `make-process' for a description of the NAME and NOQUERY
+arguments."
+  (apheleia--log
+   'process "Using make-process to create process %s with %S" name command)
   (let ((proc
          (make-process
           :name name
@@ -386,6 +406,9 @@ See `make-process' for a description of the NAME and NOQUERY arguments."
                (process-get proc :interrupted)))))))
     (set-process-sentinel (get-buffer-process stderr) #'ignore)
     (when stdin
+      (apheleia--log
+       'process
+       "Sending %d bytes to stdin of process %s" (buffer-size stdin) name)
       (set-process-coding-system
        proc
        nil
@@ -430,6 +453,9 @@ NO-QUERY, and CONNECTION-TYPE."
             nil)
            ;; argv[1:]
            (cdr command))))
+    (apheleia--log
+     'process "Sending stderr for process %s to tempfile %s"
+     name stderr-file)
     (unwind-protect
         (let ((exit-status
                (cl-letf* ((message (symbol-function #'message))
@@ -462,17 +488,32 @@ NO-QUERY, and CONNECTION-TYPE."
                            (with-current-buffer stdin
                              (apheleia--write-region-silently
                               nil nil remote-stdin))
-
+                           (apheleia--log
+                            'process
+                            "Using process-file to create process %s with %S"
+                            name (list shell "-c" shell-command))
                            (process-file
                             shell nil (nth 2 args) nil "-c" shell-command))
                        (delete-file remote-stdin))))
                   (stdin
+                   (apheleia--log
+                    'process
+                    "Using call-process-region to create process %s with %S"
+                    name command)
                    (with-current-buffer stdin
                      (apply #'call-process-region
                             (point-min) (point-max) args)))
                   (run-on-remote
+                   (apheleia--log
+                    'process
+                    "Using process-file to create process %s with %S"
+                    name command)
                    (apply #'process-file args))
                   (t
+                   (apheleia--log
+                    'process
+                    "Using process-file to create process %s with %S"
+                    name command)
                    (apply #'call-process args))))))
           ;; Save stderr from STDERR-FILE back into the STDERR buffer.
           (with-current-buffer stderr
@@ -497,7 +538,14 @@ not. EXIT-STATUS is a function which is called with the exit
 status of the command; it should return non-nil to indicate that
 the command succeeded. If EXIT-STATUS is omitted, then the
 command succeeds provided that its exit status is 0."
+  (apheleia--log
+   'process "Trying to execute formatter process %s with %S"
+   (apheleia-formatter--name ctx)
+   `(,(apheleia-formatter--arg1 ctx)
+     ,@(apheleia-formatter--argv ctx)))
   (when (process-live-p apheleia--current-process)
+    (apheleia--log
+     'process "Interrupting an existing process %S" apheleia--current-process)
     (message "Interrupting %s" apheleia--current-process)
     (process-put apheleia--current-process :interrupted t)
     (interrupt-process apheleia--current-process)
@@ -509,7 +557,7 @@ command succeeds provided that its exit status is 0."
                   (format " *apheleia-%s-stdout*" name)))
          (stderr (generate-new-buffer
                   (format " *apheleia-%s-stderr*" name)))
-         (log-name (apheliea-log--buffer-name name)))
+         (log-name (apheleia-log--buffer-name name)))
     (condition-case-unless-debug e
         (progn
           (setq apheleia--current-process
@@ -528,6 +576,14 @@ command succeeds provided that its exit status is 0."
                  :noquery t
                  :callback
                  (lambda (proc-exit-status proc-interrupted)
+                   (apheleia--log
+                    'process
+                    "Process %s exited with status %S%s"
+                    name
+                    proc-exit-status
+                    (if proc-interrupted
+                        " (interrupted)"
+                      " (not interrupted)"))
                    (setf (apheleia-formatter--exit-status ctx)
                          proc-exit-status)
                    (let ((exit-ok (and
@@ -549,6 +605,9 @@ command succeeds provided that its exit status is 0."
                         (with-current-buffer stderr
                           (string-trim (buffer-string)))))
                      (when (apheleia-formatter--name ctx)
+                       (apheleia--log
+                        'hook
+                        "Invoking apheleia-formatter-exited-hook")
                        (run-hook-with-args
                         'apheleia-formatter-exited-hook
                         :formatter (apheleia-formatter--name ctx)
@@ -557,6 +616,10 @@ command succeeds provided that its exit status is 0."
                      (unwind-protect
                          (if exit-ok
                              (when callback
+                               (apheleia--log
+                                'process
+                                (concat "Invoking process callback due "
+                                        "to successful exit status"))
                                (funcall callback stdout))
                            (message
                             (concat
@@ -641,6 +704,9 @@ Once finished, invoke CALLBACK with a buffer containing the patch
 as its sole argument.
 
 See `apheleia--run-formatters' for a description of REMOTE."
+  (apheleia--log
+   'rcs "Creating RCS patch between buffers with %d and %d bytes"
+   (buffer-size old-buffer) (buffer-size new-buffer))
   ;; Make sure at least one of the two buffers is saved to a file. The
   ;; other one we can feed on stdin.
   (let ((old-fname
@@ -781,7 +847,7 @@ it's first in the sequence"))
           (unless remote-match
             (error "Formatter uses `file' but process will run on different \
 machine from the machine file is available on"))
-	  (setq stdin nil)
+          (setq stdin nil)
           ;; If `buffer-file-name' is nil then there is no backing
           ;; file, so `buffer-modified-p' should be ignored (it always
           ;; returns non-nil).
@@ -973,6 +1039,9 @@ formatter in COMMANDS. This should not be supplied by the caller
 and instead is supplied by this command when invoked recursively.
 The stdout of the previous formatter becomes the stdin of the
 next formatter."
+  (apheleia--log
+   'run-formatter
+   "Running formatters %S on buffer %S" formatters buffer)
   (let ((command (alist-get (car formatters) apheleia-formatters)))
     (funcall
      (cond

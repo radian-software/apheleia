@@ -1,5 +1,7 @@
 ;;; apheleia-utils.el --- Formatter helpers. -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; Helper functions for defining apheleia formatters.
