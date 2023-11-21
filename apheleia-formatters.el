@@ -149,6 +149,7 @@
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-"))
+    (xmllint . ("xmllint" "--format" "-"))
     (yapf . ("yapf")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell

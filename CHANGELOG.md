@@ -64,6 +64,7 @@ The format is based on [Keep a Changelog].
 
 ### Formatters
 
+* [`xmllint`](https://gitlab.gnome.org/GNOME/libxml2) for XML ([#251]).
 * [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
 * [`jq`](https://stedolan.github.io/jq/) for
   [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
