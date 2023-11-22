@@ -60,6 +60,8 @@ The format is based on [Keep a Changelog].
   installed locally ([#215]).
 * Fixed clang-format formatter did not respect remote file-name component for
   the assumed file-name ([#215]).
+* Always supply `--stdin-filepath` to Prettier to allow it to pick up
+  the correct settings from project-level config files ([#253]).
 
 ### Formatters
 
@@ -119,6 +121,7 @@ The format is based on [Keep a Changelog].
 [#232]: https://github.com/radian-software/apheleia/issues/232
 [#236]: https://github.com/radian-software/apheleia/pull/236
 [#242]: https://github.com/radian-software/apheleia/pull/242
+[#253]: https://github.com/radian-software/apheleia/pull/253
 
 ## 3.2 (released 2023-02-25)
 ### Features

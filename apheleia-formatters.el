@@ -86,26 +86,32 @@
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-css
-     . ("apheleia-npx" "prettier" "--parser=css"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=css"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-html
-     . ("apheleia-npx" "prettier" "--parser=html"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=html"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-graphql
-     . ("apheleia-npx" "prettier" "--parser=graphql"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=graphql"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-javascript
-     . ("apheleia-npx" "prettier" "--parser=babel-flow"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=babel-flow"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-json
-     . ("apheleia-npx" "prettier" "--parser=json"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=json"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
-     . ("apheleia-npx" "prettier" "--parser=markdown"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=markdown"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-ruby
-     . ("apheleia-npx" "prettier" "--stdin-filepath" "dummy.rb"
-        "--plugin=@prettier/plugin-ruby"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--plugin=@prettier/plugin-ruby" "--parser=ruby"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-scss
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
@@ -113,13 +119,15 @@
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-svelte
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
-        "--plugin=prettier-plugin-svelte"
+        "--plugin=prettier-plugin-svelte" "--parser=svelte"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-typescript
-     . ("apheleia-npx" "prettier" "--parser=typescript"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=typescript"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-yaml
-     . ("apheleia-npx" "prettier" "--parser=yaml"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=yaml"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
     (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
