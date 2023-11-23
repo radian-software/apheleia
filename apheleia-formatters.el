@@ -150,7 +150,19 @@
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-"))
     (xmllint . ("xmllint" "--format" "-"))
-    (yapf . ("yapf")))
+    (yapf . ("yapf"))
+    (yq-csv . ("yq" "--prettyPrint" "--no-colors"
+               "--input-format" "csv" "--output-format" "csv"))
+    (yq-json . ("yq" "--prettyPrint" "--no-colors"
+                "--input-format" "json" "--output-format" "json"))
+    (yq-properties . ("yq" "--prettyPrint" "--no-colors"
+                      "--input-format" "props" "--output-format" "props"))
+    (yq-tsv . ("yq" "--prettyPrint" "--no-colors"
+               "--input-format" "tsv" "--output-format" "tsv"))
+    (yq-xml . ("yq" "--prettyPrint" "--no-colors"
+               "--input-format" "xml" "--output-format" "xml"))
+    (yq-yaml . ("yq" "--prettyPrint" "--no-colors" "--no-doc"
+                "--input-format" "yaml" "--output-format" "yaml")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell
 commands, lists of strings and symbols, or a function symbol.
