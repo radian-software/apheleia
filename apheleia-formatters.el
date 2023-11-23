@@ -282,6 +282,9 @@ rather than using this system."
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
+    ;; markdown-mode not included because so many people format
+    ;; markdown code in so many different ways and we don't want to
+    ;; try imposing a standard by default
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (perl-mode . perltidy)
