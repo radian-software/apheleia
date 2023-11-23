@@ -84,6 +84,7 @@ The format is based on [Keep a Changelog].
 * [`ormolu`](https://github.com/tweag/ormolu) for haskell.
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
+* [`pgformatter`](https://github.com/darold/pgFormatter) for [SQL](https://en.wikipedia.org/wiki/SQL) ([#247])
 * [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
 * [`ruby-standard`](https://github.com/standardrb/standard) for
@@ -122,6 +123,7 @@ The format is based on [Keep a Changelog].
 [#236]: https://github.com/radian-software/apheleia/pull/236
 [#242]: https://github.com/radian-software/apheleia/pull/242
 [#253]: https://github.com/radian-software/apheleia/pull/253
+[#247]: https://github.com/radian-software/apheleia/pull/247
 
 ## 3.2 (released 2023-02-25)
 ### Features
