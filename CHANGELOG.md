@@ -15,12 +15,11 @@ The format is based on [Keep a Changelog].
 * Disable formatting of go module files with gofmt. This was never supported
   ([#214]).
 * Remove support for Emacs 26 ([#215]).
-
-### Features
-* New user option `apheleia-formatters-respect-indent-level`,
-  defaulting to `t`. You can set this to `nil` to disable Apheleia
-  configuring formatters to use the same indent settings as the Emacs
-  major mode is using ([#208]).
+* Emacs will infer indentation configuration from your major mode and,
+  by default, supply this configuration to formatters, to ensure
+  consistency between how you have Emacs configured and how your
+  formatter is configured. You can disable this by setting
+  `apheleia-formatters-respect-indent-level` to nil ([#167], [#208]).
 
 ### Enhancements
 * Use the `prettier-json` formatter for `js-json-mode` ([#209]).
@@ -94,6 +93,7 @@ The format is based on [Keep a Changelog].
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
 * [`hclfmt`](https://github.com/hashicorp/hcl/tree/main/cmd/hclfmt) for [HCL](https://github.com/hashicorp/hcl) ([#231])
 
+[#167]: https://github.com/radian-software/apheleia/pull/167
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
 [#170]: https://github.com/radian-software/apheleia/pull/170
