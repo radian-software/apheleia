@@ -66,7 +66,7 @@ This points into a log buffer.")
   "Log the result of a formatter process.
 CTX The formatter process context (see `apheleia-formatter--context').
 LOG-BUFFER is the name of the log-buffer.
-EXIT-OK is true when the formatter exited sucesfully.
+EXIT-OK is true when the formatter exited successfully.
 DIRECTORY is the directory in which the formatter ran.
 STDERR-STRING is the stderr output of the formatter."
   (with-current-buffer (get-buffer-create log-buffer)
