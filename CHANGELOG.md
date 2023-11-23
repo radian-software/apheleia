@@ -64,6 +64,7 @@ The format is based on [Keep a Changelog].
 
 ### Formatters
 
+* [`yq`](https://mikefarah.gitbook.io/yq/) for YAML, JSON, CSV, TSV, XML and [.properties](https://en.wikipedia.org/wiki/.properties) ([#250]).
 * [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
 * [`jq`](https://stedolan.github.io/jq/) for
   [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
