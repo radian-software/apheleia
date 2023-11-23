@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.0 (released 2023-11-23)
 ### Breaking changes
 * The order of entries in `apheleia-mode-alist` is no longer as
   important. Specifically, if two different mode entries in
