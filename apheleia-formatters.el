@@ -82,31 +82,40 @@
                     "--enable-outside-detected-project"))
     (ormolu . ("ormolu"))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
+    (pgformatter . ("pg_format"
+                    (apheleia-formatters-indent "--tabs" "--spaces" 'tab-width)
+                    (apheleia-formatters-fill-column "--wrap-limit")))
     (phpcs . ("apheleia-phpcs"))
     (prettier
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-css
-     . ("apheleia-npx" "prettier" "--parser=css"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=css"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-html
-     . ("apheleia-npx" "prettier" "--parser=html"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=html"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-graphql
-     . ("apheleia-npx" "prettier" "--parser=graphql"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=graphql"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-javascript
-     . ("apheleia-npx" "prettier" "--parser=babel-flow"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=babel-flow"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-json
-     . ("apheleia-npx" "prettier" "--parser=json"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=json"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
-     . ("apheleia-npx" "prettier" "--parser=markdown"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=markdown"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-ruby
-     . ("apheleia-npx" "prettier" "--stdin-filepath" "dummy.rb"
-        "--plugin=@prettier/plugin-ruby"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--plugin=@prettier/plugin-ruby" "--parser=ruby"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-scss
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
@@ -114,13 +123,15 @@
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-svelte
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
-        "--plugin=prettier-plugin-svelte"
+        "--plugin=prettier-plugin-svelte" "--parser=svelte"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-typescript
-     . ("apheleia-npx" "prettier" "--parser=typescript"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=typescript"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-yaml
-     . ("apheleia-npx" "prettier" "--parser=yaml"
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=yaml"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
     (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
@@ -150,7 +161,20 @@
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-"))
-    (yapf . ("yapf")))
+    (xmllint . ("xmllint" "--format" "-"))
+    (yapf . ("yapf"))
+    (yq-csv . ("yq" "--prettyPrint" "--no-colors"
+               "--input-format" "csv" "--output-format" "csv"))
+    (yq-json . ("yq" "--prettyPrint" "--no-colors"
+                "--input-format" "json" "--output-format" "json"))
+    (yq-properties . ("yq" "--prettyPrint" "--no-colors"
+                      "--input-format" "props" "--output-format" "props"))
+    (yq-tsv . ("yq" "--prettyPrint" "--no-colors"
+               "--input-format" "tsv" "--output-format" "tsv"))
+    (yq-xml . ("yq" "--prettyPrint" "--no-colors"
+               "--input-format" "xml" "--output-format" "xml"))
+    (yq-yaml . ("yq" "--prettyPrint" "--no-colors" "--no-doc"
+                "--input-format" "yaml" "--output-format" "yaml")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell
 commands, lists of strings and symbols, or a function symbol.
@@ -272,6 +296,9 @@ rather than using this system."
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
+    ;; markdown-mode not included because so many people format
+    ;; markdown code in so many different ways and we don't want to
+    ;; try imposing a standard by default
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (perl-mode . perltidy)
@@ -285,6 +312,7 @@ rather than using this system."
     (rust-mode . rustfmt)
     (rust-ts-mode . rustfmt)
     (scss-mode . prettier-scss)
+    (sql-mode . pgformatter)
     (svelte-mode . prettier-svelte)
     (terraform-mode . terraform)
     (TeX-latex-mode . latexindent)
@@ -304,7 +332,7 @@ strings (matched against value of variable `buffer-file-name'
 with `string-match-p'), and the values are symbols with entries
 in `apheleia-formatters' (or equivalently, they are allowed
 values for `apheleia-formatter'). Values can be a list of such
-symnols causing each formatter in the list to be called one after
+symbols causing each formatter in the list to be called one after
 the other (with the output of the previous formatter).
 Earlier entries in this variable take precedence over later ones.
 
@@ -449,7 +477,7 @@ NO-QUERY, and CONNECTION-TYPE."
             ;; capture stderr into a separate buffer, the best we can
             ;; do is save and read from a file.
             `(,stdout ,stderr-file)
-            ;; Do not re/display stdout as output is recieved.
+            ;; Do not re/display stdout as output is received.
             nil)
            ;; argv[1:]
            (cdr command))))
@@ -791,7 +819,7 @@ This function does not modify DEST in place, it returns a copy."
 
 (defun apheleia--formatter-context (name command remote &optional stdin-buffer)
   "Construct a formatter context for the formatter with NAME and COMMAND.
-Returns a `apheleia-formatter--context' object on success and nil if
+Returns an `apheleia-formatter--context' object on success and nil if
 the formatter is not executable. The returned formatter context may
 have some state such as temporary files that the caller is expected
 to cleanup.
@@ -985,7 +1013,7 @@ being run, for diagnostic purposes."
                :scratch scratch
                ;; Name of the current formatter symbol, e.g. `black'.
                :formatter formatter
-               ;; Callback after succesfully formatting.
+               ;; Callback after successfully formatting.
                :callback
                (lambda ()
                  (unwind-protect
@@ -1025,7 +1053,7 @@ For more implementation detail, see
 FORMATTERS is a list of symbols that appear as keys in
 `apheleia-formatters'. BUFFER is the `current-buffer' when this
 function was first called. Once all the formatters in COMMANDS
-finish succesfully then invoke CALLBACK with one argument, a
+finish successfully then invoke CALLBACK with one argument, a
 buffer containing the output of all the formatters. REMOTE asserts
 whether the buffer being formatted is on a remote machine or the
 current machine. It should be the output of `file-remote-p' on the
