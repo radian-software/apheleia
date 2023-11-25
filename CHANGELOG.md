@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Enhancements
+* Use `perltidy` as default formatter for `cperl-mode` ([#260]).
+
 ### Formatters
 * [`js-beautify`](https://github.com/beautify-web/js-beautify) for
   [JavaScript](https://www.javascript.com/),
@@ -15,6 +18,7 @@ The format is based on [Keep a Changelog].
   ([#263]).
 
 [#229]: https://github.com/radian-software/apheleia/pull/229
+[#260]: https://github.com/radian-software/apheleia/pull/260
 [#263]: https://github.com/radian-software/apheleia/pull/263
 
 ## 4.0 (released 2023-11-23)
