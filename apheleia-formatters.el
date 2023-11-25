@@ -181,15 +181,18 @@
     (yq-csv . ("yq" "--prettyPrint" "--no-colors"
                "--input-format" "csv" "--output-format" "csv"))
     (yq-json . ("yq" "--prettyPrint" "--no-colors"
-                "--input-format" "json" "--output-format" "json"))
+                "--input-format" "json" "--output-format" "json"
+                (apheleia-formatters-indent nil "--indent")))
     (yq-properties . ("yq" "--prettyPrint" "--no-colors"
                       "--input-format" "props" "--output-format" "props"))
     (yq-tsv . ("yq" "--prettyPrint" "--no-colors"
                "--input-format" "tsv" "--output-format" "tsv"))
     (yq-xml . ("yq" "--prettyPrint" "--no-colors"
-               "--input-format" "xml" "--output-format" "xml"))
+               "--input-format" "xml" "--output-format" "xml"
+               (apheleia-formatters-indent nil "--indent")))
     (yq-yaml . ("yq" "--prettyPrint" "--no-colors" "--no-doc"
-                "--input-format" "yaml" "--output-format" "yaml")))
+                "--input-format" "yaml" "--output-format" "yaml"
+                (apheleia-formatters-indent nil "--indent"))))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell
 commands, lists of strings and symbols, or a function symbol.
