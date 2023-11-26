@@ -46,6 +46,7 @@ always returns nil to defer to the formatter."
               (json-mode 'js-indent-level)
               (json-ts-mode 'json-ts-mode-indent-offset)
               (nxml-mode 'nxml-child-indent)
+              (robot-mode 'robot-mode-basic-offset)
               (scss-mode 'css-indent-offset)
               (web-mode 'web-mode-indent-style)
               (tsx-ts-mode 'typescript-ts-mode-indent-offset)

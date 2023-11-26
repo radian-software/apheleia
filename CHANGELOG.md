@@ -11,8 +11,11 @@ The format is based on [Keep a Changelog].
   [HTML](https://en.wikipedia.org/wiki/HTML) and
   [CSS](https://www.google.com/search?q=css)
   ([#229])
+* [`robotidy`](https://robotidy.readthedocs.io) for Robot Framework files
+  ([#263]).
 
 [#229]: https://github.com/radian-software/apheleia/pull/229
+[#263]: https://github.com/radian-software/apheleia/pull/263
 
 ## 4.0 (released 2023-11-23)
 ### Breaking changes
