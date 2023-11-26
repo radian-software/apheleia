@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.0 (released 2023-11-23)
 ### Breaking changes
 * The order of entries in `apheleia-mode-alist` is no longer as
   important. Specifically, if two different mode entries in
@@ -15,12 +15,11 @@ The format is based on [Keep a Changelog].
 * Disable formatting of go module files with gofmt. This was never supported
   ([#214]).
 * Remove support for Emacs 26 ([#215]).
-
-### Features
-* New user option `apheleia-formatters-respect-indent-level`,
-  defaulting to `t`. You can set this to `nil` to disable Apheleia
-  configuring formatters to use the same indent settings as the Emacs
-  major mode is using ([#208]).
+* Emacs will infer indentation configuration from your major mode and,
+  by default, supply this configuration to formatters, to ensure
+  consistency between how you have Emacs configured and how your
+  formatter is configured. You can disable this by setting
+  `apheleia-formatters-respect-indent-level` to nil ([#167], [#208]).
 
 ### Enhancements
 * Use the `prettier-json` formatter for `js-json-mode` ([#209]).
@@ -61,15 +60,11 @@ The format is based on [Keep a Changelog].
   installed locally ([#215]).
 * Fixed clang-format formatter did not respect remote file-name component for
   the assumed file-name ([#215]).
+* Always supply `--stdin-filepath` to Prettier to allow it to pick up
+  the correct settings from project-level config files ([#253]).
 
 ### Formatters
 
-* [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
-* [`jq`](https://stedolan.github.io/jq/) for
-  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
-  ([#174]).
-* [`gawk`](https://www.gnu.org/software/gawk/) for
-  [awk](https://en.wikipedia.org/wiki/AWK) ([#187]).
 * [`asmfmt`](https://github.com/klauspost/asmfmt) for assembly ([#168]).
 * [`astyle`](https://github.com/steinwurf/astyle) for C ([#169]).
 * [`beautysh`](https://github.com/lovesegfault/beautysh) for shell
@@ -79,10 +74,18 @@ The format is based on [Keep a Changelog].
 * [`cmake-format`](https://github.com/cheshirekow/cmake_format)
   for [CMake](https://cmake.org/) ([#172]).
 * [`fourmolu`](https://github.com/fourmolu/fourmolu) for haskell
+* [`gawk`](https://www.gnu.org/software/gawk/) for
+  [awk](https://en.wikipedia.org/wiki/AWK) ([#187]).
+* [`hclfmt`](https://github.com/hashicorp/hcl/tree/main/cmd/hclfmt) for [HCL](https://github.com/hashicorp/hcl) ([#231])
 * [`html-tidy`](https://www.html-tidy.org/) for HTML/XML ([#173]).
+* [`jq`](https://stedolan.github.io/jq/) for
+  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
+  ([#174]).
 * [`ormolu`](https://github.com/tweag/ormolu) for haskell.
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
+* [`pgformatter`](https://github.com/darold/pgFormatter) for [SQL](https://en.wikipedia.org/wiki/SQL) ([#247])
+* [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
 * [`ruby-standard`](https://github.com/standardrb/standard) for
   [ruby](https://www.ruby-lang.org/en/) ([#201])
@@ -90,8 +93,10 @@ The format is based on [Keep a Changelog].
   [python](https://python.org) ([#236])
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
+* [`xmllint`](https://gitlab.gnome.org/GNOME/libxml2) for XML ([#251]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
 * [`hclfmt`](https://github.com/hashicorp/hcl/tree/main/cmd/hclfmt) for [HCL](https://github.com/hashicorp/hcl) ([#231])
+* [`yq`](https://mikefarah.gitbook.io/yq/) for YAML, JSON, CSV, TSV, XML and [.properties](https://en.wikipedia.org/wiki/.properties) ([#250]).
 * [`js-beautify`](https://github.com/beautify-web/js-beautify) for
   [JavaScript](https://www.javascript.com/),
   [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON),
@@ -99,6 +104,7 @@ The format is based on [Keep a Changelog].
   [CSS](https://www.google.com/search?q=css)
   ([#229])
 
+[#167]: https://github.com/radian-software/apheleia/pull/167
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
 [#170]: https://github.com/radian-software/apheleia/pull/170
@@ -124,6 +130,8 @@ The format is based on [Keep a Changelog].
 [#232]: https://github.com/radian-software/apheleia/issues/232
 [#236]: https://github.com/radian-software/apheleia/pull/236
 [#242]: https://github.com/radian-software/apheleia/pull/242
+[#253]: https://github.com/radian-software/apheleia/pull/253
+[#247]: https://github.com/radian-software/apheleia/pull/247
 
 ## 3.2 (released 2023-02-25)
 ### Features

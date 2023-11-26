@@ -38,6 +38,7 @@ always returns nil to defer to the formatter."
               (css-mode 'css-indent-offset)
               (css-ts-mode 'css-indent-offset)
               (js-jsx-mode 'js-indent-level)
+              (js-ts-mode 'js-indent-level)
               (js-mode 'js-indent-level)
               (js2-jsx-mode 'js2-basic-offset)
               (js2-mode 'js2-basic-offset)
@@ -46,7 +47,10 @@ always returns nil to defer to the formatter."
               (json-ts-mode 'json-ts-mode-indent-offset)
               (nxml-mode 'nxml-child-indent)
               (scss-mode 'css-indent-offset)
-              (web-mode 'web-mode-indent-style))))
+              (web-mode 'web-mode-indent-style)
+              (tsx-ts-mode 'typescript-ts-mode-indent-offset)
+              (typescript-mode 'typescript-indent-level)
+              (typescript-ts-mode 'typescript-ts-mode-indent-offset))))
 
     (when-let ((indent (and indent-var
                             (boundp indent-var)
