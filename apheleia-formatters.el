@@ -43,6 +43,9 @@
                          ".c")))
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
+    (css-beautify "css-beautify" "--file" "-" "--end-with-newline"
+                  (apheleia-formatters-indent
+                   "--indent-with-tabs" "--indent-size"))
     (dart-format . ("dart" "format"))
     (dprint . ("dprint" "fmt" "--stdin" (file-name-nondirectory filepath)))
     (elm-format . ("elm-format" "--yes" "--stdin"))
@@ -54,6 +57,9 @@
     (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
     (hclfmt . ("hclfmt"))
+    (html-beautify "html-beautify" "--file" "-" "--end-with-newline"
+                   (apheleia-formatters-indent
+                    "--indent-with-tabs" "--indent-size"))
     (html-tidy "tidy"
                "--quiet" "yes"
                "--tidy-mark" "no"
@@ -62,17 +68,14 @@
                (when (derived-mode-p 'nxml-mode)
                  "-xml")
                (apheleia-formatters-indent
-                "--indent-with-tabs"
-                "--indent-spaces"
-                (cond
-                 ((derived-mode-p 'nxml-mode)
-                  'nxml-child-indent)
-                 ((derived-mode-p 'web-mode)
-                  'web-mode-indent-style)))
+                "--indent-with-tabs" "--indent-spaces")
                (apheleia-formatters-fill-column "-wrap"))
     (isort . ("isort" "-"))
+    (js-beautify "js-beautify" "--file" "-" "--end-with-newline"
+                 (apheleia-formatters-indent
+                  "--indent-with-tabs" "--indent-size"))
     (jq "jq" "." "-M"
-        (apheleia-formatters-js-indent "--tab" "--indent"))
+        (apheleia-formatters-indent "--tab" "--indent"))
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))

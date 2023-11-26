@@ -103,6 +103,12 @@ The format is based on [Keep a Changelog].
 * [`xmllint`](https://gitlab.gnome.org/GNOME/libxml2) for XML ([#251]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
 * [`yq`](https://mikefarah.gitbook.io/yq/) for YAML, JSON, CSV, TSV, XML and [.properties](https://en.wikipedia.org/wiki/.properties) ([#250]).
+* [`js-beautify`](https://github.com/beautify-web/js-beautify) for
+  [JavaScript](https://www.javascript.com/),
+  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON),
+  [HTML](https://en.wikipedia.org/wiki/HTML) and
+  [CSS](https://www.google.com/search?q=css)
+  ([#229])
 
 [#167]: https://github.com/radian-software/apheleia/pull/167
 [#168]: https://github.com/radian-software/apheleia/pull/168
@@ -125,6 +131,7 @@ The format is based on [Keep a Changelog].
 [#214]: https://github.com/radian-software/apheleia/pull/214
 [#215]: https://github.com/radian-software/apheleia/pull/215
 [#223]: https://github.com/radian-software/apheleia/pull/223
+[#229]: https://github.com/radian-software/apheleia/pull/229
 [#231]: https://github.com/radian-software/apheleia/pull/231
 [#232]: https://github.com/radian-software/apheleia/issues/232
 [#236]: https://github.com/radian-software/apheleia/pull/236
