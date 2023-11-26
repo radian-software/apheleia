@@ -95,7 +95,6 @@ The format is based on [Keep a Changelog].
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
 * [`xmllint`](https://gitlab.gnome.org/GNOME/libxml2) for XML ([#251]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
-* [`hclfmt`](https://github.com/hashicorp/hcl/tree/main/cmd/hclfmt) for [HCL](https://github.com/hashicorp/hcl) ([#231])
 * [`yq`](https://mikefarah.gitbook.io/yq/) for YAML, JSON, CSV, TSV, XML and [.properties](https://en.wikipedia.org/wiki/.properties) ([#250]).
 * [`js-beautify`](https://github.com/beautify-web/js-beautify) for
   [JavaScript](https://www.javascript.com/),
