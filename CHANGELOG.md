@@ -13,9 +13,12 @@ The format is based on [Keep a Changelog].
   ([#229])
 * [`robotidy`](https://robotidy.readthedocs.io) for Robot Framework files
   ([#263]).
+* [denofmt](https://docs.deno.com/runtime/manual/tools/formatter) for
+  js, jsx, ts, tsx, json, jsonc, md files. ([#264])
 
 [#229]: https://github.com/radian-software/apheleia/pull/229
 [#263]: https://github.com/radian-software/apheleia/pull/263
+[#264]: https://github.com/radian-software/apheleia/pull/264
 
 ## 4.0 (released 2023-11-23)
 ### Breaking changes
