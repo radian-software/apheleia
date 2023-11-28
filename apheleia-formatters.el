@@ -136,6 +136,9 @@
         "--parser=yaml"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
+    (robotidy . ("robotidy" "--no-color" "-"
+                 (apheleia-formatters-indent nil "--indent")
+                 (apheleia-formatters-fill-column "--line-length")))
     (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
@@ -306,6 +309,7 @@ rather than using this system."
     (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
+    (robot-mode . robotidy)
     (ruby-mode . prettier-ruby)
     (ruby-ts-mode . prettier-ruby)
     (rustic-mode . rustfmt)
