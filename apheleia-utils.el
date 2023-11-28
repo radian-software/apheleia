@@ -58,7 +58,7 @@ always returns nil to defer to the formatter."
       (list indent-flag (number-to-string indent))))))
 
 (define-obsolete-function-alias 'apheleia-formatters-js-indent
-  'apheleia-formatters-indent "3.2")
+  'apheleia-formatters-indent "4.1")
 
 (defcustom apheleia-formatters-respect-fill-column nil
   "Whether formatters should set `fill-column' related flags."
