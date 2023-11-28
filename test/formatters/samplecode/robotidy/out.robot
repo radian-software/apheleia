@@ -21,3 +21,4 @@ Test1
         IF    ${var}>5    Other Keyword
     END
     [Teardown]    Teardown Keyword
+

@@ -136,7 +136,7 @@
         "--parser=yaml"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
-    (robotidy . ("robotidy" "--no-color" inplace
+    (robotidy . ("robotidy" "--no-color" "-"
                  (apheleia-formatters-indent nil "--indent")
                  (apheleia-formatters-fill-column "--line-length")))
     (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
