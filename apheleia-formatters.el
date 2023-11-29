@@ -47,6 +47,14 @@
                   (apheleia-formatters-indent
                    "--indent-with-tabs" "--indent-size"))
     (dart-format . ("dart" "format"))
+    (denofmt . ("deno" "fmt" "-"))
+    (denofmt-js . ("deno" "fmt" "-" "--ext" "js"))
+    (denofmt-json . ("deno" "fmt" "-" "--ext" "json"))
+    (denofmt-jsonc . ("deno" "fmt" "-" "--ext" "jsonc"))
+    (denofmt-jsx . ("deno" "fmt" "-" "--ext" "jsx"))
+    (denofmt-md . ("deno" "fmt" "-" "--ext" "md"))
+    (denofmt-ts . ("deno" "fmt" "-" "--ext" "ts"))
+    (denofmt-tsx . ("deno" "fmt" "-" "--ext" "tsx"))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
     (fourmolu . ("fourmolu"))
@@ -83,7 +91,9 @@
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
     (ormolu . ("ormolu"))
-    (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
+    (perltidy . ("perltidy" "--quiet" "--standard-error-output"
+                 (apheleia-formatters-indent "-t" "-i")
+                 (apheleia-formatters-fill-column "-l")))
     (pgformatter . ("pg_format"
                     (apheleia-formatters-indent "--tabs" "--spaces" 'tab-width)
                     (apheleia-formatters-fill-column "--wrap-limit")))
