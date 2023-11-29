@@ -49,6 +49,7 @@ always returns nil to defer to the formatter."
               (nxml-mode 'nxml-child-indent)
               (robot-mode 'robot-mode-basic-offset)
               (perl-mode 'perl-indent-level)
+              (python-mode 'python-indent-offset)
               (scss-mode 'css-indent-offset)
               (web-mode 'web-mode-indent-style)
               (tsx-ts-mode 'typescript-ts-mode-indent-offset)

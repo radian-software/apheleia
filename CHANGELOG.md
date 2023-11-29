@@ -16,12 +16,15 @@ The format is based on [Keep a Changelog].
   [HTML](https://en.wikipedia.org/wiki/HTML) and
   [CSS](https://www.google.com/search?q=css)
   ([#229])
+* [`python3-json`](https://docs.python.org/3/library/json.html#module-json.tool)
+  for JSON ([#257]).
 * [`robotidy`](https://robotidy.readthedocs.io) for Robot Framework files
   ([#263]).
 * [denofmt](https://docs.deno.com/runtime/manual/tools/formatter) for
   js, jsx, ts, tsx, json, jsonc, md files. ([#264])
 
 [#229]: https://github.com/radian-software/apheleia/pull/229
+[#257]: https://github.com/radian-software/apheleia/pull/257
 [#260]: https://github.com/radian-software/apheleia/pull/260
 [#261]: https://github.com/radian-software/apheleia/pull/261
 [#263]: https://github.com/radian-software/apheleia/pull/263
