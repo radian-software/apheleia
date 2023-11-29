@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Enhancements
+* The `perltidy` formatter now supports Emacs indentation and line length
+  settings ([#261]).
+
 ### Formatters
 * [`js-beautify`](https://github.com/beautify-web/js-beautify) for
   [JavaScript](https://www.javascript.com/),
@@ -17,6 +21,7 @@ The format is based on [Keep a Changelog].
   js, jsx, ts, tsx, json, jsonc, md files. ([#264])
 
 [#229]: https://github.com/radian-software/apheleia/pull/229
+[#261]: https://github.com/radian-software/apheleia/pull/261
 [#263]: https://github.com/radian-software/apheleia/pull/263
 [#264]: https://github.com/radian-software/apheleia/pull/264
 
