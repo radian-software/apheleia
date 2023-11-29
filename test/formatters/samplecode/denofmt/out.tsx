@@ -1,0 +1,1 @@
+../denofmt-tsx/out.tsx
