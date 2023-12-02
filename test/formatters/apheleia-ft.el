@@ -269,8 +269,10 @@ environment variable, defaulting to all formatters."
     (dolist (in-file (apheleia-ft--input-files formatter))
       (let ((extension (file-name-extension in-file))
             (in-text (apheleia-ft--read-file in-file))
+            ;; The `in-temp-real-file' variable is set to whatever
+            ;; temporary file the formatter will run on (in case it
+            ;; uses the `file' or `filepath' symbol or is a function).
             (in-temp-real-file nil)
-            (in-temp-file nil)
             (out-temp-file nil)
             (command (alist-get (intern formatter) apheleia-formatters))
             (syms nil)
@@ -292,15 +294,15 @@ environment variable, defaulting to all formatters."
         ;; Some formatters use the current file-name or buffer-name to interpret the
         ;; type of file that is being formatted. Some may not be able to determine
         ;; this from the contents of the file so we set this to force it.
-        (rename-buffer in-file)
+        (rename-buffer (file-name-nondirectory in-file))
         (setq stdout-buffer (get-buffer-create
                              (format "*apheleia-ft-stdout-%S%s" formatter extension)))
         (with-current-buffer stdout-buffer
           (erase-buffer))
         (if (functionp command)
-            (progn
-              (setq in-temp-file (apheleia-ft--write-temp-file
-                                  in-text extension))
+            (let ((in-temp-file (apheleia-ft--write-temp-file
+                                 in-text extension)))
+              (setq in-temp-real-file in-temp-file)
               (with-current-buffer (find-file-noselect in-temp-file)
                 (funcall command
                          :buffer (current-buffer)
@@ -308,14 +310,20 @@ environment variable, defaulting to all formatters."
                          :formatter formatter
                          :callback (lambda ()))
                 (copy-to-buffer stdout-buffer (point-min) (point-max))))
-          (progn
-
-            (let ((ctx (apheleia--formatter-context
-                        (intern formatter) command nil nil)))
-              (setq command `(,(apheleia-formatter--arg1 ctx)
-                              ,@(apheleia-formatter--argv ctx))
-                    in-temp-real-file (apheleia-formatter--input-fname ctx)
-                    out-temp-file (apheleia-formatter--output-fname ctx)))
+          (let ((in-temp-file (apheleia-ft--write-temp-file
+                               in-text extension)))
+            (with-current-buffer (find-file-noselect in-temp-file)
+              (let ((ctx (apheleia--formatter-context
+                          (intern formatter) command nil nil)))
+                (setq command `(,(apheleia-formatter--arg1 ctx)
+                                ,@(apheleia-formatter--argv ctx))
+                      ;; In this case the real temp file might be
+                      ;; different from the one we generated, because
+                      ;; the context creator might generate another
+                      ;; temporary file to avoid touching our existing
+                      ;; one.
+                      in-temp-real-file (apheleia-formatter--input-fname ctx)
+                      out-temp-file (apheleia-formatter--output-fname ctx))))
 
             (with-current-buffer stdout-buffer
               (erase-buffer))

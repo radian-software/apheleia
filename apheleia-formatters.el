@@ -47,7 +47,7 @@
                   (apheleia-formatters-indent
                    "--indent-with-tabs" "--indent-size"))
     (dart-format . ("dart" "format"))
-    (dprint . ("dprint" "fmt" "--stdin" (file-name-nondirectory filepath)))
+    (dprint . ("dprint" "fmt" "--stdin" filepath))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
     (fourmolu . ("fourmolu"))
