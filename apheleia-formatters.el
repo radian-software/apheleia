@@ -279,6 +279,7 @@ rather than using this system."
     (cmake-mode . cmake-format)
     (cmake-ts-mode . cmake-format)
     (common-lisp-mode . lisp-indent)
+    (cperl-mode . perltidy)
     (crystal-mode . crystal-tool-format)
     (css-mode . prettier-css)
     (css-ts-mode . prettier-css)

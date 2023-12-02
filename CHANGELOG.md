@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog].
 
 ## Unreleased
 ### Enhancements
+* Use `perltidy` as default formatter for `cperl-mode` ([#260]).
 * The `perltidy` formatter now supports Emacs indentation and line length
   settings ([#261]).
 
@@ -21,6 +22,7 @@ The format is based on [Keep a Changelog].
   js, jsx, ts, tsx, json, jsonc, md files. ([#264])
 
 [#229]: https://github.com/radian-software/apheleia/pull/229
+[#260]: https://github.com/radian-software/apheleia/pull/260
 [#261]: https://github.com/radian-software/apheleia/pull/261
 [#263]: https://github.com/radian-software/apheleia/pull/263
 [#264]: https://github.com/radian-software/apheleia/pull/264
