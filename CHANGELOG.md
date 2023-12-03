@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Enhancements
+* Use `perltidy` as default formatter for `cperl-mode` ([#260]).
+* The `perltidy` formatter now supports Emacs indentation and line length
+  settings ([#261]).
+
 ### Formatters
 * [`dprint`](https://dprint.dev) for various (depending on
   [installed plugins](https://dprint.dev/plugins/)) ([#209]).
@@ -15,10 +20,15 @@ The format is based on [Keep a Changelog].
   ([#229])
 * [`robotidy`](https://robotidy.readthedocs.io) for Robot Framework files
   ([#263]).
+* [denofmt](https://docs.deno.com/runtime/manual/tools/formatter) for
+  js, jsx, ts, tsx, json, jsonc, md files. ([#264])
 
 [#209]: https://github.com/radian-software/apheleia/pull/209
 [#229]: https://github.com/radian-software/apheleia/pull/229
+[#260]: https://github.com/radian-software/apheleia/pull/260
+[#261]: https://github.com/radian-software/apheleia/pull/261
 [#263]: https://github.com/radian-software/apheleia/pull/263
+[#264]: https://github.com/radian-software/apheleia/pull/264
 
 ## 4.0 (released 2023-11-23)
 ### Breaking changes
