@@ -11,7 +11,7 @@ cat <<\EOF >/tmp/dprint.json
     "https://plugins.dprint.dev/markdown-0.16.3.wasm",
     "https://plugins.dprint.dev/ruff-0.0.2.wasm",
     "https://plugins.dprint.dev/toml-0.5.4.wasm",
-    "https://plugins.dprint.dev/typescript-0.88.5.wasm"
+    "https://plugins.dprint.dev/typescript-0.88.7.wasm"
   ]
 }
 EOF
