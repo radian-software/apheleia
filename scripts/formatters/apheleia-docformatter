@@ -1,0 +1,10 @@
+#!/bin/sh
+
+output=$(docformatter "$@")
+
+# On successful change docformatter gives exit code of 3.
+# Raise error for all other positive exit codes
+ret=$?
+[ $ret -gt 0 ] && [ $ret -ne 3 ] && exit $ret
+
+echo "${output}" | patch --quiet --output=-
