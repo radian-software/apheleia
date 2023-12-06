@@ -987,7 +987,8 @@ purposes."
              :ctx ctx
              :callback
              (lambda (stdout)
-               (when-let ((output-fname (apheleia-formatter--output-fname ctx)))
+               (when-let
+                   ((output-fname (apheleia-formatter--output-fname ctx)))
                  ;; Load output-fname contents into the stdout buffer.
                  (with-current-buffer stdout
                    (erase-buffer)
