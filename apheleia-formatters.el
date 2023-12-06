@@ -55,7 +55,7 @@
     (denofmt-md . ("deno" "fmt" "-" "--ext" "md"))
     (denofmt-ts . ("deno" "fmt" "-" "--ext" "ts"))
     (denofmt-tsx . ("deno" "fmt" "-" "--ext" "tsx"))
-    (docformatter . ("apheleia-docformatter" file))
+    (docformatter . ("apheleia-docformatter" filepath))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
     (fourmolu . ("fourmolu"))
