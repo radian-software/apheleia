@@ -980,26 +980,25 @@ purposes."
                               (let ((load-suffixes '(".el")))
                                 (locate-library "apheleia"))))))
                         exec-path)))
-      (unless
-          (when (executable-find (apheleia-formatter--arg1 ctx)
-                                 (eq apheleia-remote-algorithm 'remote))
-            (apheleia--execute-formatter-process
-             :ctx ctx
-             :callback
-             (lambda (stdout)
-               (when-let
-                   ((output-fname (apheleia-formatter--output-fname ctx)))
-                 ;; Load output-fname contents into the stdout buffer.
-                 (with-current-buffer stdout
-                   (erase-buffer)
-                   (insert-file-contents-literally output-fname)))
-               (funcall callback stdout))
-             :ensure
-             (lambda ()
-               (dolist (fname (list (apheleia-formatter--input-fname ctx)
-                                    (apheleia-formatter--output-fname ctx)))
-                 (when fname
-                   (ignore-errors (delete-file fname)))))))
+      (if (executable-find (apheleia-formatter--arg1 ctx)
+                           (eq apheleia-remote-algorithm 'remote))
+          (apheleia--execute-formatter-process
+           :ctx ctx
+           :callback
+           (lambda (stdout)
+             (when-let
+                 ((output-fname (apheleia-formatter--output-fname ctx)))
+               ;; Load output-fname contents into the stdout buffer.
+               (with-current-buffer stdout
+                 (erase-buffer)
+                 (insert-file-contents-literally output-fname)))
+             (funcall callback stdout))
+           :ensure
+           (lambda ()
+             (dolist (fname (list (apheleia-formatter--input-fname ctx)
+                                  (apheleia-formatter--output-fname ctx)))
+               (when fname
+                 (ignore-errors (delete-file fname))))))
         (apheleia--log
          'process
          "Could not find executable for formatter %s, skipping" formatter)))))
