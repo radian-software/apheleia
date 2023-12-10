@@ -306,6 +306,7 @@ rather than using this system."
     (json-mode . prettier-json)
     (json-ts-mode . prettier-json)
     (kotlin-mode . ktlint)
+    (kotlin-ts-mode . ktlint)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
