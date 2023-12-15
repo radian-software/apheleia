@@ -305,19 +305,18 @@ returned context."
           (with-current-buffer stdout-buffer
             (erase-buffer))
           (if (functionp command)
-              (with-current-buffer
-                  (funcall command
-                           :buffer (current-buffer)
-                           :scratch (current-buffer)
-                           :formatter formatter
-                           :callback (lambda ()))
+              (progn
+                (funcall command
+                         :buffer (current-buffer)
+                         :scratch (current-buffer)
+                         :formatter formatter
+                         :callback (lambda ()))
                 (copy-to-buffer stdout-buffer (point-min) (point-max)))
-            (with-current-buffer (find-file-noselect in-temp-file)
-              (let ((ctx (apheleia--formatter-context
-                          (intern formatter) command nil nil)))
-                (setq command `(,(apheleia-formatter--arg1 ctx)
-                                ,@(apheleia-formatter--argv ctx))
-                      out-temp-file (apheleia-formatter--output-fname ctx))))
+            (let ((ctx (apheleia--formatter-context
+                        (intern formatter) command nil nil)))
+              (setq command `(,(apheleia-formatter--arg1 ctx)
+                              ,@(apheleia-formatter--argv ctx))
+                    out-temp-file (apheleia-formatter--output-fname ctx)))
 
             (with-current-buffer stdout-buffer
               (erase-buffer))
