@@ -12,23 +12,34 @@ The format is based on [Keep a Changelog].
   `ruby-ts-mode`, `svelte-mode`, and `yaml-mode` ([#258]).
 
 ### Formatters
+* [`dprint`](https://dprint.dev) for various (depending on
+  [installed plugins](https://dprint.dev/plugins/)) ([#209]).
 * [`js-beautify`](https://github.com/beautify-web/js-beautify) for
   [JavaScript](https://www.javascript.com/),
   [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON),
   [HTML](https://en.wikipedia.org/wiki/HTML) and
   [CSS](https://www.google.com/search?q=css)
   ([#229])
+* [`python3-json`](https://docs.python.org/3/library/json.html#module-json.tool)
+  for JSON ([#257]).
 * [`robotidy`](https://robotidy.readthedocs.io) for Robot Framework files
   ([#263]).
 * [denofmt](https://docs.deno.com/runtime/manual/tools/formatter) for
   js, jsx, ts, tsx, json, jsonc, md files. ([#264])
+* [docformatter](https://github.com/PyCQA/docformatter) for Python docstrings ([#267])
+* [cljfmt](https://github.com/weavejester/cljfmt) for clojure,
+  clojurescript, edn files. ([#271])
 
+[#209]: https://github.com/radian-software/apheleia/pull/209
 [#229]: https://github.com/radian-software/apheleia/pull/229
+[#257]: https://github.com/radian-software/apheleia/pull/257
 [#258]: https://github.com/radian-software/apheleia/pull/258
 [#260]: https://github.com/radian-software/apheleia/pull/260
 [#261]: https://github.com/radian-software/apheleia/pull/261
 [#263]: https://github.com/radian-software/apheleia/pull/263
 [#264]: https://github.com/radian-software/apheleia/pull/264
+[#267]: https://github.com/radian-software/apheleia/pull/267
+[#271]: https://github.com/radian-software/apheleia/pull/271
 
 ## 4.0 (released 2023-11-23)
 ### Breaking changes
