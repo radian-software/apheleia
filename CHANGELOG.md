@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog].
   settings ([#261]).
 * Indent level is now determined for `graphql-mode`, `html-mode`, `ruby-mode`,
   `ruby-ts-mode`, `svelte-mode`, and `yaml-mode` ([#258]).
+* Indent level support when using yq to format JSON, XML, and YAML ([#259]).
 
 ### Formatters
 * [`dprint`](https://dprint.dev) for various (depending on
@@ -34,6 +35,7 @@ The format is based on [Keep a Changelog].
 [#229]: https://github.com/radian-software/apheleia/pull/229
 [#257]: https://github.com/radian-software/apheleia/pull/257
 [#258]: https://github.com/radian-software/apheleia/pull/258
+[#259]: https://github.com/radian-software/apheleia/pull/259
 [#260]: https://github.com/radian-software/apheleia/pull/260
 [#261]: https://github.com/radian-software/apheleia/pull/261
 [#263]: https://github.com/radian-software/apheleia/pull/263
