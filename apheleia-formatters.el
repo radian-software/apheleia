@@ -41,6 +41,7 @@
                      (or (apheleia-formatters-local-buffer-file-name)
                          (apheleia-formatters-mode-extension)
                          ".c")))
+    (cljfmt . ("cljfmt" "fix" "-"))
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
     (css-beautify "css-beautify" "--file" "-" "--end-with-newline"
@@ -55,6 +56,8 @@
     (denofmt-md . ("deno" "fmt" "-" "--ext" "md"))
     (denofmt-ts . ("deno" "fmt" "-" "--ext" "ts"))
     (denofmt-tsx . ("deno" "fmt" "-" "--ext" "tsx"))
+    (docformatter . ("apheleia-docformatter" inplace))
+    (dprint . ("dprint" "fmt" "--stdin" filepath))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
     (fourmolu . ("fourmolu"))
@@ -149,6 +152,9 @@
     (robotidy . ("robotidy" "--no-color" "-"
                  (apheleia-formatters-indent nil "--indent")
                  (apheleia-formatters-fill-column "--line-length")))
+    (python3-json
+     . ("python3" "-m" "json.tool"
+        (apheleia-formatters-indent "--tab" "--indent")))
     (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
@@ -279,15 +285,25 @@ rather than using this system."
     (c-ts-mode . clang-format)
     (c++-mode . clang-format)
     (caml-mode . ocamlformat)
+    (clojure-dart-ts-mode . cljfmt)
+    (clojure-jank-ts-mode . cljfmt)
+    (clojure-mode . cljfmt)
+    (clojure-ts-mode . cljfmt)
+    (clojurec-mode . cljfmt)
+    (clojurec-ts-mode . cljfmt)
+    (clojurescript-mode . cljfmt)
+    (clojurescript-ts-mode . cljfmt)
     (cmake-mode . cmake-format)
     (cmake-ts-mode . cmake-format)
     (common-lisp-mode . lisp-indent)
+    (conf-toml-mode . dprint)
     (cperl-mode . perltidy)
     (crystal-mode . crystal-tool-format)
     (css-mode . prettier-css)
     (css-ts-mode . prettier-css)
     (dart-mode . dart-format)
     (dart-ts-mode . dart-format)
+    (dockerfile-mode . dprint)
     (elixir-mode . mix-format)
     (elixir-ts-mode . mix-format)
     (elm-mode . elm-format)
@@ -309,6 +325,7 @@ rather than using this system."
     (json-mode . prettier-json)
     (json-ts-mode . prettier-json)
     (kotlin-mode . ktlint)
+    (kotlin-ts-mode . ktlint)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
@@ -983,24 +1000,28 @@ purposes."
                               (let ((load-suffixes '(".el")))
                                 (locate-library "apheleia"))))))
                         exec-path)))
-      (when (executable-find (apheleia-formatter--arg1 ctx)
-                             (eq apheleia-remote-algorithm 'remote))
-        (apheleia--execute-formatter-process
-         :ctx ctx
-         :callback
-         (lambda (stdout)
-           (when-let ((output-fname (apheleia-formatter--output-fname ctx)))
-             ;; Load output-fname contents into the stdout buffer.
-             (with-current-buffer stdout
-               (erase-buffer)
-               (insert-file-contents-literally output-fname)))
-           (funcall callback stdout))
-         :ensure
-         (lambda ()
-           (dolist (fname (list (apheleia-formatter--input-fname ctx)
-                                (apheleia-formatter--output-fname ctx)))
-             (when fname
-               (ignore-errors (delete-file fname))))))))))
+      (if (executable-find (apheleia-formatter--arg1 ctx)
+                           (eq apheleia-remote-algorithm 'remote))
+          (apheleia--execute-formatter-process
+           :ctx ctx
+           :callback
+           (lambda (stdout)
+             (when-let
+                 ((output-fname (apheleia-formatter--output-fname ctx)))
+               ;; Load output-fname contents into the stdout buffer.
+               (with-current-buffer stdout
+                 (erase-buffer)
+                 (insert-file-contents-literally output-fname)))
+             (funcall callback stdout))
+           :ensure
+           (lambda ()
+             (dolist (fname (list (apheleia-formatter--input-fname ctx)
+                                  (apheleia-formatter--output-fname ctx)))
+               (when fname
+                 (ignore-errors (delete-file fname))))))
+        (apheleia--log
+         'process
+         "Could not find executable for formatter %s, skipping" formatter)))))
 
 (defun apheleia--run-formatter-function
     (func buffer remote callback stdin formatter)
