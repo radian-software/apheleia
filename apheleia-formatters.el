@@ -89,7 +89,8 @@
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
-    (mix-format . ("apheleia-from-project-root" ".formatter.exs" "mix" "format" "-"))
+    (mix-format . ("apheleia-from-project-root"
+                   ".formatter.exs" "mix" "format" "-"))
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
@@ -159,7 +160,8 @@
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
                       "--format" "quiet" "--fail-level" "fatal"))
-    (ruby-syntax-tree . ("apheleia-from-project-root" ".streerc" "stree" "format" filepath))
+    (ruby-syntax-tree . ("apheleia-from-project-root"
+                         ".streerc" "stree" "format" filepath))
     (ruff . ("ruff" "format"
              "--silent"
              (apheleia-formatters-fill-column "--line-length")
