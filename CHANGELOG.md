@@ -20,12 +20,15 @@ The format is based on [Keep a Changelog].
   ([#263]).
 * [denofmt](https://docs.deno.com/runtime/manual/tools/formatter) for
   js, jsx, ts, tsx, json, jsonc, md files. ([#264])
+* [cljfmt](https://github.com/weavejester/cljfmt) for clojure,
+  clojurescript, edn files. ([#271])
 
 [#229]: https://github.com/radian-software/apheleia/pull/229
 [#260]: https://github.com/radian-software/apheleia/pull/260
 [#261]: https://github.com/radian-software/apheleia/pull/261
 [#263]: https://github.com/radian-software/apheleia/pull/263
 [#264]: https://github.com/radian-software/apheleia/pull/264
+[#271]: https://github.com/radian-software/apheleia/pull/271
 
 ## 4.0 (released 2023-11-23)
 ### Breaking changes
