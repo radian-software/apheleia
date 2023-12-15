@@ -1,0 +1,5 @@
+#!/bin/sh
+docformatter --in-place "$@"
+if [ "$?" -eq 3 ]; then
+    exit 0
+fi

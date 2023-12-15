@@ -1,5 +1,7 @@
 ;;; apheleia-log.el --- Log utilities -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; Helpers for `apheleia' logging.
@@ -51,7 +53,7 @@ This points into a log buffer.")
   (pop-to-buffer (marker-buffer apheleia--last-error-marker))
   (goto-char apheleia--last-error-marker))
 
-(defun apheliea-log--buffer-name (formatter)
+(defun apheleia-log--buffer-name (formatter)
   "Get the name of the log buffer for FORMATTER."
   (format "%s*apheleia-%s-log*"
           (if apheleia-hide-log-buffers
@@ -64,7 +66,7 @@ This points into a log buffer.")
   "Log the result of a formatter process.
 CTX The formatter process context (see `apheleia-formatter--context').
 LOG-BUFFER is the name of the log-buffer.
-EXIT-OK is true when the formatter exited sucesfully.
+EXIT-OK is true when the formatter exited successfully.
 DIRECTORY is the directory in which the formatter ran.
 STDERR-STRING is the stderr output of the formatter."
   (with-current-buffer (get-buffer-create log-buffer)

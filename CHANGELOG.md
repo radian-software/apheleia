@@ -4,6 +4,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Enhancements
+* Use `perltidy` as default formatter for `cperl-mode` ([#260]).
+* The `perltidy` formatter now supports Emacs indentation and line length
+  settings ([#261]).
+* Indent level is now determined for `graphql-mode`, `html-mode`, `ruby-mode`,
+  `ruby-ts-mode`, `svelte-mode`, and `yaml-mode` ([#258]).
+* Indent level support when using yq to format JSON, XML, and YAML ([#259]).
+
+### Formatters
+* [`dprint`](https://dprint.dev) for various (depending on
+  [installed plugins](https://dprint.dev/plugins/)) ([#209]).
+* [`js-beautify`](https://github.com/beautify-web/js-beautify) for
+  [JavaScript](https://www.javascript.com/),
+  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON),
+  [HTML](https://en.wikipedia.org/wiki/HTML) and
+  [CSS](https://www.google.com/search?q=css)
+  ([#229])
+* [`python3-json`](https://docs.python.org/3/library/json.html#module-json.tool)
+  for JSON ([#257]).
+* [`robotidy`](https://robotidy.readthedocs.io) for Robot Framework files
+  ([#263]).
+* [denofmt](https://docs.deno.com/runtime/manual/tools/formatter) for
+  js, jsx, ts, tsx, json, jsonc, md files. ([#264])
+* [docformatter](https://github.com/PyCQA/docformatter) for Python docstrings ([#267])
+* [cljfmt](https://github.com/weavejester/cljfmt) for clojure,
+  clojurescript, edn files. ([#271])
+
+[#209]: https://github.com/radian-software/apheleia/pull/209
+[#229]: https://github.com/radian-software/apheleia/pull/229
+[#257]: https://github.com/radian-software/apheleia/pull/257
+[#258]: https://github.com/radian-software/apheleia/pull/258
+[#259]: https://github.com/radian-software/apheleia/pull/259
+[#260]: https://github.com/radian-software/apheleia/pull/260
+[#261]: https://github.com/radian-software/apheleia/pull/261
+[#263]: https://github.com/radian-software/apheleia/pull/263
+[#264]: https://github.com/radian-software/apheleia/pull/264
+[#267]: https://github.com/radian-software/apheleia/pull/267
+[#271]: https://github.com/radian-software/apheleia/pull/271
+
+## 4.0 (released 2023-11-23)
 ### Breaking changes
 * The order of entries in `apheleia-mode-alist` is no longer as
   important. Specifically, if two different mode entries in
@@ -15,25 +55,41 @@ The format is based on [Keep a Changelog].
 * Disable formatting of go module files with gofmt. This was never supported
   ([#214]).
 * Remove support for Emacs 26 ([#215]).
-
-### Features
-* New user option `apheleia-formatters-respect-indent-level`,
-  defaulting to `t`. You can set this to `nil` to disable Apheleia
-  configuring formatters to use the same indent settings as the Emacs
-  major mode is using ([#208]).
+* Emacs will infer indentation configuration from your major mode and,
+  by default, supply this configuration to formatters, to ensure
+  consistency between how you have Emacs configured and how your
+  formatter is configured. You can disable this by setting
+  `apheleia-formatters-respect-indent-level` to nil ([#167], [#208]).
 
 ### Enhancements
 * Use the `prettier-json` formatter for `js-json-mode` ([#209]).
 * Prettier is now enabled in `svelte-mode`.
 * More tree-sitter based major modes have been added to
   `apheleia-mode-alist` ([#191]).
+* All marks (the current `(mark)`, and the `mark-ring`) are now
+  adjusted, alongside `(point)` ([#197]).
+* Built-in formatters now use a new `"apheleia-npx"` built-in script
+  instead of the legacy `npx` keyword. The effect of the new script is
+  the same, except that it also works with Yarn PNP projects as well
+  as `node_modules` style projects ([#200]).
 * Autoload the apheleia-goto-error command ([#215]).
 * Use `lisp-indent` as default formatter for `emacs-lisp-mode` ([#223])
 * Use `hclfmt` for formatting hashicorp HCL files ([#231])
+* The `mix format` formatter will respect `.formatter.exs` files even
+  if they are present in a parent directory rather than the same
+  directory as the file being formatted ([#232]).
 
 ### Internal Changes
 * Refactored the organisation of the apheleia package for ease of
   understanding and usability ([#215]).
+* The new `scripts/pnp-bin.js` script is standalone minified nodejs built
+  from the [`pnp-bin`](https://github.com/PuddleByteComputing/pnp-bin) repo,
+  extracted from apheleia PR [#200].
+* Test environment bumped from Ubuntu 20.04 to 22.04 ([#242]).
+* The function `apheleia--format-after-save` was renamed to
+  `apheleia-format-after-save`. This is only called out explicitly
+  because it was added to `after-save-hook` so customization that
+  assumed this behavior might break.
 
 ### Bugs fixed
 * `ktlint` would emit log messages into its stdout when formatting,
@@ -44,15 +100,11 @@ The format is based on [Keep a Changelog].
   installed locally ([#215]).
 * Fixed clang-format formatter did not respect remote file-name component for
   the assumed file-name ([#215]).
+* Always supply `--stdin-filepath` to Prettier to allow it to pick up
+  the correct settings from project-level config files ([#253]).
 
 ### Formatters
 
-* [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
-* [`jq`](https://stedolan.github.io/jq/) for
-  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
-  ([#174]).
-* [`gawk`](https://www.gnu.org/software/gawk/) for
-  [awk](https://en.wikipedia.org/wiki/AWK) ([#187]).
 * [`asmfmt`](https://github.com/klauspost/asmfmt) for assembly ([#168]).
 * [`astyle`](https://github.com/steinwurf/astyle) for C ([#169]).
 * [`beautysh`](https://github.com/lovesegfault/beautysh) for shell
@@ -62,18 +114,30 @@ The format is based on [Keep a Changelog].
 * [`cmake-format`](https://github.com/cheshirekow/cmake_format)
   for [CMake](https://cmake.org/) ([#172]).
 * [`fourmolu`](https://github.com/fourmolu/fourmolu) for haskell
+* [`gawk`](https://www.gnu.org/software/gawk/) for
+  [awk](https://en.wikipedia.org/wiki/AWK) ([#187]).
+* [`hclfmt`](https://github.com/hashicorp/hcl/tree/main/cmd/hclfmt) for [HCL](https://github.com/hashicorp/hcl) ([#231])
 * [`html-tidy`](https://www.html-tidy.org/) for HTML/XML ([#173]).
+* [`jq`](https://stedolan.github.io/jq/) for
+  [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON)
+  ([#174]).
 * [`ormolu`](https://github.com/tweag/ormolu) for haskell.
 * [`perltidy`](https://perltidy.sourceforge.net/) for
   [perl](https://www.perl.org/) ([#175]).
+* [`pgformatter`](https://github.com/darold/pgFormatter) for [SQL](https://en.wikipedia.org/wiki/SQL) ([#247])
+* [purs-tidy](https://github.com/natefaubion/purescript-tidy) for PureScript ([#182]).
 * [`rubocop`](https://github.com/rubocop/rubocop) for [ruby](https://www.ruby-lang.org/en/) ([#176]).
 * [`ruby-standard`](https://github.com/standardrb/standard) for
   [ruby](https://www.ruby-lang.org/en/) ([#201])
+* [`ruff`](https://github.com/astral-sh/ruff) for
+  [python](https://python.org) ([#236])
 * [`rufo`](https://github.com/ruby-formatter/rufo) for
   [Ruby](https://www.ruby-lang.org/en/) ([#177]).
+* [`xmllint`](https://gitlab.gnome.org/GNOME/libxml2) for XML ([#251]).
 * [`yapf`](https://github.com/google/yapf) for [Python](https://www.python.org/) ([#196])
-* [`hclfmt`](https://github.com/hashicorp/hcl/tree/main/cmd/hclfmt) for [HCL](https://github.com/hashicorp/hcl) ([#231])
+* [`yq`](https://mikefarah.gitbook.io/yq/) for YAML, JSON, CSV, TSV, XML and [.properties](https://en.wikipedia.org/wiki/.properties) ([#250]).
 
+[#167]: https://github.com/radian-software/apheleia/pull/167
 [#168]: https://github.com/radian-software/apheleia/pull/168
 [#169]: https://github.com/radian-software/apheleia/pull/169
 [#170]: https://github.com/radian-software/apheleia/pull/170
@@ -87,6 +151,7 @@ The format is based on [Keep a Changelog].
 [#182]: https://github.com/radian-software/apheleia/pull/182
 [#187]: https://github.com/radian-software/apheleia/pull/187
 [#196]: https://github.com/radian-software/apheleia/pull/196
+[#197]: https://github.com/radian-software/apheleia/issues/197
 [#208]: https://github.com/radian-software/apheleia/discussions/208
 [#209]: https://github.com/radian-software/apheleia/pull/209
 [#213]: https://github.com/radian-software/apheleia/pull/213
@@ -94,6 +159,11 @@ The format is based on [Keep a Changelog].
 [#215]: https://github.com/radian-software/apheleia/pull/215
 [#223]: https://github.com/radian-software/apheleia/pull/223
 [#231]: https://github.com/radian-software/apheleia/pull/231
+[#232]: https://github.com/radian-software/apheleia/issues/232
+[#236]: https://github.com/radian-software/apheleia/pull/236
+[#242]: https://github.com/radian-software/apheleia/pull/242
+[#253]: https://github.com/radian-software/apheleia/pull/253
+[#247]: https://github.com/radian-software/apheleia/pull/247
 
 ## 3.2 (released 2023-02-25)
 ### Features

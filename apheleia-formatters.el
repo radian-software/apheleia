@@ -1,5 +1,7 @@
 ;;; apheleia-formatters.el --- Run formatters -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; This module defines a series of functions for running a formatter process
@@ -39,9 +41,23 @@
                      (or (apheleia-formatters-local-buffer-file-name)
                          (apheleia-formatters-mode-extension)
                          ".c")))
+    (cljfmt . ("cljfmt" "fix" "-"))
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
+    (css-beautify "css-beautify" "--file" "-" "--end-with-newline"
+                  (apheleia-formatters-indent
+                   "--indent-with-tabs" "--indent-size"))
     (dart-format . ("dart" "format"))
+    (denofmt . ("deno" "fmt" "-"))
+    (denofmt-js . ("deno" "fmt" "-" "--ext" "js"))
+    (denofmt-json . ("deno" "fmt" "-" "--ext" "json"))
+    (denofmt-jsonc . ("deno" "fmt" "-" "--ext" "jsonc"))
+    (denofmt-jsx . ("deno" "fmt" "-" "--ext" "jsx"))
+    (denofmt-md . ("deno" "fmt" "-" "--ext" "md"))
+    (denofmt-ts . ("deno" "fmt" "-" "--ext" "ts"))
+    (denofmt-tsx . ("deno" "fmt" "-" "--ext" "tsx"))
+    (docformatter . ("apheleia-docformatter" inplace))
+    (dprint . ("dprint" "fmt" "--stdin" filepath))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
     (fourmolu . ("fourmolu"))
@@ -51,6 +67,9 @@
     (goimports . ("goimports"))
     (google-java-format . ("google-java-format" "-"))
     (hclfmt . ("hclfmt"))
+    (html-beautify "html-beautify" "--file" "-" "--end-with-newline"
+                   (apheleia-formatters-indent
+                    "--indent-with-tabs" "--indent-size"))
     (html-tidy "tidy"
                "--quiet" "yes"
                "--tidy-mark" "no"
@@ -59,70 +78,94 @@
                (when (derived-mode-p 'nxml-mode)
                  "-xml")
                (apheleia-formatters-indent
-                "--indent-with-tabs"
-                "--indent-spaces"
-                (cond
-                 ((derived-mode-p 'nxml-mode)
-                  'nxml-child-indent)
-                 ((derived-mode-p 'web-mode)
-                  'web-mode-indent-style)))
+                "--indent-with-tabs" "--indent-spaces")
                (apheleia-formatters-fill-column "-wrap"))
     (isort . ("isort" "-"))
+    (js-beautify "js-beautify" "--file" "-" "--end-with-newline"
+                 (apheleia-formatters-indent
+                  "--indent-with-tabs" "--indent-size"))
     (jq "jq" "." "-M"
-        (apheleia-formatters-js-indent "--tab" "--indent"))
+        (apheleia-formatters-indent "--tab" "--indent"))
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
-    (mix-format . ("mix" "format" "-"))
+    (mix-format . ("apheleia-mix" "format" "-"))
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
     (ormolu . ("ormolu"))
-    (perltidy . ("perltidy" "--quiet" "--standard-error-output"))
+    (perltidy . ("perltidy" "--quiet" "--standard-error-output"
+                 (apheleia-formatters-indent "-t" "-i")
+                 (apheleia-formatters-fill-column "-l")))
+    (pgformatter . ("pg_format"
+                    (apheleia-formatters-indent "--tabs" "--spaces" 'tab-width)
+                    (apheleia-formatters-fill-column "--wrap-limit")))
     (phpcs . ("apheleia-phpcs"))
     (prettier
-     . (npx "prettier" "--stdin-filepath" filepath
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-css
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=css"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=css"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-html
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=html"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=html"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-graphql
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=graphql"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=graphql"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-javascript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=babel-flow"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=babel-flow"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-json
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=json"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=json"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=markdown"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=markdown"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-ruby
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=ruby"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--plugin=@prettier/plugin-ruby" "--parser=ruby"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-scss
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=scss"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=scss"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-svelte
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=svelte"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--plugin=prettier-plugin-svelte" "--parser=svelte"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-typescript
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=typescript"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=typescript"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-yaml
-     . (npx "prettier" "--stdin-filepath" filepath "--parser=yaml"
-            (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
-    (purs-tidy . (npx "purs-tidy" "format"))
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=yaml"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+    (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
+    (robotidy . ("robotidy" "--no-color" "-"
+                 (apheleia-formatters-indent nil "--indent")
+                 (apheleia-formatters-fill-column "--line-length")))
+    (python3-json
+     . ("python3" "-m" "json.tool"
+        (apheleia-formatters-indent "--tab" "--indent")))
     (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
                       "--format" "quiet" "--fail-level" "fatal"))
     (ruby-syntax-tree . ("stree" "format" filepath
                          (apheleia-formatters-args-from-file ".streerc")))
+    (ruff . ("ruff" "format"
+             "--silent"
+             (apheleia-formatters-fill-column "--line-length")
+             "--stdin-filename" filepath
+             "-"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
@@ -141,7 +184,23 @@
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-"))
-    (yapf . ("yapf")))
+    (xmllint . ("xmllint" "--format" "-"))
+    (yapf . ("yapf"))
+    (yq-csv . ("yq" "--prettyPrint" "--no-colors"
+               "--input-format" "csv" "--output-format" "csv"))
+    (yq-json . ("yq" "--prettyPrint" "--no-colors"
+                "--input-format" "json" "--output-format" "json"
+                (apheleia-formatters-indent nil "--indent")))
+    (yq-properties . ("yq" "--prettyPrint" "--no-colors"
+                      "--input-format" "props" "--output-format" "props"))
+    (yq-tsv . ("yq" "--prettyPrint" "--no-colors"
+               "--input-format" "tsv" "--output-format" "tsv"))
+    (yq-xml . ("yq" "--prettyPrint" "--no-colors"
+               "--input-format" "xml" "--output-format" "xml"
+               (apheleia-formatters-indent nil "--indent")))
+    (yq-yaml . ("yq" "--prettyPrint" "--no-colors" "--no-doc"
+                "--input-format" "yaml" "--output-format" "yaml"
+                (apheleia-formatters-indent nil "--indent"))))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell
 commands, lists of strings and symbols, or a function symbol.
@@ -181,6 +240,11 @@ If you use the symbol `npx' as one of the elements of commands,
 then the first string element of the command list is resolved
 inside node_modules/.bin if such a directory exists anywhere
 above the current `default-directory'.
+
+\(However, instead of using `npx', consider using
+\"apheleia-npx\", which is a built-in script that will replicate
+the effect, but will also work with Yarn PNP projects and other
+npm project types that may exist in the future.)
 
 Any list elements that are not strings and not any of the special
 symbols mentioned above will be evaluated when the formatter is
@@ -223,14 +287,25 @@ rather than using this system."
     (c-ts-mode . clang-format)
     (c++-mode . clang-format)
     (caml-mode . ocamlformat)
+    (clojure-dart-ts-mode . cljfmt)
+    (clojure-jank-ts-mode . cljfmt)
+    (clojure-mode . cljfmt)
+    (clojure-ts-mode . cljfmt)
+    (clojurec-mode . cljfmt)
+    (clojurec-ts-mode . cljfmt)
+    (clojurescript-mode . cljfmt)
+    (clojurescript-ts-mode . cljfmt)
     (cmake-mode . cmake-format)
     (cmake-ts-mode . cmake-format)
     (common-lisp-mode . lisp-indent)
+    (conf-toml-mode . dprint)
+    (cperl-mode . perltidy)
     (crystal-mode . crystal-tool-format)
     (css-mode . prettier-css)
     (css-ts-mode . prettier-css)
     (dart-mode . dart-format)
     (dart-ts-mode . dart-format)
+    (dockerfile-mode . dprint)
     (elixir-mode . mix-format)
     (elixir-ts-mode . mix-format)
     (elm-mode . elm-format)
@@ -252,10 +327,14 @@ rather than using this system."
     (json-mode . prettier-json)
     (json-ts-mode . prettier-json)
     (kotlin-mode . ktlint)
+    (kotlin-ts-mode . ktlint)
     (latex-mode . latexindent)
     (LaTeX-mode . latexindent)
     (lua-mode . stylua)
     (lisp-mode . lisp-indent)
+    ;; markdown-mode not included because so many people format
+    ;; markdown code in so many different ways and we don't want to
+    ;; try imposing a standard by default
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (perl-mode . perltidy)
@@ -263,12 +342,14 @@ rather than using this system."
     (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
+    (robot-mode . robotidy)
     (ruby-mode . prettier-ruby)
     (ruby-ts-mode . prettier-ruby)
     (rustic-mode . rustfmt)
     (rust-mode . rustfmt)
     (rust-ts-mode . rustfmt)
     (scss-mode . prettier-scss)
+    (sql-mode . pgformatter)
     (svelte-mode . prettier-svelte)
     (terraform-mode . terraform)
     (TeX-latex-mode . latexindent)
@@ -288,7 +369,7 @@ strings (matched against value of variable `buffer-file-name'
 with `string-match-p'), and the values are symbols with entries
 in `apheleia-formatters' (or equivalently, they are allowed
 values for `apheleia-formatter'). Values can be a list of such
-symnols causing each formatter in the list to be called one after
+symbols causing each formatter in the list to be called one after
 the other (with the output of the previous formatter).
 Earlier entries in this variable take precedence over later ones.
 
@@ -433,7 +514,7 @@ NO-QUERY, and CONNECTION-TYPE."
             ;; capture stderr into a separate buffer, the best we can
             ;; do is save and read from a file.
             `(,stdout ,stderr-file)
-            ;; Do not re/display stdout as output is recieved.
+            ;; Do not re/display stdout as output is received.
             nil)
            ;; argv[1:]
            (cdr command))))
@@ -541,7 +622,7 @@ command succeeds provided that its exit status is 0."
                   (format " *apheleia-%s-stdout*" name)))
          (stderr (generate-new-buffer
                   (format " *apheleia-%s-stderr*" name)))
-         (log-name (apheliea-log--buffer-name name)))
+         (log-name (apheleia-log--buffer-name name)))
     (condition-case-unless-debug e
         (progn
           (setq apheleia--current-process
@@ -775,7 +856,7 @@ This function does not modify DEST in place, it returns a copy."
 
 (defun apheleia--formatter-context (name command remote &optional stdin-buffer)
   "Construct a formatter context for the formatter with NAME and COMMAND.
-Returns a `apheleia-formatter--context' object on success and nil if
+Returns an `apheleia-formatter--context' object on success and nil if
 the formatter is not executable. The returned formatter context may
 have some state such as temporary files that the caller is expected
 to cleanup.
@@ -831,7 +912,7 @@ it's first in the sequence"))
           (unless remote-match
             (error "Formatter uses `file' but process will run on different \
 machine from the machine file is available on"))
-	  (setq stdin nil)
+          (setq stdin nil)
           ;; If `buffer-file-name' is nil then there is no backing
           ;; file, so `buffer-modified-p' should be ignored (it always
           ;; returns non-nil).
@@ -921,24 +1002,28 @@ purposes."
                               (let ((load-suffixes '(".el")))
                                 (locate-library "apheleia"))))))
                         exec-path)))
-      (when (executable-find (apheleia-formatter--arg1 ctx)
-                             (eq apheleia-remote-algorithm 'remote))
-        (apheleia--execute-formatter-process
-         :ctx ctx
-         :callback
-         (lambda (stdout)
-           (when-let ((output-fname (apheleia-formatter--output-fname ctx)))
-             ;; Load output-fname contents into the stdout buffer.
-             (with-current-buffer stdout
-               (erase-buffer)
-               (insert-file-contents-literally output-fname)))
-           (funcall callback stdout))
-         :ensure
-         (lambda ()
-           (dolist (fname (list (apheleia-formatter--input-fname ctx)
-                                (apheleia-formatter--output-fname ctx)))
-             (when fname
-               (ignore-errors (delete-file fname))))))))))
+      (if (executable-find (apheleia-formatter--arg1 ctx)
+                           (eq apheleia-remote-algorithm 'remote))
+          (apheleia--execute-formatter-process
+           :ctx ctx
+           :callback
+           (lambda (stdout)
+             (when-let
+                 ((output-fname (apheleia-formatter--output-fname ctx)))
+               ;; Load output-fname contents into the stdout buffer.
+               (with-current-buffer stdout
+                 (erase-buffer)
+                 (insert-file-contents-literally output-fname)))
+             (funcall callback stdout))
+           :ensure
+           (lambda ()
+             (dolist (fname (list (apheleia-formatter--input-fname ctx)
+                                  (apheleia-formatter--output-fname ctx)))
+               (when fname
+                 (ignore-errors (delete-file fname))))))
+        (apheleia--log
+         'process
+         "Could not find executable for formatter %s, skipping" formatter)))))
 
 (defun apheleia--run-formatter-function
     (func buffer remote callback stdin formatter)
@@ -969,7 +1054,7 @@ being run, for diagnostic purposes."
                :scratch scratch
                ;; Name of the current formatter symbol, e.g. `black'.
                :formatter formatter
-               ;; Callback after succesfully formatting.
+               ;; Callback after successfully formatting.
                :callback
                (lambda ()
                  (unwind-protect
@@ -1009,7 +1094,7 @@ For more implementation detail, see
 FORMATTERS is a list of symbols that appear as keys in
 `apheleia-formatters'. BUFFER is the `current-buffer' when this
 function was first called. Once all the formatters in COMMANDS
-finish succesfully then invoke CALLBACK with one argument, a
+finish successfully then invoke CALLBACK with one argument, a
 buffer containing the output of all the formatters. REMOTE asserts
 whether the buffer being formatted is on a remote machine or the
 current machine. It should be the output of `file-remote-p' on the

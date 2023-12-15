@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# This function prints the name of the current directory if it
+# contains a file or directory named after the first argument, or the
+# parent directory if it contains such a file, or the parent's parent,
+# and so on. If no such file is found it returns nonzero.
+# https://unix.stackexchange.com/a/22215
+find_upwards() {
+    fname="$1"
+
+    path="${PWD}"
+    while [[ -n "${path}" && ! -e "${path}/${fname}" ]]; do
+        path="${path%/*}"
+    done
+    [[ -n "${path}" ]] && echo "${path}"
+}
+
+if dir="$(find_upwards .formatter.exs)"; then
+    cd -- "${dir}" || exit
+fi
+
+exec mix "$@"

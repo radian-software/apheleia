@@ -1,5 +1,7 @@
 ;;; apheleia-utils.el --- Formatter helpers. -*- lexical-binding: t -*-
 
+;; SPDX-License-Identifier: MIT
+
 ;;; Commentary:
 
 ;; Helper functions for defining apheleia formatters.
@@ -14,13 +16,15 @@
   :type 'boolean
   :group 'apheleia)
 
-(defun apheleia-formatters-indent (tab-flag indent-flag indent-var)
+(defun apheleia-formatters-indent (tab-flag indent-flag &optional indent-var)
   "Set flag for indentation.
 Helper function for `apheleia-formatters' which allows you to supply
 alternating flags based on the current buffers indent configuration. If the
 buffer is indented with tabs then returns TAB-FLAG. Otherwise if INDENT-VAR
 is set in the buffer return INDENT-FLAG and the value of INDENT-VAR. Use this
-to easily configure the indentation level of a formatter.
+to easily configure the indentation level of a formatter. If INDENT-VAR is
+unset then intelligently try to determine the indentation variable based on
+the current mode.
 
 If `apheleia-formatters-respect-indent-level' is nil then this
 always returns nil to defer to the formatter."
@@ -28,24 +32,43 @@ always returns nil to defer to the formatter."
    ((not apheleia-formatters-respect-indent-level) nil)
    (indent-tabs-mode tab-flag)
    (indent-var
-    (when-let ((indent (and (boundp indent-var)
+    (unless indent-var
+      (setq indent-var
+            (cl-case major-mode
+              (cperl-mode 'cperl-indent-level)
+              (css-mode 'css-indent-offset)
+              (css-ts-mode 'css-indent-offset)
+              (graphql-mode 'graphql-indent-level)
+              (html-mode 'sgml-basic-offset)
+              (js-jsx-mode 'js-indent-level)
+              (js-ts-mode 'js-indent-level)
+              (js-mode 'js-indent-level)
+              (js2-jsx-mode 'js2-basic-offset)
+              (js2-mode 'js2-basic-offset)
+              (js3-mode 'js3-indent-level)
+              (json-mode 'js-indent-level)
+              (json-ts-mode 'json-ts-mode-indent-offset)
+              (nxml-mode 'nxml-child-indent)
+              (robot-mode 'robot-mode-basic-offset)
+              (perl-mode 'perl-indent-level)
+              (python-mode 'python-indent-offset)
+              (ruby-mode 'ruby-indent-level)
+              (ruby-ts-mode 'ruby-indent-level)
+              (scss-mode 'css-indent-offset)
+              (svelte-mode 'svelte-basic-offset)
+              (web-mode 'web-mode-indent-style)
+              (tsx-ts-mode 'typescript-ts-mode-indent-offset)
+              (typescript-mode 'typescript-indent-level)
+              (typescript-ts-mode 'typescript-ts-mode-indent-offset)
+              (yaml-mode 'yaml-indent-offset))))
+
+    (when-let ((indent (and indent-var
+                            (boundp indent-var)
                             (symbol-value indent-var))))
       (list indent-flag (number-to-string indent))))))
 
-(defun apheleia-formatters-js-indent (tab-flag indent-flag)
-  "Variant of `apheleia-formatters-indent' for JavaScript like modes.
-See `apheleia-formatters-indent' for a description of TAB-FLAG and
-INDENT-FLAG."
-  (apheleia-formatters-indent
-   tab-flag indent-flag
-   (cl-case major-mode
-     (json-mode 'js-indent-level)
-     (json-ts-mode 'json-ts-mode-indent-offset)
-     (js-mode 'js-indent-level)
-     (js-jsx-mode 'js-indent-level)
-     (js2-mode 'js2-basic-offset)
-     (js2-jsx-mode 'js2-basic-offset)
-     (js3-mode 'js3-indent-level))))
+(define-obsolete-function-alias 'apheleia-formatters-js-indent
+  'apheleia-formatters-indent "4.1")
 
 (defcustom apheleia-formatters-respect-fill-column nil
   "Whether formatters should set `fill-column' related flags."
