@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog].
   settings ([#261]).
 
 ### Formatters
+* [`dprint`](https://dprint.dev) for various (depending on
+  [installed plugins](https://dprint.dev/plugins/)) ([#209]).
 * [`js-beautify`](https://github.com/beautify-web/js-beautify) for
   [JavaScript](https://www.javascript.com/),
   [JSON](https://developer.mozilla.org/en-US/docs/Learn/JavaScript/Objects/JSON),
@@ -25,6 +27,7 @@ The format is based on [Keep a Changelog].
 * [cljfmt](https://github.com/weavejester/cljfmt) for clojure,
   clojurescript, edn files. ([#271])
 
+[#209]: https://github.com/radian-software/apheleia/pull/209
 [#229]: https://github.com/radian-software/apheleia/pull/229
 [#257]: https://github.com/radian-software/apheleia/pull/257
 [#260]: https://github.com/radian-software/apheleia/pull/260
