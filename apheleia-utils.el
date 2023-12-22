@@ -92,6 +92,17 @@ FILE-NAME."
   (when-let ((file (locate-dominating-file default-directory file-name)))
     (list file-flag (concat (expand-file-name file) file-name))))
 
+(defun apheleia-formatters-args-from-file (file-name)
+  "Extract arguments from a text file.
+Look for a file up recursively from the current directory until FILE-NAME is
+found. If found, read the file and return an Alist of lines in the file."
+  (when-let ((file (locate-dominating-file default-directory file-name)))
+    (with-temp-buffer
+      (insert-file-contents (concat (expand-file-name file) file-name))
+      (cl-loop for line in (split-string (buffer-string) "\n" t)
+               collect line)))
+  )
+
 (defun apheleia-formatters-extension-p (&rest exts)
   "Assert whether current buffer has an extension in EXTS."
   (when-let ((name buffer-file-name)
