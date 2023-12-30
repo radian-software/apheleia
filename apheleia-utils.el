@@ -31,7 +31,7 @@ always returns nil to defer to the formatter."
   (cond
    ((not apheleia-formatters-respect-indent-level) nil)
    (indent-tabs-mode tab-flag)
-   (indent-var
+   (t
     (unless indent-var
       (setq indent-var
             (cl-case major-mode
