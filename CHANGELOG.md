@@ -33,6 +33,10 @@ The format is based on [Keep a Changelog].
 * Stylua is used now in `lua-ts-mode` as well as just `lua-mode`, by
   default ([#275]).
 
+### Bugs fixed
+* Apheleia sometimes failed to determine indent level from Emacs
+  settings even when configured to do so. This is fixed ([#274]).
+
 [#209]: https://github.com/radian-software/apheleia/pull/209
 [#229]: https://github.com/radian-software/apheleia/pull/229
 [#257]: https://github.com/radian-software/apheleia/pull/257
@@ -44,6 +48,7 @@ The format is based on [Keep a Changelog].
 [#264]: https://github.com/radian-software/apheleia/pull/264
 [#267]: https://github.com/radian-software/apheleia/pull/267
 [#271]: https://github.com/radian-software/apheleia/pull/271
+[#274]: https://github.com/radian-software/apheleia/issues/274
 [#275]: https://github.com/radian-software/apheleia/pull/275
 
 ## 4.0 (released 2023-11-23)
