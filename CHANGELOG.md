@@ -30,6 +30,8 @@ The format is based on [Keep a Changelog].
 * [docformatter](https://github.com/PyCQA/docformatter) for Python docstrings ([#267])
 * [cljfmt](https://github.com/weavejester/cljfmt) for clojure,
   clojurescript, edn files. ([#271])
+* Stylua is used now in `lua-ts-mode` as well as just `lua-mode`, by
+  default ([#275]).
 
 [#209]: https://github.com/radian-software/apheleia/pull/209
 [#229]: https://github.com/radian-software/apheleia/pull/229
@@ -42,6 +44,7 @@ The format is based on [Keep a Changelog].
 [#264]: https://github.com/radian-software/apheleia/pull/264
 [#267]: https://github.com/radian-software/apheleia/pull/267
 [#271]: https://github.com/radian-software/apheleia/pull/271
+[#275]: https://github.com/radian-software/apheleia/pull/275
 
 ## 4.0 (released 2023-11-23)
 ### Breaking changes
