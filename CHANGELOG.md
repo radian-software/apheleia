@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog].
   for JSON ([#257]).
 * [`robotidy`](https://robotidy.readthedocs.io) for Robot Framework files
   ([#263]).
+* [`ruff-isort`](https://github.com/astral-sh/ruff) for [Python](https://python.org) imports using ruff ([#TBD]).
 * [denofmt](https://docs.deno.com/runtime/manual/tools/formatter) for
   js, jsx, ts, tsx, json, jsonc, md files. ([#264])
 * [docformatter](https://github.com/PyCQA/docformatter) for Python docstrings ([#267])
