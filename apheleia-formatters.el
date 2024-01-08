@@ -185,6 +185,7 @@
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-"))
+    (treefmt . ("treefmt" "--stdin" filepath))
     (xmllint . ("xmllint" "--format" "-"))
     (yapf . ("yapf"))
     (yq-csv . ("yq" "--prettyPrint" "--no-colors"
