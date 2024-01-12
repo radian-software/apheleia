@@ -167,6 +167,12 @@
              (apheleia-formatters-fill-column "--line-length")
              "--stdin-filename" filepath
              "-"))
+    (ruff-isort . ("ruff" "check"
+                   "-n"
+                   "--select" "I"
+                   "--fix" "--fix-only"
+                   "--stdin-filename" filepath
+                   "-"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
