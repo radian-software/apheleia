@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog].
   for JSON ([#257]).
 * [`robotidy`](https://robotidy.readthedocs.io) for Robot Framework files
   ([#263]).
-* [`ruff-isort`](https://github.com/astral-sh/ruff) for [Python](https://python.org) imports using ruff ([#TBD]).
+* [`ruff-isort`](https://github.com/astral-sh/ruff) for [Python](https://python.org) imports using ruff ([#279]).
 * [denofmt](https://docs.deno.com/runtime/manual/tools/formatter) for
   js, jsx, ts, tsx, json, jsonc, md files. ([#264])
 * [docformatter](https://github.com/PyCQA/docformatter) for Python docstrings ([#267])
@@ -51,6 +51,7 @@ The format is based on [Keep a Changelog].
 [#271]: https://github.com/radian-software/apheleia/pull/271
 [#274]: https://github.com/radian-software/apheleia/issues/274
 [#275]: https://github.com/radian-software/apheleia/pull/275
+[#279]: https://github.com/radian-software/apheleia/pull/279
 
 ## 4.0 (released 2023-11-23)
 ### Breaking changes
