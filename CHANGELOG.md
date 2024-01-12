@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog].
   clojurescript, edn files. ([#271])
 * Stylua is used now in `lua-ts-mode` as well as just `lua-mode`, by
   default ([#275]).
+* [`treefmt`](https://numtide.github.io/treefmt) for project configured formatters ([#280]).
 
 ### Bugs fixed
 * Apheleia sometimes failed to determine indent level from Emacs
