@@ -150,6 +150,7 @@
         "--parser=yaml"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
+    (pyang . ("pyang" "--ignore-errors" "-f" "yang"))
     (robotidy . ("robotidy" "--no-color" "-"
                  (apheleia-formatters-indent nil "--indent")
                  (apheleia-formatters-fill-column "--line-length")))
@@ -370,7 +371,8 @@ rather than using this system."
     (typescript-ts-mode . prettier-typescript)
     (web-mode . prettier)
     (yaml-mode . prettier-yaml)
-    (yaml-ts-mode . prettier-yaml))
+    (yaml-ts-mode . prettier-yaml)
+    (yang-mode . pyang))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode

@@ -1,0 +1,11 @@
+module in {
+  namespace "http://com/in/in";
+  prefix in;
+
+  list example {
+    key "name";
+    leaf name {
+      type string;
+    }
+  }
+}
