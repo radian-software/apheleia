@@ -33,7 +33,10 @@ The format is based on [Keep a Changelog].
   clojurescript, edn files. ([#271])
 * Stylua is used now in `lua-ts-mode` as well as just `lua-mode`, by
   default ([#275]).
-* [`treefmt`](https://numtide.github.io/treefmt) for project configured formatters ([#280]).
+* [`treefmt`](https://numtide.github.io/treefmt) for project
+  configured formatters ([#280]).
+* [`pyang`](https://github.com/mbj4668/pyang) for
+  [YANG](https://www.rfc-editor.org/rfc/rfc7950.html) ([#282]).
 
 ### Bugs fixed
 * Apheleia sometimes failed to determine indent level from Emacs
@@ -53,6 +56,7 @@ The format is based on [Keep a Changelog].
 [#274]: https://github.com/radian-software/apheleia/issues/274
 [#275]: https://github.com/radian-software/apheleia/pull/275
 [#279]: https://github.com/radian-software/apheleia/pull/279
+[#282]: https://github.com/radian-software/apheleia/pull/282
 
 ## 4.0 (released 2023-11-23)
 ### Breaking changes
