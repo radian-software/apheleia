@@ -13,6 +13,8 @@ The format is based on [Keep a Changelog].
 * Indent level support when using yq to format JSON, XML, and YAML ([#259]).
 
 ### Formatters
+* `dhall-format` official formatter for
+  [Dhall](https://dhall-lang.org/) ([#284]).
 * [`dprint`](https://dprint.dev) for various (depending on
   [installed plugins](https://dprint.dev/plugins/)) ([#209]).
 * [`js-beautify`](https://github.com/beautify-web/js-beautify) for
@@ -53,6 +55,7 @@ The format is based on [Keep a Changelog].
 [#274]: https://github.com/radian-software/apheleia/issues/274
 [#275]: https://github.com/radian-software/apheleia/pull/275
 [#279]: https://github.com/radian-software/apheleia/pull/279
+[#284]: https://github.com/radian-software/apheleia/pull/284
 
 ## 4.0 (released 2023-11-23)
 ### Breaking changes
