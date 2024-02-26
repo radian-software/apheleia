@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.1 (released 2024-02-25)
 ### Enhancements
 * Use `perltidy` as default formatter for `cperl-mode` ([#260]).
 * The `perltidy` formatter now supports Emacs indentation and line length
