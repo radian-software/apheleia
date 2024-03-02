@@ -17,4 +17,4 @@ jobs:
         env:
           VERSION: ${{ matrix.emacs_version }}
         run: >-
-          make docker CMD="make lint"
+          make docker CMD="make lint lint-changelog"
