@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Enhancements
+### Formatters
+### Bugs fixed
+* `apheleia-indent-lisp-buffer` updated to apply local variables after
+  calling major-mode. Also includes setting for `indent-tabs-mode` ([#286]).
+
+[#286]: https://github.com/radian-software/apheleia/pull/286
+
 ## 4.1 (released 2024-02-25)
 ### Enhancements
 * Use `perltidy` as default formatter for `cperl-mode` ([#260]).
