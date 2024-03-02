@@ -33,7 +33,7 @@ entry.
 
 <== lint-changelog ==>
 
+lint-changelog: Please update the changelog to cover the changes you made.
 EOF
-    echo >&2 "lint-changelog: Please update the changelog to cover the changes you made."
     exit 1
 fi
