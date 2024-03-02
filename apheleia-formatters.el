@@ -1095,11 +1095,13 @@ transformation.
 For more implementation detail, see
 `apheleia--run-formatter-function'."
   (with-current-buffer scratch
+    (funcall (with-current-buffer buffer major-mode))
     (setq-local indent-line-function
                 (buffer-local-value 'indent-line-function buffer))
     (setq-local lisp-indent-function
-                (buffer-local-value 'lisp-indent-function buffer))
-    (funcall (with-current-buffer buffer major-mode))
+		(buffer-local-value 'lisp-indent-function buffer))
+    (setq-local indent-tabs-mode
+                (buffer-local-value 'indent-tabs-mode buffer))
     (goto-char (point-min))
     (let ((inhibit-message t)
           (message-log-max nil))
