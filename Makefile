@@ -96,18 +96,26 @@ fmt-build-common: ## Build a Docker image with just the common base
 fmt-docker: ## Start a Docker shell for testing formatters
 	@scripts/docker-run.bash -e FORMATTERS "apheleia-formatters:$(TAG)" "$(CMD)"
 
+APHELEIA_FT := -L test/formatters -l apheleia-ft
+
 .PHONY: fmt-lint
 fmt-lint: ## Do basic linting for formatter configuration
-	@test/formatters/run-func.bash apheleia-ft-lint
+	@test/shared/run-func.bash apheleia-ft-lint $(APHELEIA_FT)
 
 .PHONY: fmt-check
 fmt-changed: ## Get list of changed formatters on this PR
-	@test/formatters/run-func.bash apheleia-ft-changed
+	@test/shared/run-func.bash apheleia-ft-changed $(APHELEIA_FT)
 
 .PHONY: fmt-test  # env var: FORMATTERS
 fmt-test: ## Actually run formatter tests
-	@test/formatters/run-func.bash apheleia-ft-test
+	@test/shared/run-func.bash apheleia-ft-test $(APHELEIA_FT)
 
 .PHONY: lint-changelog
 lint-changelog: ## Report an error if the changelog wasn't updated
 	@scripts/lint-changelog.bash
+
+APHELEIA_UNIT := -L test/unit -l apheleia-unit
+
+.PHONY: unit-test
+unit-test: ## Run unit tests
+	@test/shared/run-func.bash ert-run-tests-batch-and-exit $(APHELEIA_UNIT)
