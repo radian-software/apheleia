@@ -9,6 +9,7 @@ find=(
     -name .log -prune -o
     -path ./scripts/pnp-bin.js -prune -o
     -path ./test/formatters -prune -o
+    -path ./test/unit -prune -o
     -name "*.elc" -o
     -type f -print
 )
