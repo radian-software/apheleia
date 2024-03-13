@@ -4,7 +4,9 @@
 
 (require 'apheleia)
 
-(require 'ert)
+;; Using buttercup because ert makes it really hard to write tabular
+;; tests that report enough context to debug when they fail.
+(require 'buttercup)
 
 (defun apheleia-unit-find-vars (form)
   (cond
@@ -13,20 +15,34 @@
    ((listp form)
     (mapcan #'apheleia-unit-find-vars (cdr form)))))
 
-(ert-deftest apheleia-align-point ()
-  (dolist (testcase
-           '(("hello| world"
-              "helo| word")
-             ("hello | world"
-              "hello|world")
-             ;; https://github.com/radian-software/apheleia/pull/290
-             ("      | <div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n  <svg\n"
-              "<|div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n <svg")))
-    (save-match-data
-      (cl-destructuring-bind (before-spec after-spec) testcase
-        (let ((before-pos (string-match "|" before-spec))
-              (after-pos (string-match "|" after-spec))
-              (before-str (replace-regexp-in-string "|" "" before-spec))
-              (after-str (replace-regexp-in-string "|" "" after-spec)))
-          (should
-           (equal (apheleia--align-point before-str after-str before-pos) after-pos)))))))
+(describe "apheleia--align-point"
+  (cl-flet ((alignment-error
+             (before-spec after-spec)
+             (let* ((before-pos (string-match "|" before-spec))
+                    (after-pos (string-match "|" after-spec))
+                    (before-str (replace-regexp-in-string "|" "" before-spec))
+                    (after-str (replace-regexp-in-string "|" "" after-spec))
+                    (real-after-pos (apheleia--align-point before-str after-str before-pos)))
+               (unless (= after-pos real-after-pos)
+                 (concat (substring after-str 0 real-after-pos) "|"
+                         (substring after-str real-after-pos))))))
+    (cl-macrolet ((testcases
+                   (description &rest specs)
+                   `(it ,description
+                      ,@(mapcar
+                         (lambda (spec)
+                           (cl-destructuring-bind (before-spec after-spec) spec
+                             `(expect
+                               (alignment-error ,before-spec ,after-spec)
+                               :to-be nil)))
+                         specs))))
+      (testcases
+       "does normal alignments"
+       ("hello| world"
+        "helo| word")
+       ("hello | world"
+        "hello|world"))
+      (testcases
+       "solves issue #290"
+       ("      | <div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n  <svg\n"
+        "<|div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n <svg")))))
