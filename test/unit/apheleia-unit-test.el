@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t -*-
 
-;; `apheleia-unit' - unit tests using ERT.
+;; `apheleia-unit-tests' - unit tests using ERT.
 
 (require 'apheleia)
 

@@ -114,8 +114,15 @@ fmt-test: ## Actually run formatter tests
 lint-changelog: ## Report an error if the changelog wasn't updated
 	@scripts/lint-changelog.bash
 
-APHELEIA_UNIT := -L test/unit -l apheleia-unit
+BUTTERCUP_VER := 1.34
+BUTTERCUP := vendor/buttercup-$(BUTTERCUP_VER)
 
-.PHONY: unit-test
-unit-test: ## Run unit tests
-	@test/shared/run-func.bash ert-run-tests-batch-and-exit $(APHELEIA_UNIT)
+$(BUTTERCUP):
+	@rm -rf $(BUTTERCUP) && mkdir -p $(BUTTERCUP)
+	@curl -fsSL https://github.com/jorgenschaefer/emacs-buttercup/archive/refs/tags/v$(BUTTERCUP_VER).tar.gz -o $(BUTTERCUP).tar.gz
+	@tar -xf $(BUTTERCUP).tar.gz --strip-components=1 -C $(BUTTERCUP)
+	@rm $(BUTTERCUP).tar.gz
+
+.PHONY: unit
+unit: $(BUTTERCUP) ## Run unit tests
+	@$(BUTTERCUP)/bin/buttercup test/unit -L $(BUTTERCUP) -L .
