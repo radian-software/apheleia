@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog].
 
 ## Unreleased
 ### Enhancements
+* `apheleia-npx` updated to handle bun projects ([#292])
 ### Formatters
 ### Bugs fixed
 * `apheleia-indent-lisp-buffer` updated to apply local variables after
