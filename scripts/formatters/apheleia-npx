@@ -40,6 +40,7 @@ if [[ -d $dir ]]; then
 
     pnp_root=$(find_upwards '.pnp.cjs')
     npm_root=$(find_upwards 'node_modules')
+    bun_root=$(find_upwards 'bun.lockb')
 
     if [[ -n ${pnp_root} && ${#pnp_root} -gt ${#npm_root} ]]; then
         # trying pnp
@@ -55,6 +56,11 @@ if [[ -d $dir ]]; then
             command="${node} --require ${pnp_path} ${loader_opt} ${bin} ${@:2}"
             exec ${command}
         fi
+        
+    elif [[ -n ${bun_root} ]]; then
+        bun=$(which bun)
+        exec "$bun" "$@"
+
     elif [[ -n ${npm_root} ]]; then
         # trying npm
         node_modules_paths=(\
