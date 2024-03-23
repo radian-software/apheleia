@@ -2,3 +2,4 @@
 .log
 .tmp
 auto
+vendor/buttercup-*/
