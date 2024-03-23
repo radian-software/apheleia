@@ -9,8 +9,11 @@ The format is based on [Keep a Changelog].
 ### Bugs fixed
 * `apheleia-indent-lisp-buffer` updated to apply local variables after
   calling major-mode. Also includes setting for `indent-tabs-mode` ([#286]).
+* [Formatter scripts](scripts/formatters) will now work on Windows if Emacs
+  can find the executable defined in the shebang.
 
 [#286]: https://github.com/radian-software/apheleia/pull/286
+[#285]: https://github.com/radian-software/apheleia/issues/285
 
 ## 4.1 (released 2024-02-25)
 ### Enhancements
