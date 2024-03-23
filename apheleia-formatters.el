@@ -56,6 +56,7 @@
     (denofmt-md . ("deno" "fmt" "-" "--ext" "md"))
     (denofmt-ts . ("deno" "fmt" "-" "--ext" "ts"))
     (denofmt-tsx . ("deno" "fmt" "-" "--ext" "tsx"))
+    (dhall-format . ("dhall" "format"))
     (docformatter . ("apheleia-docformatter" inplace))
     (dprint . ("dprint" "fmt" "--stdin" filepath))
     (elm-format . ("elm-format" "--yes" "--stdin"))
