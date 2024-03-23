@@ -16,9 +16,9 @@
 
 (cl-defun apheleia--edit-distance-table (s1 s2)
   "Align strings S1 and S2 for minimum edit distance.
-Return the dynamic programming table as has table which maps cons
-of integers (I1 . I2) to the edit distance between the first I1
-characters of S1 and the first I2 characters of S2."
+Return the dynamic programming table as a hash table which maps
+cons of integers (I1 . I2) to the edit distance between the first
+I1 characters of S1 and the first I2 characters of S2."
   (let ((table (make-hash-table :test #'equal)))
     (dotimes (i1 (1+ (length s1)))
       (puthash (cons i1 0) i1 table))
