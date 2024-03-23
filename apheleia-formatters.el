@@ -314,7 +314,6 @@ rather than using this system."
     (css-ts-mode . prettier-css)
     (dart-mode . dart-format)
     (dart-ts-mode . dart-format)
-    (dhall-mode . dhall-format)
     (dockerfile-mode . dprint)
     (elixir-mode . mix-format)
     (elixir-ts-mode . mix-format)
