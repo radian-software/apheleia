@@ -151,6 +151,7 @@
         "--parser=yaml"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
+    (pyang . ("pyang" "--ignore-errors" "-f" "yang"))
     (robotidy . ("robotidy" "--no-color" "-"
                  (apheleia-formatters-indent nil "--indent")
                  (apheleia-formatters-fill-column "--line-length")))
@@ -371,7 +372,8 @@ rather than using this system."
     (typescript-ts-mode . prettier-typescript)
     (web-mode . prettier)
     (yaml-mode . prettier-yaml)
-    (yaml-ts-mode . prettier-yaml))
+    (yaml-ts-mode . prettier-yaml)
+    (yang-mode . pyang))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode
@@ -991,6 +993,26 @@ machine from the machine file is available on"))
              collect val
              else do (error "Result of command evaluation must be a string \
 or list of strings: %S" arg)))
+
+      ;; Windows fails to run formatter scripts. Check whether the
+      ;; command executable is a script that contains a shebang. Parse
+      ;; the shebang and insert the binary into the command.
+      (when (member system-type '(ms-dos windows-nt))
+        (when-let ((arg1-file (locate-file (car command) exec-path)))
+          (with-temp-buffer
+            (insert-file-contents arg1-file nil 0 2)
+            (when (string= (buffer-string) "#!")
+              ;; Assumes that the full shebang is max 200 characters
+              (insert-file-contents arg1-file nil 2 200 t)
+              (let* ((shebang-components (split-string (thing-at-point 'line)))
+                     (shebang-binary
+                      (if (string= (car shebang-components) "/usr/bin/env")
+                          (cdr shebang-components)
+                        (last (split-string (car shebang-components) "/")))))
+                (setq command (append shebang-binary
+                                      (list arg1-file)
+                                      (cdr command))))))))
+
       (setf (apheleia-formatter--arg1 context) (car command)
             (apheleia-formatter--argv context) (cdr command))
       context)))
@@ -1008,9 +1030,7 @@ purposes."
   ;; resolve for the whole formatting process (for example
   ;; `apheleia--current-process').
   (with-current-buffer buffer
-    (when-let ((ctx
-                (apheleia--formatter-context formatter command remote stdin))
-               (exec-path
+    (when-let ((exec-path
                 (append `(,(expand-file-name
                             "scripts/formatters"
                             (file-name-directory
@@ -1018,7 +1038,9 @@ purposes."
                               ;; Borrowed with love from Magit
                               (let ((load-suffixes '(".el")))
                                 (locate-library "apheleia"))))))
-                        exec-path)))
+                        exec-path))
+               (ctx
+                (apheleia--formatter-context formatter command remote stdin)))
       (if (executable-find (apheleia-formatter--arg1 ctx)
                            (eq apheleia-remote-algorithm 'remote))
           (apheleia--execute-formatter-process
@@ -1094,11 +1116,13 @@ transformation.
 For more implementation detail, see
 `apheleia--run-formatter-function'."
   (with-current-buffer scratch
+    (funcall (with-current-buffer buffer major-mode))
     (setq-local indent-line-function
                 (buffer-local-value 'indent-line-function buffer))
     (setq-local lisp-indent-function
-                (buffer-local-value 'lisp-indent-function buffer))
-    (funcall (with-current-buffer buffer major-mode))
+		(buffer-local-value 'lisp-indent-function buffer))
+    (setq-local indent-tabs-mode
+                (buffer-local-value 'indent-tabs-mode buffer))
     (goto-char (point-min))
     (let ((inhibit-message t)
           (message-log-max nil))

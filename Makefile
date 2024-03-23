@@ -107,3 +107,7 @@ fmt-changed: ## Get list of changed formatters on this PR
 .PHONY: fmt-test  # env var: FORMATTERS
 fmt-test: ## Actually run formatter tests
 	@test/formatters/run-func.bash apheleia-ft-test
+
+.PHONY: lint-changelog
+lint-changelog: ## Report an error if the changelog wasn't updated
+	@scripts/lint-changelog.bash
