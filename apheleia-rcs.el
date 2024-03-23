@@ -9,59 +9,11 @@
 
 ;;; Code:
 
+(require 'apheleia-dp)
 (require 'apheleia-log)
 
 (require 'cl-lib)
 (require 'subr-x)
-
-(cl-defun apheleia--edit-distance-table (s1 s2)
-  "Align strings S1 and S2 for minimum edit distance.
-Return the dynamic programming table as a hash table which maps
-cons of integers (I1 . I2) to the edit distance between the first
-I1 characters of S1 and the first I2 characters of S2."
-  (let ((table (make-hash-table :test #'equal)))
-    (dotimes (i1 (1+ (length s1)))
-      (puthash (cons i1 0) i1 table))
-    (dotimes (i2 (1+ (length s2)))
-      (puthash (cons 0 i2) i2 table))
-    (dotimes (i1 (length s1))
-      ;; Iterate from 1 to length+1.
-      (cl-incf i1)
-      (dotimes (i2 (length s2))
-        (cl-incf i2)
-        (let ((ins (1+ (gethash (cons i1 (1- i2)) table)))
-              (del (1+ (gethash (cons (1- i1) i2) table)))
-              (sub (gethash (cons (1- i1) (1- i2)) table)))
-          (unless (= (aref s1 (1- i1)) (aref s2 (1- i2)))
-            (cl-incf sub))
-          (puthash (cons i1 i2) (min ins del sub) table))))
-    table))
-
-(defun apheleia--align-point (s1 s2 p1)
-  "Given strings S1 and S2 and index P1 in S1, return matching index P2 in S2.
-If S1 and S2 are the same, then P1 and P2 will also be the same.
-Otherwise, the text of S2 surrounding P2 is \"similar\" to the
-text of S1 surrounding P1."
-  (let* ((table (apheleia--edit-distance-table s1 s2))
-         (i1 (length s1))
-         (i2 (length s2)))
-    (while (> i1 p1)
-      (let ((ins (1+ (or (gethash (cons i1 (1- i2)) table) 1)))
-            (del (1+ (or (gethash (cons (1- i1) i2) table) 1)))
-            (sub (or (gethash (cons (1- i1) (1- i2)) table) 1)))
-        (unless (and (> 0 i2)
-                     (= (aref s1 (1- i1)) (aref s2 (1- i2))))
-          (cl-incf sub))
-        (let ((cost (min ins del sub)))
-          (cond
-           ((= cost ins)
-            (cl-decf i2))
-           ((= cost del)
-            (cl-decf i1))
-           ((= cost sub)
-            (cl-decf i1)
-            (cl-decf i2))))))
-    i2))
 
 (defun apheleia--map-rcs-patch (func)
   "Map over the RCS patch in the current buffer.

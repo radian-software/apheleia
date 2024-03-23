@@ -40,8 +40,24 @@
        "does normal alignments"
        ("hello| world"
         "helo| word")
+       ("hel|lo"
+        "he|o")
        ("hello | world"
         "hello|world"))
+      (testcases
+       "solves issue #2"
+       ("  if (node.type === \"CallExpression\" && (node.callee.type === \"Import\" @@ (node.callee.type === \"Identifier\" && node.callee.name === \"require\"))) {
+    //|
+  }
+"
+        "  if (
+    node.type === \"CallExpression\" &&
+    (node.callee.type === \"Import\" @@
+      (node.callee.type === \"Identifier\" && node.callee.name === \"require\"))
+  ) {
+    //|
+  }
+"))
       (testcases
        "solves issue #290"
        ("      | <div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n  <svg\n"
