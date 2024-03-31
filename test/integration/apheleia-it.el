@@ -5,7 +5,6 @@
 ;; and breaking changes may occur at any time.
 
 (require 'apheleia)
-(require 'apheleia-core)
 
 (require 'cl-lib)
 
@@ -20,17 +19,17 @@
   :keymap apheleia-it-mode-keymap)
 
 (defvar apheleia-it-tests nil
-  "List of unit tests, an alist.")
+  "List of integration tests, an alist.")
 (setq apheleia-it-tests nil)
 
 (cl-defmacro apheleia-it-deftest (name desc &rest kws &key scripts formatters steps)
-  "Declare a unit test."
+  "Declare a integration test."
   (declare (indent defun) (doc-string 2))
   (ignore scripts formatters steps)
   `(progn
      (when (alist-get ',name apheleia-it-tests)
        (message "Overwriting existing test: %S" ',name))
-     (setf (alist-get ',name apheleia-it-tests) '(:desc ,desc ,@kws))))
+     (setf (alist-get ',name apheleia-it-tests) (cl-list* :desc ,desc ,@kws))))
 
 (defvar apheleia-it-workdir
   (file-name-directory (or load-file-name buffer-file-name))
@@ -61,13 +60,20 @@ steps."
          ,form))
      (funcall callback))
     (`((insert ,str) . ,rest)
-     (insert str)
+     (erase-buffer)
+     (let ((p (string-match-p "|" str)))
+       (insert (replace-regexp-in-string "|" "" str nil 'literal))
+       (goto-char p))
      (apheleia-it--run-test-steps rest callback bindings))
     (`((expect ,str) . ,rest)
-     )))
+     (cl-assert (eq (point) (string-match-p "|" str)))
+     (cl-assert
+      (string=
+       (buffer-string)
+       (replace-regexp-in-string "|" "" str nil 'literal))))))
 
 (defun apheleia-it-run-test (name)
-  "Run a single unit test. Return non-nil if passed, nil if failed."
+  "Run a single integration test. Return non-nil if passed, nil if failed."
   (interactive
    (list
     (intern
@@ -93,7 +99,7 @@ steps."
         (dolist (script (plist-get test :scripts))
           (with-temp-buffer
             (insert (cdr script))
-            (write-file (format ".tmp/%s") (car script))))
+            (write-file (format ".tmp/%s" (car script)))))
         (setq-local apheleia-formatters (plist-get test :formatters))
         (apheleia-it--run-test-steps (plist-get test :steps) FIXME)
         (search-forward "|")
@@ -137,7 +143,7 @@ steps."
       nil)))
 
 (defun apheleia-it-run-all-tests ()
-  "Run all the unit tests until a failure is encountered."
+  "Run all the integration tests until a failure is encountered."
   (interactive)
   (cl-block nil
     (dolist (name (nreverse (map-keys apheleia-it-tests)))
@@ -180,7 +186,7 @@ exit 1
                 :allowed-inputs
                 '(("The quick brown fox jumped over the lazy dog\n" .
                    "The slow brown fox jumped over the studious dog\n")))))
-  :formatters ((apheleia-it . ("apheleia-it")))
+  :formatters '((apheleia-it . ("apheleia-it")))
   :steps '((insert "The quick brown fox jum|ped over the lazy dog\n")
            (with-callback
             callback

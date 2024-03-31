@@ -22,4 +22,4 @@ jobs:
         env:
           VERSION: ${{ matrix.emacs_version }}
         run: >-
-          make docker CMD="make unit lint lint-changelog"
+          make docker CMD="make unit integration lint lint-changelog"
