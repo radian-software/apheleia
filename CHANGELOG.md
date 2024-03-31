@@ -7,6 +7,10 @@ The format is based on [Keep a Changelog].
 ### Enhancements
 ### Formatters
 ### Bugs fixed
+* The point alignment algorithm, which has been slightly wrong since
+  2019, has been fixed to more correctly use dynamic programming to
+  maintain the position of point. Also, some cases of a nil pointer
+  error during point alignment have been fixed ([#290]).
 * `apheleia-indent-lisp-buffer` updated to apply local variables after
   calling major-mode. Also includes setting for `indent-tabs-mode` ([#286]).
 * [Formatter scripts](scripts/formatters) will now work on Windows if Emacs
@@ -14,6 +18,7 @@ The format is based on [Keep a Changelog].
 
 [#286]: https://github.com/radian-software/apheleia/pull/286
 [#285]: https://github.com/radian-software/apheleia/issues/285
+[#290]: https://github.com/radian-software/apheleia/pull/290
 
 ## 4.1 (released 2024-02-25)
 ### Enhancements
