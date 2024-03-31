@@ -71,7 +71,7 @@
 ;; - 0 1 2 3 4 5
 ;; H 1 0 1 2 3 4
 ;; E 2 1 0 1 2 3
-;; O 3 2 1 2 2 2
+;; O 3 2 1 1 2 2
 ;;
 ;; Step 2 is to take this table and convert it into the sequence of
 ;; editing operations that transforms the first string to the second.
@@ -86,7 +86,7 @@
 ;; - * 1 2 3 4 5
 ;; H 1 * 1 2 3 4
 ;; E 2 1 * * * 3
-;; O 3 2 1 2 2 *
+;; O 3 2 1 1 2 *
 ;;
 ;; Tracing to the upper-left, we get this sequence of operations:
 ;;
@@ -104,6 +104,23 @@
 ;; operations 3-5 are relevant for point. But we do need to go through
 ;; operations 1-2 during step 2 to determine the correct path through
 ;; the dynamic programming table.
+;;
+;; When going through steps 3-5, we may adjust point. We assume point
+;; will start at the same position in the modified string as it was in
+;; the original string, and then possibly make changes to it. In the
+;; case of a substitution or no-op, we don't move point. In the case
+;; of a deletion that occurs before point, we need to decrease point.
+;; In the case of an insertion that occurs before point, we need to
+;; increase point.
+;;
+;; For our given example, we have two no-ops and one deletion that
+;; occur in steps 3-5 before point, so "HEL|LO" becomes "HE|O" with
+;; point changing from 3 to 2 (assuming the start of the string is 0).
+;;
+;; This example is tested in the unit tests file if you want to look
+;; there to verify usage.
+
+(require 'cl-lib)
 
 (cl-defun apheleia--edit-distance-table (s1 s2)
   "Align strings S1 and S2 for minimum edit distance.
@@ -135,24 +152,29 @@ Otherwise, the text of S2 surrounding P2 is \"similar\" to the
 text of S1 surrounding P1."
   (let* ((table (apheleia--edit-distance-table s1 s2))
          (i1 (length s1))
-         (i2 (length s2)))
-    (while (> i1 p1)
-      (let ((ins (1+ (or (gethash (cons i1 (1- i2)) table) 1)))
-            (del (1+ (or (gethash (cons (1- i1) i2) table) 1)))
-            (sub (or (gethash (cons (1- i1) (1- i2)) table) 1)))
-        (unless (and (> 0 i2)
+         (i2 (length s2))
+         (p2 p1))
+    (while (not (= i1 i2 0))
+      (let ((ins (1+ (gethash (cons i1 (1- i2)) table 9999)))
+            (del (1+ (gethash (cons (1- i1) i2) table 9999)))
+            (sub (gethash (cons (1- i1) (1- i2)) table 9999)))
+        (unless (and (> 0 i1) (> 0 i2)
                      (= (aref s1 (1- i1)) (aref s2 (1- i2))))
           (cl-incf sub))
         (let ((cost (min ins del sub)))
           (cond
-           ((= cost ins)
-            (cl-decf i2))
-           ((= cost del)
-            (cl-decf i1))
            ((= cost sub)
             (cl-decf i1)
-            (cl-decf i2))))))
-    i2))
+            (cl-decf i2))
+           ((= cost ins)
+            (cl-decf i2)
+            (when (< i1 p1)
+              (cl-incf p2)))
+           ((= cost del)
+            (cl-decf i1)
+            (when (< i1 p1)
+              (cl-decf p2)))))))
+    p2))
 
 (provide 'apheleia-dp)
 

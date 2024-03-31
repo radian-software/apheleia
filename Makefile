@@ -10,6 +10,7 @@ TAG ?= latest
 # The order is important for compilation.
 for_compile := \
     apheleia-utils.el \
+    apheleia-dp.el \
     apheleia-formatter-context.el \
     apheleia-log.el \
     apheleia-formatters.el \

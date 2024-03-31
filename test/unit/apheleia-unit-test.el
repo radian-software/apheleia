@@ -8,12 +8,45 @@
 ;; tests that report enough context to debug when they fail.
 (require 'buttercup)
 
+(require 'map)
+
 (defun apheleia-unit-find-vars (form)
   (cond
    ((symbolp form)
     (list form))
    ((listp form)
     (mapcan #'apheleia-unit-find-vars (cdr form)))))
+
+(describe "apheleia--edit-distance-table"
+  (cl-flet ((table-error
+             (before-str after-str expected-table)
+             (let* ((hash (apheleia--edit-distance-table before-str after-str))
+                    (table
+                     (mapcar
+                      (lambda (i2)
+                        (mapcar
+                         (lambda (i1)
+                           (gethash (cons i1 i2) hash))
+                         (number-sequence 0 (length before-str))))
+                      (number-sequence 0 (length after-str)))))
+               (unless (equal table expected-table)
+                 table))))
+    (cl-macrolet ((testcases
+                   (description &rest specs)
+                   `(it ,description
+                      ,@(mapcar
+                         (lambda (spec)
+                           `(expect
+                             (table-error ,@spec)
+                             :to-be nil))
+                         specs))))
+      (testcases
+       "computes the example from apheleia-dp file header"
+       ("hello" "heo"
+        '((0 1 2 3 4 5)
+          (1 0 1 2 3 4)
+          (2 1 0 1 2 3)
+          (3 2 1 1 2 2)))))))
 
 (describe "apheleia--align-point"
   (cl-flet ((alignment-error
@@ -38,10 +71,10 @@
                          specs))))
       (testcases
        "does normal alignments"
-       ("hello| world"
-        "helo| word")
        ("hel|lo"
         "he|o")
+       ("hello| world"
+        "helo| word")
        ("hello | world"
         "hello|world"))
       (testcases
@@ -61,4 +94,4 @@
       (testcases
        "solves issue #290"
        ("      | <div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n  <svg\n"
-        "<|div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n <svg")))))
+        "|<div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n <svg")))))
