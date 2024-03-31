@@ -8,7 +8,14 @@ EMACS ?= emacs
 TAG ?= latest
 
 # The order is important for compilation.
-for_compile := apheleia-utils.el apheleia.el apheleia-core.el
+for_compile := \
+    apheleia-utils.el \
+    apheleia-dp.el \
+    apheleia-formatter-context.el \
+    apheleia-log.el \
+    apheleia-formatters.el \
+    apheleia-rcs.el \
+    apheleia.el
 for_checkdoc := *.el
 for_checkindent := *.el
 
@@ -80,20 +87,43 @@ docker: ## Start a Docker shell; e.g. make docker VERSION=25.3
 
 .PHONY: fmt-build  # env vars: FORMATTERS, TAG
 fmt-build: ## Build a Docker image with formatters installed
-	@test/formatters/build-image.bash
+	@COMMON=0 test/formatters/build-image.bash
+
+.PHONY: fmt-build-common  # env var: TAG
+fmt-build-common: ## Build a Docker image with just the common base
+	@COMMON=1 test/formatters/build-image.bash
 
 .PHONY: fmt-docker  # env var: TAG
 fmt-docker: ## Start a Docker shell for testing formatters
 	@scripts/docker-run.bash -e FORMATTERS "apheleia-formatters:$(TAG)" "$(CMD)"
 
+APHELEIA_FT := -L test/formatters -l apheleia-ft
+
 .PHONY: fmt-lint
 fmt-lint: ## Do basic linting for formatter configuration
-	@test/formatters/run-func.bash apheleia-ft-lint
+	@test/shared/run-func.bash apheleia-ft-lint $(APHELEIA_FT)
 
 .PHONY: fmt-check
 fmt-changed: ## Get list of changed formatters on this PR
-	@test/formatters/run-func.bash apheleia-ft-changed
+	@test/shared/run-func.bash apheleia-ft-changed $(APHELEIA_FT)
 
 .PHONY: fmt-test  # env var: FORMATTERS
 fmt-test: ## Actually run formatter tests
-	@test/formatters/run-func.bash apheleia-ft-test
+	@test/shared/run-func.bash apheleia-ft-test $(APHELEIA_FT)
+
+.PHONY: lint-changelog
+lint-changelog: ## Report an error if the changelog wasn't updated
+	@scripts/lint-changelog.bash
+
+BUTTERCUP_VER := 1.34
+BUTTERCUP := vendor/buttercup-$(BUTTERCUP_VER)
+
+$(BUTTERCUP):
+	@rm -rf $(BUTTERCUP) && mkdir -p $(BUTTERCUP)
+	@curl -fsSL https://github.com/jorgenschaefer/emacs-buttercup/archive/refs/tags/v$(BUTTERCUP_VER).tar.gz -o $(BUTTERCUP).tar.gz
+	@tar -xf $(BUTTERCUP).tar.gz --strip-components=1 -C $(BUTTERCUP)
+	@rm $(BUTTERCUP).tar.gz
+
+.PHONY: unit
+unit: $(BUTTERCUP) ## Run unit tests
+	@$(BUTTERCUP)/bin/buttercup test/unit -L $(BUTTERCUP) -L .

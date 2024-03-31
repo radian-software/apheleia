@@ -5,15 +5,28 @@
 ;; breaking changes may occur at any time.
 
 (require 'apheleia)
-(require 'apheleia-core)
 
 (require 'cl-lib)
 (require 'map)
+(require 'subr-x)
 
 (defvar apheleia-ft--test-dir
   (file-name-directory
    (or load-file-name buffer-file-name))
   "Directory containing this module.")
+
+(defvar apheleia-ft--repo-dir
+  (expand-file-name (locate-dominating-file apheleia-ft--test-dir ".git"))
+  "Root directory of the Git repository.
+Guaranteed to be absolute and expanded.")
+
+(defun apheleia-ft--relative-truename (path)
+  "Given PATH relative to repo root, resolve symlinks.
+Return another path relative to repo root."
+  (string-remove-prefix
+   apheleia-ft--repo-dir
+   (file-truename
+    (expand-file-name path apheleia-ft--repo-dir))))
 
 (defun apheleia-ft--get-formatters (&optional all)
   "Return list of strings naming the formatters to run.
@@ -51,10 +64,49 @@ already in memory on the current branch."
          invocation-name)
        nil (current-buffer) nil
        "--batch" "-L" old-apheleia
-       "--eval" "(require 'apheleia-core)"
+       "--eval" "(require 'apheleia)"
        "--eval" "(prin1 apheleia-formatters)")
       (goto-char (point-min))
       (read (current-buffer)))))
+
+(defun apheleia-ft--files-changed-since (ref)
+  "Get a list of the files changed between REF and HEAD."
+  (let ((stderr-file (make-temp-file "apheleia-ft-stderr-")))
+    (with-temp-buffer
+      (let ((exit-status
+             (call-process
+              "git" nil (list (current-buffer) stderr-file) nil
+              "diff" "--name-only" "--diff-filter=d" (format "%s..." ref))))
+        (unless (zerop exit-status)
+          (with-temp-buffer
+            (insert-file-contents stderr-file)
+            (princ (buffer-string)))
+          (error "Failed to 'git diff', got exit status %S" exit-status)))
+      (split-string (buffer-string)))))
+
+(defun apheleia-ft--formatters-depending-on-file (changed-file)
+  "Given CHANGED-FILE, return list of formatters affected by it.
+Return formatters as string names. This is used to determine
+which formatters need tests to be run. CHANGED-FILE should be
+relative to repo root, as returned by git diff --name-only."
+  (setq changed-file (apheleia-ft--relative-truename changed-file))
+  (save-match-data
+    (cond
+     ((string-match
+       "^test/formatters/installers/\\([^/]+\\)\\.bash$" changed-file)
+      (list (match-string 1 changed-file)))
+     ((string-match
+       "^test/formatters/samplecode/\\([^/]+\\)/[^/]+$" changed-file)
+      (list (match-string 1 changed-file)))
+     ((string-match
+       "^scripts/formatters/\\([^/]+\\)$" changed-file)
+      (let ((script (match-string 1 changed-file)))
+        (mapcar #'symbol-name
+                (map-keys
+                 (map-filter
+                  (lambda (fmt def)
+                    (and (listp def) (member script def)))
+                  apheleia-formatters))))))))
 
 (defun apheleia-ft--get-formatters-for-pull-request ()
   "Return list of formatter string names that were touched in this PR.
@@ -69,13 +121,23 @@ main."
        (unless (equal command (alist-get formatter old-formatters))
          (push (symbol-name formatter) touched-formatters)))
      new-formatters)
+    (mapc
+     (lambda (changed-file)
+       (setq touched-formatters
+             (nconc
+              (apheleia-ft--formatters-depending-on-file changed-file)
+              touched-formatters)))
+     (apheleia-ft--files-changed-since "origin/main"))
     touched-formatters))
 
 (defun apheleia-ft-changed ()
   "Print to stdout a comma-delimited list of formatters changed in this PR."
   (princ (concat
           (string-join
-           (apheleia-ft--get-formatters-for-pull-request) ",")
+           (cl-remove-duplicates
+            (apheleia-ft--get-formatters-for-pull-request)
+            :test 'string=)
+           ",")
           "\n")))
 
 (defun apheleia-ft--read-file (filename)
@@ -198,60 +260,63 @@ involve running any formatters."
 Interactively, select a single formatter to test using
 `completing-read'. If FORMATTERS is not provided (or,
 interactively, with prefix argument), fall back to the FORMATTERS
-environment variable, defaulting to all formatters."
+environment variable, defaulting to all formatters.
+
+This takes care of creating temporary file(s), if necessary for
+the provided formatter, for example if `input' or `inplace' is
+used, and substituting them in the command line. You can get the
+name of the file used for input, if any, as a property on the
+returned context."
   (interactive
    (unless (or current-prefix-arg noninteractive)
      (list (completing-read "Formatter: " (apheleia-ft--get-formatters)))))
   (setq-default indent-tabs-mode nil)
   (dolist (formatter (or formatters (apheleia-ft--get-formatters)))
     (dolist (in-file (apheleia-ft--input-files formatter))
-      (let ((extension (file-name-extension in-file))
-            (in-text (apheleia-ft--read-file in-file))
-            (in-temp-real-file nil)
-            (in-temp-file nil)
-            (out-temp-file nil)
-            (command (alist-get (intern formatter) apheleia-formatters))
-            (syms nil)
-            (stdout-buffer nil)
-            (stderr-file (make-temp-file "apheleia-ft-stderr-"))
-            (default-directory temporary-file-directory)
-            (exit-status nil)
-            (out-file (replace-regexp-in-string
-                       "/in\\([^/]+\\)" "/out\\1" in-file 'fixedcase))
-            (exec-path
-             (append `(,(expand-file-name
-                         "scripts/formatters"
-                         (file-name-directory
-                          (file-truename
-                           ;; Borrowed with love from Magit
-                           (let ((load-suffixes '(".el")))
-                             (locate-library "apheleia"))))))
-                     exec-path)))
-        ;; Some formatters use the current file-name or buffer-name to interpret the
-        ;; type of file that is being formatted. Some may not be able to determine
-        ;; this from the contents of the file so we set this to force it.
-        (rename-buffer in-file)
-        (setq stdout-buffer (get-buffer-create
-                             (format "*apheleia-ft-stdout-%S%s" formatter extension)))
-        (with-current-buffer stdout-buffer
-          (erase-buffer))
-        (if (functionp command)
-            (progn
-              (setq in-temp-file (apheleia-ft--write-temp-file
-                                  in-text extension))
-              (with-current-buffer (find-file-noselect in-temp-file)
+      (let* ((extension (file-name-extension in-file))
+             (in-text (apheleia-ft--read-file in-file))
+             (in-temp-file (apheleia-ft--write-temp-file
+                            in-text extension))
+             (out-temp-file nil)
+             (command (alist-get (intern formatter) apheleia-formatters))
+             (syms nil)
+             (stdout-buffer nil)
+             (stderr-file (make-temp-file "apheleia-ft-stderr-"))
+             (default-directory temporary-file-directory)
+             (exit-status nil)
+             (out-file (replace-regexp-in-string
+                        "/in\\([^/]+\\)" "/out\\1" in-file 'fixedcase))
+             (exec-path
+              (append `(,(expand-file-name
+                          "scripts/formatters"
+                          (file-name-directory
+                           (file-truename
+                            ;; Borrowed with love from Magit
+                            (let ((load-suffixes '(".el")))
+                              (locate-library "apheleia"))))))
+                      exec-path)))
+        (with-current-buffer (find-file-noselect in-temp-file)
+          ;; Some formatters use the current file-name or buffer-name to interpret the
+          ;; type of file that is being formatted. Some may not be able to determine
+          ;; this from the contents of the file so we set this to force it.
+          (rename-buffer (file-name-nondirectory in-file))
+          (setq stdout-buffer (get-buffer-create
+                               (format "*apheleia-ft-stdout-%S%s" formatter extension)))
+          (with-current-buffer stdout-buffer
+            (erase-buffer))
+          (if (functionp command)
+              (progn
                 (funcall command
                          :buffer (current-buffer)
                          :scratch (current-buffer)
                          :formatter formatter
                          :callback (lambda ()))
-                (copy-to-buffer stdout-buffer (point-min) (point-max))))
-          (progn
-
-            (let ((result (apheleia--format-command command nil nil)))
-              (setq command (nthcdr 3 result)
-                    in-temp-real-file (nth 0 result)
-                    out-temp-file (nth 1 result)))
+                (copy-to-buffer stdout-buffer (point-min) (point-max)))
+            (let ((ctx (apheleia--formatter-context
+                        (intern formatter) command nil nil)))
+              (setq command `(,(apheleia-formatter--arg1 ctx)
+                              ,@(apheleia-formatter--argv ctx))
+                    out-temp-file (apheleia-formatter--output-fname ctx)))
 
             (with-current-buffer stdout-buffer
               (erase-buffer))
@@ -275,16 +340,15 @@ environment variable, defaulting to all formatters."
               (error
                "Formatter %s exited with status %S" formatter exit-status))))
         ;; Verify that formatter has not touched original file.
-        (when in-temp-real-file
-          (let ((in-text-now (apheleia-ft--read-file in-temp-real-file)))
-            (unless (string= in-text in-text-now)
-              (apheleia-ft--print-diff
-               "original" in-text
-               "updated" in-text-now)
-              (error "Formatter %s modified original file in place" formatter))))
+        (let ((in-text-now (apheleia-ft--read-file in-temp-file)))
+          (unless (string= in-text in-text-now)
+            (apheleia-ft--print-diff
+             "original" in-text
+             "updated" in-text-now)
+            (error "Formatter %s modified original file in place" formatter)))
         ;; Verify that formatter formatted correctly.
         (let ((out-text
-               (if (or (memq 'output syms) (memq 'inplace syms))
+               (if out-temp-file
                    (apheleia-ft--read-file out-temp-file)
                  (with-current-buffer stdout-buffer
                    (buffer-string))))

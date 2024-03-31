@@ -1,16 +1,25 @@
 name: Lint
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request: {}
 jobs:
   lint:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        emacs_version: [26, 27, 28, "master"]
+        emacs_version: [27, 28, 29]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          # No shallow clone, we want to be able to compare PR branch
+          # to main.
+          fetch-depth: 0
       - name: Run linters
         env:
           VERSION: ${{ matrix.emacs_version }}
         run: >-
-          make docker CMD="make lint"
+          make docker CMD="make unit lint lint-changelog"
