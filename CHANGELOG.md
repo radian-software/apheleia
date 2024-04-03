@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog].
 
 ## Unreleased
 ### Enhancements
+* `apheleia-npx` updated to handle bun projects ([#292])
 ### Formatters
 ### Bugs fixed
 * The point alignment algorithm, which has been slightly wrong since
