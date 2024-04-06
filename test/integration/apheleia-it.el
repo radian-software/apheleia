@@ -29,66 +29,74 @@
   `(progn
      (when (alist-get ',name apheleia-it-tests)
        (message "Overwriting existing test: %S" ',name))
-     (setf (alist-get ',name apheleia-it-tests) (cl-list* :desc ,desc ,@kws))))
+     (setf (alist-get ',name apheleia-it-tests) (list :desc ,desc ,@kws))))
 
 (defvar apheleia-it-workdir
   (file-name-directory (or load-file-name buffer-file-name))
   "Directory that this variable is defined in.")
 
-(defun apheleia-it--run-test-steps (steps callback bindings)
+(defun apheleia-it--run-test-steps (steps bindings callback)
   "Run STEPS from defined integration test.
 This is a list that can appear in `:steps'. For supported steps,
-see the implementation below, or example tests. CALLBACK will be
-invoked, with nil or an error, after the steps are run. This
-could be synchronous or asynchronous. BINDINGS is a `let'-style
-list of lexical bindings that will be available for `eval'
-steps."
-  (pcase steps
-    (`nil (funcall callback))
-    (`((with-callback ,callback . ,body) . ,rest)
-     (apheleia-it--run-test-steps
-      body
-      #'ignore
-      (cons
-       (list callback (lambda ()
-                        (apheleia-it--run-test-steps
-                         rest callback bindings)))
-       bindings)))
-    (`((eval ,form))
-     (eval
-      `(let (,@bindings)
-         ,form))
-     (funcall callback))
-    (`((insert ,str) . ,rest)
-     (erase-buffer)
-     (let ((p (string-match-p "|" str)))
-       (insert (replace-regexp-in-string "|" "" str nil 'literal))
-       (goto-char p))
-     (apheleia-it--run-test-steps rest callback bindings))
-    (`((expect ,str) . ,rest)
-     (cl-assert (eq (point) (string-match-p "|" str)))
-     (cl-assert
-      (string=
-       (buffer-string)
-       (replace-regexp-in-string "|" "" str nil 'literal))))))
+see the implementation below, or example tests. BINDINGS is a
+`let'-style list of lexical bindings that will be available for
+`eval' steps. CALLBACK will be invoked, with nil or an error,
+after the steps are run. This could be synchronous or
+asynchronous."
+  (message "running step: %S" (car steps))
+  (condition-case-unless-debug err
+      (pcase steps
+        (`nil (funcall callback))
+        (`((with-callback ,callback-sym . ,body) . ,rest)
+         (apheleia-it--run-test-steps
+          body
+          (cons
+           (cons callback-sym
+                 (lambda (err)
+                   (if err
+                       (funcall callback err)
+                     (apheleia-it--run-test-steps
+                      rest bindings callback))))
+           bindings)
+          #'ignore))
+        (`((eval ,form))
+         (eval form bindings)
+         (funcall callback nil))
+        (`((insert ,str) . ,rest)
+         (erase-buffer)
+         (let ((p (string-match-p "|" str)))
+           (insert (replace-regexp-in-string "|" "" str nil 'literal))
+           (goto-char p))
+         (apheleia-it--run-test-steps rest bindings callback))
+        (`((expect ,str) . ,rest)
+         (cl-assert (eq (point) (string-match-p "|" str)))
+         (cl-assert
+          (string=
+           (buffer-string)
+           (replace-regexp-in-string "|" "" str nil 'literal))))
+        (_ (error "Malformed test step `%S'" (car steps))))
+    (error (funcall callback err))))
 
-(defun apheleia-it-run-test (name)
-  "Run a single integration test. Return non-nil if passed, nil if failed."
+(defun apheleia-it-run-test (name callback)
+  "Run a single integration test. Invoke CALLBACK with nil or an error."
   (interactive
    (list
     (intern
      (completing-read
       "Run test: "
-      (mapcar #'symbol-name (map-keys apheleia-it-tests))))))
-  (let* ((test (alist-get name apheleia-it-tests))
-         (bufname (format " *apheleia-it test %S*" name))
-         (result nil))
-    (unless (plist-get test :steps)
-      (user-error "Incomplete test: %S" name))
-    (when (get-buffer bufname)
-      (kill-buffer bufname))
-    (cl-block nil
-      (save-window-excursion
+      (mapcar #'symbol-name (map-keys apheleia-it-tests))))
+    (lambda (err)
+      (if err
+          (signal (car err) (cdr err))
+        (message "Test passed" (length apheleia-it-tests))))))
+  (condition-case-unless-debug err
+      (let* ((test (alist-get name apheleia-it-tests))
+             (bufname (format " *apheleia-it test %S*" name))
+             (result nil))
+        (unless (plist-get test :steps)
+          (user-error "Incomplete test: %S" name))
+        (when (get-buffer bufname)
+          (kill-buffer bufname))
         (pop-to-buffer bufname)
         (setq-local default-directory apheleia-it-workdir)
         (fundamental-mode)
@@ -99,57 +107,34 @@ steps."
         (dolist (script (plist-get test :scripts))
           (with-temp-buffer
             (insert (cdr script))
-            (write-file (format ".tmp/%s" (car script)))))
+            (let ((fname (expand-file-name (format ".tmp/%s" (car script)))))
+              (write-file fname)
+              (chmod fname #o755))))
         (setq-local apheleia-formatters (plist-get test :formatters))
-        (apheleia-it--run-test-steps (plist-get test :steps) FIXME)
-        (search-forward "|")
-        (delete-region (match-beginning 0) (match-end 0))
-        (condition-case e
-            (execute-kbd-macro (kbd (plist-get test :keys)))
-          (error
-           (save-excursion
-             (goto-char (point-max))
-             (insert " [" (error-message-string e) "]"))))
-        (insert "|")
-        (setq result (buffer-string))))
-    (if (equal result (plist-get test :after))
-        (progn
-          (message "Test %S passed" name)
-          t)
-      (message "Test %S failed" name)
-      (with-current-buffer bufname
-        (erase-buffer)
-        (insert
-         "TEST:\n\n"
-         (symbol-name name)
-         "\n"
-         (plist-get test :desc)
-         "\n\nBEFORE:\n\n"
-         (plist-get test :before)
-         "\n\nKEYS:\n\n"
-         (plist-get test :keys)
-         "\n\nEXPECTED:\n\n"
-         (plist-get test :after)
-         "\n\nGOT:\n\n"
-         result
-         "\n")
-        (apheleia-it-mode +1))
-      (if noninteractive
-          (progn
-            (message "%s" (with-current-buffer bufname
-                            (string-trim (buffer-string))))
-            (kill-emacs 1))
-        (pop-to-buffer bufname))
-      nil)))
+        (apheleia-it--run-test-steps (plist-get test :steps) nil callback))
+    (error (funcall callback err))))
+
+(defun apheleia-it-run-tests (names callback)
+  "Run multiple integration tests. Stop on error.
+Invoke CALLBACK with nil or an error."
+  (if names
+      (apheleia-it-run-test
+       (car names)
+       (lambda (err)
+         (if err
+             (funcall callback err)
+           (apheleia-it-run-tests (cdr names) callback))))
+    (funcall callback nil)))
 
 (defun apheleia-it-run-all-tests ()
   "Run all the integration tests until a failure is encountered."
   (interactive)
-  (cl-block nil
-    (dolist (name (nreverse (map-keys apheleia-it-tests)))
-      (unless (apheleia-it-run-test name)
-        (cl-return)))
-    (message "All tests passed")))
+  (apheleia-it-run-tests
+   (nreverse (map-keys apheleia-it-tests))
+   (lambda (err)
+     (if err
+         (signal (car err) (cdr err))
+       (message "All %d tests passed" (length apheleia-it-tests))))))
 
 (cl-defun apheleia-it-script (&key allowed-inputs)
   "Return text of a bash script to act as a mock formatter.
