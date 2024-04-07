@@ -29,6 +29,7 @@
                  (apheleia-formatters-indent
                   "--tab" "--indent-size" 'sh-basic-offset)
                  "-"))
+    (bibtex-format . apheleia-reformat-bibtex-buffer)
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
               (apheleia-formatters-fill-column "--line-length")
@@ -290,6 +291,7 @@ rather than using this system."
     (bash-ts-mode . shfmt)
     (bazel-mode . buildifier)
     (beancount-mode . bean-format)
+    (bibtex-mode . bibtex-format)
     (c++-ts-mode . clang-format)
     (caddyfile-mode . caddyfmt)
     (cc-mode . clang-format)
@@ -1121,6 +1123,19 @@ For more implementation detail, see
     (let ((inhibit-message t)
           (message-log-max nil))
       (indent-region (point-min) (point-max)))
+    (funcall callback)))
+
+(cl-defun apheleia-reformat-bibtex-buffer
+    (&key buffer scratch callback &allow-other-keys)
+  "Format a Bibtex BUFFER.
+Use SCRATCH as a temporary buffer and CALLBACK to apply the
+transformation.
+
+For more implementation detail, see
+`apheleia--run-formatter-function'."
+  (with-current-buffer scratch
+    (funcall (with-current-buffer buffer major-mode))
+    (bibtex-reformat)
     (funcall callback)))
 
 (defun apheleia--run-formatters
