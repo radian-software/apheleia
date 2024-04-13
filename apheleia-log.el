@@ -145,11 +145,14 @@ callables by accident."
             (error (setq body (format "Got error formatting log line %S: %s"
                                       message
                                       (error-message-string err)))))
-          (insert
-           (format
-            "%s <%S>: %s\n"
-            (format-time-string "%Y-%m-%d %H:%M:%S.%3N" (current-time))
-            category body)))))))
+          (let ((msg
+                 (format
+                  "%s <%S>: %s"
+                  (format-time-string "%Y-%m-%d %H:%M:%S.%3N" (current-time))
+                  category body)))
+            (insert msg "\n")
+            (when noninteractive
+              (message "%s" msg))))))))
 
 (provide 'apheleia-log)
 

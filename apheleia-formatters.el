@@ -608,14 +608,16 @@ NO-QUERY, and CONNECTION-TYPE."
 (cl-defun apheleia--execute-formatter-process
     (&key ctx callback ensure exit-status)
   "Wrapper for `make-process' that behaves a bit more nicely.
-CTX is a formatter process context (see `apheleia-formatter--context').
-CALLBACK is invoked with one argument, the buffer containing the text
-from stdout, when the process terminates (if it succeeds). ENSURE is a
-callback that's invoked whether the process exited successfully or
-not. EXIT-STATUS is a function which is called with the exit
-status of the command; it should return non-nil to indicate that
-the command succeeded. If EXIT-STATUS is omitted, then the
-command succeeds provided that its exit status is 0."
+CTX is a formatter process context (see
+`apheleia-formatter--context'). CALLBACK is invoked with two
+arguments. The first is an error or nil. The second is the buffer
+containing the text from stdout, when the process terminates (if
+it succeeds). ENSURE is a callback that's invoked whether the
+process exited successfully or not. EXIT-STATUS is a function
+which is called with the exit status of the command; it should
+return non-nil to indicate that the command succeeded. If
+EXIT-STATUS is omitted, then the command succeeds provided that
+its exit status is 0."
   (apheleia--log
    'process "Trying to execute formatter process %s with %S"
    (apheleia-formatter--name ctx)
@@ -678,7 +680,7 @@ command succeeds provided that its exit status is 0."
                        (apheleia-log--formatter-result
                         ctx
                         log-name
-                        (apheleia-formatter--exit-status ctx)
+                        exit-ok
                         (buffer-local-value 'default-directory stdout)
                         (with-current-buffer stderr
                           (string-trim (buffer-string)))))
@@ -693,22 +695,29 @@ command succeeds provided that its exit status is 0."
                         :log (get-buffer log-name)))
                      (unwind-protect
                          (if exit-ok
-                             (when callback
-                               (apheleia--log
-                                'process
-                                (concat "Invoking process callback due "
-                                        "to successful exit status"))
-                               (funcall callback stdout))
-                           (message
-                            (concat
-                             "Failed to run %s: exit status %s "
-                             "(see %s %s)")
-                            (apheleia-formatter--arg1 ctx)
-                            proc-exit-status
-                            (if (string-prefix-p " " log-name)
-                                "hidden buffer"
-                              "buffer")
-                            (string-trim log-name)))
+                             (funcall callback nil stdout)
+                           (let ((errmsg
+                                  (format
+                                   (concat
+                                    "Failed to run %s: exit status %s "
+                                    "(see %s %s)")
+                                   (apheleia-formatter--arg1 ctx)
+                                   proc-exit-status
+                                   (if (string-prefix-p " " log-name)
+                                       "hidden buffer"
+                                     "buffer")
+                                   (string-trim log-name))))
+                             (message "%s" errmsg)
+                             (when noninteractive
+                               (message
+                                "%s"
+                                (concat
+                                 "(log buffer shown"
+                                 " below in batch mode)\n"
+                                 (with-current-buffer log-name
+                                   (buffer-string)))))
+                             (funcall
+                              callback (cons 'error errmsg) nil)))
                        (when ensure
                          (funcall ensure))
                        (ignore-errors
@@ -1040,23 +1049,28 @@ purposes."
           (apheleia--execute-formatter-process
            :ctx ctx
            :callback
-           (lambda (stdout)
-             (when-let
-                 ((output-fname (apheleia-formatter--output-fname ctx)))
-               ;; Load output-fname contents into the stdout buffer.
-               (with-current-buffer stdout
-                 (erase-buffer)
-                 (insert-file-contents-literally output-fname)))
-             (funcall callback stdout))
+           (lambda (err stdout)
+             (if err
+                 (funcall callback err stdout)
+               (when-let
+                   ((output-fname (apheleia-formatter--output-fname ctx)))
+                 ;; Load output-fname contents into the stdout buffer.
+                 (with-current-buffer stdout
+                   (erase-buffer)
+                   (insert-file-contents-literally output-fname)))
+               (funcall callback nil stdout)))
            :ensure
            (lambda ()
              (dolist (fname (list (apheleia-formatter--input-fname ctx)
                                   (apheleia-formatter--output-fname ctx)))
                (when fname
                  (ignore-errors (delete-file fname))))))
-        (apheleia--log
-         'process
-         "Could not find executable for formatter %s, skipping" formatter)))))
+        (let ((errmsg
+               (format
+                "Could not find executable for formatter %s, skipping"
+                formatter)))
+          (apheleia--log 'process "%s" errmsg)
+          (funcall callback (cons 'error errmsg) nil))))))
 
 (defun apheleia--run-formatter-function
     (func buffer remote callback stdin formatter)
@@ -1087,11 +1101,14 @@ being run, for diagnostic purposes."
                :scratch scratch
                ;; Name of the current formatter symbol, e.g. `black'.
                :formatter formatter
-               ;; Callback after successfully formatting.
+               ;; Callback. Should pass an error value (cons of symbol
+               ;; and data, like for `signal') or nil. For backwards
+               ;; compatibility it can also invoke only on success,
+               ;; with no args.
                :callback
-               (lambda ()
+               (lambda (&optional err)
                  (unwind-protect
-                     (funcall callback scratch)
+                     (funcall callback err (when (not err) scratch))
                    (kill-buffer scratch)))
                ;; The remote part of the buffers file-name or directory.
                :remote remote
@@ -1123,20 +1140,25 @@ For more implementation detail, see
       (indent-region (point-min) (point-max)))
     (funcall callback)))
 
-(defun apheleia--run-formatters
+(cl-defun apheleia--run-formatters
     (formatters buffer remote callback &optional stdin)
   "Run one or more code formatters on the current buffer.
 FORMATTERS is a list of symbols that appear as keys in
 `apheleia-formatters'. BUFFER is the `current-buffer' when this
-function was first called. Once all the formatters in COMMANDS
-finish successfully then invoke CALLBACK with one argument, a
-buffer containing the output of all the formatters. REMOTE asserts
-whether the buffer being formatted is on a remote machine or the
-current machine. It should be the output of `file-remote-p' on the
-current variable `buffer-file-name'. REMOTE is the remote part of the
-original buffers file-name or directory'. It's used alongside
-`apheleia-remote-algorithm' to determine where the formatter process
-and any temporary files it may need should be placed.
+function was first called.
+
+CALLBACK is always invoked unless there is a synchronous nonlocal
+exit, the first argument is nil or an error. In the case of no
+error, the second argument is a buffer containing the output of
+all the formatters, otherwise it is nil.
+
+REMOTE asserts whether the buffer being formatted is on a remote
+machine or the current machine. It should be the output of
+`file-remote-p' on the current variable `buffer-file-name'.
+REMOTE is the remote part of the original buffers file-name or
+directory'. It's used alongside `apheleia-remote-algorithm' to
+determine where the formatter process and any temporary files it
+may need should be placed.
 
 STDIN is a buffer containing the standard input for the first
 formatter in COMMANDS. This should not be supplied by the caller
@@ -1160,15 +1182,20 @@ function: %s" command)))
      command
      buffer
      remote
-     (lambda (stdout)
-       (unless (string-empty-p (with-current-buffer stdout (buffer-string)))
-         (if (cdr formatters)
-             ;; Forward current stdout to remaining formatters, passing along
-             ;; the current callback and using the current formatters output
-             ;; as stdin.
-             (apheleia--run-formatters
-              (cdr formatters) buffer remote callback stdout)
-           (funcall callback stdout))))
+     (lambda (err stdout)
+       (if err
+           (funcall callback err stdout)
+         (condition-case-unless-debug err
+             (unless (string-empty-p
+                      (with-current-buffer stdout (buffer-string)))
+               (if (cdr formatters)
+                   ;; Forward current stdout to remaining formatters,
+                   ;; passing along the current callback and using the
+                   ;; current formatters output as stdin.
+                   (apheleia--run-formatters
+                    (cdr formatters) buffer remote callback stdout)
+                 (funcall callback nil stdout)))
+           (error (funcall callback err nil)))))
      stdin
      (car formatters))))
 

@@ -1,4 +1,4 @@
-name: Lint
+name: Tests and linters
 on:
   push:
     branches:
@@ -22,4 +22,4 @@ jobs:
         env:
           VERSION: ${{ matrix.emacs_version }}
         run: >-
-          make docker CMD="make unit lint lint-changelog"
+          make docker CMD="make unit integration lint lint-changelog"
