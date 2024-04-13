@@ -22,7 +22,8 @@
   "List of integration tests, an alist.")
 (setq apheleia-it-tests nil)
 
-(cl-defmacro apheleia-it-deftest (name desc &rest kws &key scripts formatters steps)
+(cl-defmacro apheleia-it-deftest
+    (name desc &rest kws &key scripts formatters steps)
   "Declare a integration test."
   (declare (indent defun) (doc-string 2))
   (ignore scripts formatters steps)
@@ -84,7 +85,9 @@ asynchronous."
            (setq timeout-timer
                  (apheleia-it-run-with-timer
                   3 wrapped-callback
-                  (cons 'error (format "Callback not invoked within timeout for %S" body))))
+                  (cons 'error (format
+                                "Callback not invoked within timeout for %S"
+                                body))))
            (apheleia-it--run-test-steps
             body
             (cons

@@ -166,7 +166,8 @@ this is either an error or nil."
                          (funcall callback "Buffer has died"))
                      (with-current-buffer cur-buffer
                        ;; Short-circuit.
-                       (if (not (equal saved-buffer-hash (apheleia--buffer-hash)))
+                       (if (not (equal
+                                 saved-buffer-hash (apheleia--buffer-hash)))
                            (progn
                              (apheleia--log
                               'format-buffer
@@ -187,12 +188,16 @@ this is either an error or nil."
                                         (progn
                                           (apheleia--log
                                            'format-buffer
-                                           "Aborting in %S because contents have changed"
+                                           (concat
+                                            "Aborting in %S because "
+                                            "contents have changed")
                                            (buffer-name cur-buffer))
-                                          (funcall callback "Contents have changed"))
+                                          (funcall
+                                           callback "Contents have changed"))
                                       (apheleia--apply-rcs-patch
                                        (current-buffer) patch-buffer)
-                                      (funcall callback nil)))))))))))))))))))))
+                                      (funcall
+                                       callback nil)))))))))))))))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."
