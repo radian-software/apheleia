@@ -40,7 +40,7 @@
 
 (defun apheleia-it-run-with-timer (secs function &rest args)
   "Like `run-with-timer' but delays Emacs exit until done or canceled."
-  (push (apply #'run-with-timer secs function args) apheleia-it-timers))
+  (push (apply #'run-with-timer secs nil function args) apheleia-it-timers))
 
 (defun apheleia-it-timers-active-p ()
   "Non-nil if there are any active Apheleia timers for tests.
@@ -59,7 +59,7 @@ see the implementation below, or example tests. BINDINGS is a
 `eval' steps. CALLBACK will be invoked, with nil or an error,
 after the steps are run. This could be synchronous or
 asynchronous."
-  (message "running step: %S" (car steps))
+  (apheleia--log 'test "Running test step %S" (car steps))
   (condition-case-unless-debug err
       (pcase steps
         (`nil (funcall callback))
@@ -79,7 +79,7 @@ asynchronous."
            (setq timeout-timer
                  (apheleia-it-run-with-timer
                   3 wrapped-callback
-                  (cons 'error "Callback not invoked within timeout")))
+                  (cons 'error (format "Callback not invoked within timeout for %S" body))))
            (apheleia-it--run-test-steps
             body
             (cons
@@ -117,6 +117,7 @@ asynchronous."
       (if err
           (signal (car err) (cdr err))
         (message "Test passed" (length apheleia-it-tests))))))
+  (message "Running test %S" name)
   (condition-case-unless-debug err
       (let* ((test (alist-get name apheleia-it-tests))
              (bufname (format " *apheleia-it test %S*" name))
@@ -138,6 +139,7 @@ asynchronous."
             (let ((fname (expand-file-name (format ".tmp/%s" (car script)))))
               (write-file fname)
               (chmod fname #o755))))
+        ;; (setq-local exec-path (cons (expand-file-name ".tmp") exec-path))
         (setq-local apheleia-formatters (plist-get test :formatters))
         (apheleia-it--run-test-steps (plist-get test :steps) nil callback))
     (error (funcall callback err))))
@@ -206,5 +208,5 @@ exit 1
   :steps '((insert "The quick brown fox jum|ped over the lazy dog\n")
            (with-callback
             callback
-            (eval (apheleia-format-buffer 'apheleia-it callback)))
+            (eval (apheleia-format-buffer 'apheleia-it nil :callback callback)))
            (expect "The slow brown fox jum|ped over the studious dog\n")))

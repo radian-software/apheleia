@@ -128,8 +128,8 @@ throw an error or incorrect behavior may result."
              "Aborting in %S due to apheleia--disallowed-p: %s"
              (buffer-name (current-buffer))
              err)
-            (when on-error
-              (funcall on-error err)))
+            (when callback
+              (funcall callback err)))
         ;; It's important to store the saved buffer hash in a lexical
         ;; variable rather than a dynamic (global) one, else multiple
         ;; concurrent invocations of `apheleia-format-buffer' can
@@ -173,15 +173,22 @@ throw an error or incorrect behavior may result."
                                  (buffer-name cur-buffer))
                               (apheleia--apply-rcs-patch
                                (current-buffer) patch-buffer)
-                              (if (not callback)
+                              (if (not success-callback)
                                   (apheleia--log
                                    'format-buffer
                                    (concat
-                                    "Skipping callback because "
+                                    "Skipping success-callback because "
                                     "none was provided"))
                                 (apheleia--log
-                                 'format-buffer "Invoking callback")
-                                (funcall callback))))))))))))))))))
+                                 'format-buffer "Invoking success-callback")
+                                (funcall success-callback))
+                              (when callback
+                                (funcall callback nil)))))))))))
+             nil
+             :on-error
+             (lambda (err)
+               (when callback
+                 (funcall callback (cons 'error err)))))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."

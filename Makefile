@@ -128,7 +128,7 @@ $(BUTTERCUP):
 unit: $(BUTTERCUP) ## Run unit tests
 	@$(BUTTERCUP)/bin/buttercup test/unit -L $(BUTTERCUP) -L .
 
-APHELEIA_IT := -L test/integration -l apheleia-it
+APHELEIA_IT := -L test/integration --eval "(setq apheleia-log-debug-info t)" -l apheleia-it
 
 .PHONY: integration
 integration: ## Run integration tests
