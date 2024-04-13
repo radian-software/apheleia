@@ -92,11 +92,10 @@ successfully updated (even if the formatter has not made any
 changes), SUCCESS-CALLBACK, if provided, is invoked with no
 arguments.
 
-If provided, CALLBACK is invoked unconditionally with a plist.
-Callback function must accept unknown keywords. At present only
-`:error' is included, this is either an error or nil. When
-CALLBACK is passed, errors are not thrown. CALLBACK should not
-throw an error or incorrect behavior may result."
+If provided, CALLBACK is invoked unconditionally (unless there is
+a synchronous nonlocal exit) with a plist. Callback function must
+accept unknown keywords. At present only `:error' is included,
+this is either an error or nil."
   (interactive (progn
                  (when-let ((err (apheleia--disallowed-p)))
                    (user-error err))
@@ -104,7 +103,15 @@ throw an error or incorrect behavior may result."
                         (if current-prefix-arg
                             'prompt
                           'interactive)))))
-  (apheleia--with-on-error callback
+  (let ((callback
+         (lambda (err)
+           (unless (listp err)
+             (setq err (cons 'error err)))
+           (unless err
+             (when success-callback
+               (funcall success-callback)))
+           (when callback
+             (funcall callback :error err)))))
     (apheleia--log
      'format-buffer
      "Invoking apheleia-format-buffer on %S with formatter %S"
@@ -146,49 +153,46 @@ throw an error or incorrect behavior may result."
              formatters
              cur-buffer
              remote
-             (lambda (formatted-buffer)
-               (if (not (buffer-live-p cur-buffer))
-                   (apheleia--log
-                    'format-buffer
-                    "Aborting in %S because buffer has died"
-                    (buffer-name cur-buffer))
-                 (with-current-buffer cur-buffer
-                   ;; Short-circuit.
-                   (if (not (equal saved-buffer-hash (apheleia--buffer-hash)))
-                       (apheleia--log
-                        'format-buffer
-                        "Aborting in %S because contents have changed"
-                        (buffer-name cur-buffer))
-                     (apheleia--create-rcs-patch
-                      cur-buffer formatted-buffer remote
-                      (lambda (patch-buffer)
-                        (when (buffer-live-p cur-buffer)
-                          (with-current-buffer cur-buffer
-                            (if (not (equal
-                                      saved-buffer-hash
-                                      (apheleia--buffer-hash)))
-                                (apheleia--log
-                                 'format-buffer
-                                 "Aborting in %S because contents have changed"
-                                 (buffer-name cur-buffer))
-                              (apheleia--apply-rcs-patch
-                               (current-buffer) patch-buffer)
-                              (if (not success-callback)
-                                  (apheleia--log
-                                   'format-buffer
-                                   (concat
-                                    "Skipping success-callback because "
-                                    "none was provided"))
-                                (apheleia--log
-                                 'format-buffer "Invoking success-callback")
-                                (funcall success-callback))
-                              (when callback
-                                (funcall callback nil)))))))))))
-             nil
-             :on-error
-             (lambda (err)
-               (when callback
-                 (funcall callback (cons 'error err)))))))))))
+             (lambda (err formatted-buffer)
+               (if err
+                   (funcall callback err)
+                 (apheleia--with-on-error callback
+                   (if (not (buffer-live-p cur-buffer))
+                       (progn
+                         (apheleia--log
+                          'format-buffer
+                          "Aborting in %S because buffer has died"
+                          (buffer-name cur-buffer))
+                         (funcall callback "Buffer has died"))
+                     (with-current-buffer cur-buffer
+                       ;; Short-circuit.
+                       (if (not (equal saved-buffer-hash (apheleia--buffer-hash)))
+                           (progn
+                             (apheleia--log
+                              'format-buffer
+                              "Aborting in %S because contents have changed"
+                              (buffer-name cur-buffer))
+                             (funcall callback "Contents have changed"))
+                         (apheleia--create-rcs-patch
+                          cur-buffer formatted-buffer remote
+                          (lambda (err patch-buffer)
+                            (if err
+                                (funcall callback err)
+                              (apheleia--with-on-error callback
+                                (when (buffer-live-p cur-buffer)
+                                  (with-current-buffer cur-buffer
+                                    (if (not (equal
+                                              saved-buffer-hash
+                                              (apheleia--buffer-hash)))
+                                        (progn
+                                          (apheleia--log
+                                           'format-buffer
+                                           "Aborting in %S because contents have changed"
+                                           (buffer-name cur-buffer))
+                                          (funcall callback "Contents have changed"))
+                                      (apheleia--apply-rcs-patch
+                                       (current-buffer) patch-buffer)
+                                      (funcall callback nil)))))))))))))))))))))
 
 (defcustom apheleia-post-format-hook nil
   "Normal hook run after Apheleia formats a buffer successfully."
