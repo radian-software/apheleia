@@ -40,7 +40,9 @@
 
 (defun apheleia-it-run-with-timer (secs function &rest args)
   "Like `run-with-timer' but delays Emacs exit until done or canceled."
-  (push (apply #'run-with-timer secs nil function args) apheleia-it-timers))
+  (let ((timer (apply #'run-with-timer secs nil function args)))
+    (prog1 timer
+      (push timer apheleia-it-timers))))
 
 (defun apheleia-it-timers-active-p ()
   "Non-nil if there are any active Apheleia timers for tests.
@@ -104,7 +106,8 @@ asynchronous."
          (cl-assert
           (string=
            (buffer-string)
-           (replace-regexp-in-string "|" "" str nil 'literal))))
+           (replace-regexp-in-string "|" "" str nil 'literal)))
+         (funcall callback nil))
         (_ (error "Malformed test step `%S'" (car steps))))
     (error (funcall callback err))))
 
