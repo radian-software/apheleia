@@ -4,7 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Changes
+* Custom Emacs Lisp formatting functions have the option to report an
+  error asynchronously by invoking their callback with an error as
+  argument. Passing nil as argument indicates that there was no error,
+  as before. The old calling convention is still supported for
+  backwards compatibility, and errors can also be reported by
+  throwing, as normal. Implemented in [#204].
+
 ### Enhancements
+* There is a new keyword argument to `apheleia-format-buffer` which is
+  a more powerful callback that is guaranteed to be called except in
+  cases of synchronous nonlocal exit. See the docstring for details.
+  The old callback, which is only invoked on success and receives no
+  information about errors, is still supported and will continue to be
+  called if provided. See [#204].
+
 ### Formatters
 ### Bugs fixed
 * The point alignment algorithm, which has been slightly wrong since
@@ -16,6 +31,14 @@ The format is based on [Keep a Changelog].
 * [Formatter scripts](scripts/formatters) will now work on Windows if Emacs
   can find the executable defined in the shebang.
 
+### Internal
+* Major internal refactoring has occurred to make it possible to write
+  integration tests against Apheleia. This should improve future
+  stability but could have introduced some bugs in the initial
+  version. See [#204].
+* Some debugging log messages have changed, see [#204].
+
+[#204]: https://github.com/radian-software/apheleia/pull/204
 [#286]: https://github.com/radian-software/apheleia/pull/286
 [#285]: https://github.com/radian-software/apheleia/issues/285
 [#290]: https://github.com/radian-software/apheleia/pull/290
