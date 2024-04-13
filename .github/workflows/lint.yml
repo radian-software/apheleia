@@ -1,4 +1,4 @@
-name: Lint
+name: Tests and linters
 on:
   push:
     branches:
