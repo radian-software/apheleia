@@ -59,10 +59,13 @@ see the implementation below, or example tests. BINDINGS is a
 `eval' steps. CALLBACK will be invoked, with nil or an error,
 after the steps are run. This could be synchronous or
 asynchronous."
-  (apheleia--log 'test "Running test step %S" (car steps))
+  (apheleia--log
+   'test "Running test step %s"
+   (replace-regexp-in-string
+    "\n" "\\n" (format "%S" (car steps)) nil 'literal))
   (condition-case-unless-debug err
       (pcase steps
-        (`nil (funcall callback))
+        (`nil (funcall callback nil))
         (`((with-callback ,callback-sym . ,body) . ,rest)
          (let* ((callback-called nil)
                 (timeout-timer nil)
@@ -139,7 +142,7 @@ asynchronous."
             (let ((fname (expand-file-name (format ".tmp/%s" (car script)))))
               (write-file fname)
               (chmod fname #o755))))
-        ;; (setq-local exec-path (cons (expand-file-name ".tmp") exec-path))
+        (setq-local exec-path (cons (expand-file-name ".tmp") exec-path))
         (setq-local apheleia-formatters (plist-get test :formatters))
         (apheleia-it--run-test-steps (plist-get test :steps) nil callback))
     (error (funcall callback err))))
@@ -177,7 +180,8 @@ along with the outputs that is will return. Any other input will
 generate an error."
   (concat
    "#!/usr/bin/env bash
-input=\"$(cat)\"
+input=\"$(cat; echo x)\"
+input=\"${input%x}\"
 "
    (mapcan
     (lambda (link)
@@ -194,6 +198,8 @@ fi
          (shell-quote-argument output))))
     allowed-inputs)
    "echo >&2 'formatter got unexpected input'
+echo >&2 'received input follows:'
+echo \"${input}\" | sed 's/^/| /' >&2
 exit 1
 "))
 
@@ -208,5 +214,9 @@ exit 1
   :steps '((insert "The quick brown fox jum|ped over the lazy dog\n")
            (with-callback
             callback
-            (eval (apheleia-format-buffer 'apheleia-it nil :callback callback)))
+            (eval (apheleia-format-buffer
+                   'apheleia-it nil
+                   :callback
+                   (lambda (&rest props)
+                     (funcall callback (plist-get props :error))))))
            (expect "The slow brown fox jum|ped over the studious dog\n")))

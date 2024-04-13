@@ -680,7 +680,7 @@ its exit status is 0."
                        (apheleia-log--formatter-result
                         ctx
                         log-name
-                        (apheleia-formatter--exit-status ctx)
+                        exit-ok
                         (buffer-local-value 'default-directory stdout)
                         (with-current-buffer stderr
                           (string-trim (buffer-string)))))
@@ -697,16 +697,25 @@ its exit status is 0."
                          (if exit-ok
                              (funcall callback nil stdout)
                            (let ((errmsg
-                                  (concat
-                                   "Failed to run %s: exit status %s "
-                                   "(see %s %s)")
-                                  (apheleia-formatter--arg1 ctx)
-                                  proc-exit-status
-                                  (if (string-prefix-p " " log-name)
-                                      "hidden buffer"
-                                    "buffer")
-                                  (string-trim log-name)))
-                             (message errmsg)
+                                  (format
+                                   (concat
+                                    "Failed to run %s: exit status %s "
+                                    "(see %s %s)")
+                                   (apheleia-formatter--arg1 ctx)
+                                   proc-exit-status
+                                   (if (string-prefix-p " " log-name)
+                                       "hidden buffer"
+                                     "buffer")
+                                   (string-trim log-name))))
+                             (message "%s" errmsg)
+                             (when noninteractive
+                               (message
+                                "%s"
+                                (concat
+                                 "(log buffer shown"
+                                 " below in batch mode)\n"
+                                 (with-current-buffer log-name
+                                   (buffer-string)))))
                              (funcall
                               callback (cons 'error errmsg) nil)))
                        (when ensure
