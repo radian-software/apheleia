@@ -35,6 +35,22 @@
   (file-name-directory (or load-file-name buffer-file-name))
   "Directory that this variable is defined in.")
 
+(defvar apheleia-it-timers nil
+  "List of timers that should be canceled or finished before exit.")
+
+(defun apheleia-it-run-with-timer (secs function &rest args)
+  "Like `run-with-timer' but delays Emacs exit until done or canceled."
+  (push (apply #'run-with-timer secs function args) apheleia-it-timers))
+
+(defun apheleia-it-timers-active-p ()
+  "Non-nil if there are any active Apheleia timers for tests.
+This may mutate `apheleia-it-timers' to cleanup expired timers."
+  (cl-block nil
+    (while apheleia-it-timers
+      (if (memq (car apheleia-it-timers) timer-list)
+          (cl-return t)
+        (setq apheleia-it-timers (cdr apheleia-it-timers))))))
+
 (defun apheleia-it--run-test-steps (steps bindings callback)
   "Run STEPS from defined integration test.
 This is a list that can appear in `:steps'. For supported steps,
@@ -48,17 +64,29 @@ asynchronous."
       (pcase steps
         (`nil (funcall callback))
         (`((with-callback ,callback-sym . ,body) . ,rest)
-         (apheleia-it--run-test-steps
-          body
-          (cons
-           (cons callback-sym
+         (let* ((callback-called nil)
+                (timeout-timer nil)
+                (wrapped-callback
                  (lambda (err)
-                   (if err
-                       (funcall callback err)
-                     (apheleia-it--run-test-steps
-                      rest bindings callback))))
-           bindings)
-          #'ignore))
+                   (when (timerp timeout-timer)
+                     (cancel-timer timeout-timer))
+                   (unless callback-called
+                     (setq callback-called t)
+                     (if err
+                         (funcall callback err)
+                       (apheleia-it--run-test-steps
+                        rest bindings callback))))))
+           (setq timeout-timer
+                 (apheleia-it-run-with-timer
+                  3 wrapped-callback
+                  (cons 'error "Callback not invoked within timeout")))
+           (apheleia-it--run-test-steps
+            body
+            (cons
+             (cons callback-sym
+                   wrapped-callback)
+             bindings)
+            #'ignore)))
         (`((eval ,form))
          (eval form bindings)
          (funcall callback nil))
@@ -134,7 +162,10 @@ Invoke CALLBACK with nil or an error."
    (lambda (err)
      (if err
          (signal (car err) (cdr err))
-       (message "All %d tests passed" (length apheleia-it-tests))))))
+       (message "All %d tests passed" (length apheleia-it-tests)))))
+  (when noninteractive
+    (while (apheleia-it-timers-active-p)
+      (sit-for 0.5))))
 
 (cl-defun apheleia-it-script (&key allowed-inputs)
   "Return text of a bash script to act as a mock formatter.
