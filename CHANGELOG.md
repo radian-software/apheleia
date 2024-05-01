@@ -47,6 +47,9 @@ The format is based on [Keep a Changelog].
   loader. ([#301])
 * `apheleia-npx` did not correctly guard against word splitting.
   ([#301])
+* `apheleia-npx` was sometimes not able to find formatters in a Yarn
+  PnP project if there was also a node_modules folder at the root of
+  the project ([#301]).
 
 ### Internal
 * Major internal refactoring has occurred to make it possible to write
