@@ -15,7 +15,7 @@ if (( "$#" == 0 )); then
 fi
 
 # location of this script
-scripts_dir="$(cd $(dirname ${BASH_SOURCE[0]}) &>/dev/null && pwd)"
+scripts_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 pnp_bin="${scripts_dir}/pnp-bin.js"
 
 # This function prints the name of the current directory if it
@@ -36,30 +36,32 @@ find_upwards() {
 dir="$(find_upwards package.json)"
 
 if [[ -d $dir ]]; then
-    cd $dir
+    cd "$dir"
 
-    pnp_root=$(find_upwards '.pnp.cjs')
-    npm_root=$(find_upwards 'node_modules')
+    pnp_root="$(find_upwards .pnp.cjs)"
+    npm_root="$(find_upwards node_modules)"
 
     if [[ -n ${pnp_root} && ${#pnp_root} -gt ${#npm_root} ]]; then
         # trying pnp
         pnp_path="${pnp_root}/.pnp.cjs"
-        bin="$(${pnp_bin} ${pnp_path} $1)"
+        bin="$(${pnp_bin} "${pnp_path}" "$1")"
         # note: $bin might not be on the real filesystem,
         #   might be in a zip archive
         if [[ -n $bin ]]; then
+            node="$(which node)"
             if [[ -f "${pnp_root}/.pnp.loader.mjs" ]]; then
-                loader_opt="--loader ${pnp_root}/.pnp.loader.mjs"
+                exec ${node} --require "${pnp_path}" \
+                    --loader "${pnp_root}/.pnp.loader.mjs" "${bin}" "${@:2}"
             fi
-            node=$(which node)
-            command="${node} --require ${pnp_path} ${loader_opt} ${bin} ${@:2}"
-            exec ${command}
+            exec ${node} --require "${pnp_path}" "${bin}" "${@:2}"
         fi
     elif [[ -n ${npm_root} ]]; then
         # trying npm
-        node_modules_paths=(\
-            $(node -e 'console.log(require.resolve.paths("").join("\n"))'))
-        for path in ${node_modules_paths[@]}; do
+        node_modules_paths=()
+        while IFS='' read -r line; do
+            node_modules_paths+=("$line")
+        done < <(node -e 'console.log(require.resolve.paths("").join("\n"))')
+        for path in "${node_modules_paths[@]}"; do
             if [[ -x "${path}/.bin/$1" ]]; then
                 exec "${path}/.bin/$1" "${@:2}"
             fi
