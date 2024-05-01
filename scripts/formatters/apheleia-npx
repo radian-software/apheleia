@@ -41,7 +41,7 @@ if [[ -d $dir ]]; then
     pnp_root="$(find_upwards .pnp.cjs)"
     npm_root="$(find_upwards node_modules)"
 
-    if [[ -n ${pnp_root} && ${#pnp_root} -gt ${#npm_root} ]]; then
+    if [[ -n ${pnp_root} ]]; then
         # trying pnp
         pnp_path="${pnp_root}/.pnp.cjs"
         bin="$(${pnp_bin} "${pnp_path}" "$1")"
