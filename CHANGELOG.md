@@ -45,6 +45,8 @@ The format is based on [Keep a Changelog].
   can find the executable defined in the shebang.
 * `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
   loader. ([#301])
+* `apheleia-npx` did not correctly guard against word splitting.
+  ([#301])
 
 ### Internal
 * Major internal refactoring has occurred to make it possible to write
