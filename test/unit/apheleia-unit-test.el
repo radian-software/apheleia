@@ -95,3 +95,31 @@
        "solves issue #290"
        ("      | <div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n  <svg\n"
         "|<div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n <svg")))))
+
+(describe "apheleia--get-formatters"
+  (cl-macrolet ((testcases
+                 (description mode-alist pred-list &rest specs)
+                 `(cl-flet ((fmt-error
+                             (mode fname expected)
+                             (with-temp-buffer
+                               (setq major-mode mode)
+                               (setq-local buffer-file-name fname)
+                               (let ((real (apheleia--get-formatters)))
+                                 (unless (equal real expected)
+                                   real)))))
+                    (it ,description
+                      ,@(mapcar
+                         (lambda (spec)
+                           `(let ((apheleia-mode-alist ,mode-alist)
+                                  (apheleia-mode-predicates ,pred-list))
+                              (expect
+                               (fmt-error ,@spec)
+                               :to-be nil)))
+                         specs)))))
+    (testcases
+     "always returns nil when user options are nil"
+     nil nil
+     ('text-mode "foo.txt" nil)
+     ('fundamental-mode nil nil)
+     ('cc-mode "foo.c" nil)
+     ('mhtml-mode "foo.html" nil))))
