@@ -91,7 +91,7 @@
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("apheleia-from-project-root"
-                   ".formatter.exs" "mix" "format" 
+                   ".formatter.exs" "mix" "format"
 		   "--stdin-filename" filepath "-"))
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
