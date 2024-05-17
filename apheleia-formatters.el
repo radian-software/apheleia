@@ -405,6 +405,32 @@ mode."
                    (symbol :tag "Formatter"))))
   :group 'apheleia)
 
+(defun apheleia-mhtml-mode-predicate ()
+  "Return `mhtml-mode' if the user is in that mode.
+This checks text properties because `mhtml-mode' sets
+`major-mode' to different values depending on where the user is
+in the buffer."
+  (when (get-text-property
+         (if (and (eobp) (not (bobp)))
+             (1- (point))
+           (point))
+         'mhtml-submode)
+    #'mhtml-mode))
+
+;;;###autoload
+(defcustom apheleia-mode-predicates '(apheleia-mhtml-mode-predicate)
+  "List of predicates that check for sneaky major modes.
+Sometimes a major mode will set `major-mode' to something other
+than itself, making it hard to correctly detect what major mode
+is active. In such cases you can add a predicate to this list to
+handle it. Predicates take no arguments, are run in the current
+buffer, and should return the name of a mode if one is detected.
+If all the predicates return nil, or if there aren't any in the
+list, then only the value of `major-mode' is used to determine
+the major mode. The detected major mode affects the selection
+from `apheleia-mode-alist'."
+  :type '(repeat function)
+  :group 'apheleia)
 
 (defcustom apheleia-formatter-exited-hook nil
   "Abnormal hook run after a formatter has finished running.
@@ -1240,6 +1266,7 @@ the current buffer.
 
 Consult the values of `apheleia-mode-alist' and
 `apheleia-formatter' to determine which formatter is configured.
+Consult also `apheleia-mode-predicates', if non-nil.
 
 If INTERACTIVE is non-nil, then prompt the user for which
 formatter to run if none is configured, instead of returning nil.
@@ -1268,7 +1295,12 @@ even if a formatter is configured."
                 ;; didn't exit early.
                 (let* ((unset (make-symbol "gensym-unset"))
                        (matched-mode nil)
-                       (formatters unset))
+                       (formatters unset)
+                       (mode major-mode))
+                  (cl-dolist (pred apheleia-mode-predicates)
+                    (when-let ((new-mode (funcall pred)))
+                      (setq mode new-mode)
+                      (cl-return)))
                   (cl-dolist (entry apheleia-mode-alist
                                     (unless (eq formatters unset)
                                       formatters))
@@ -1279,7 +1311,7 @@ even if a formatter is configured."
                                (eq formatters unset))
                       (cl-return (cdr entry)))
                     (when (and (symbolp (car entry))
-                               (derived-mode-p (car entry))
+                               (provided-mode-derived-p mode (car entry))
                                (or (eq formatters unset)
                                    (and
                                     (not (eq (car entry) matched-mode))
