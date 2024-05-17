@@ -12,6 +12,13 @@ The format is based on [Keep a Changelog].
   backwards compatibility, and errors can also be reported by
   throwing, as normal. Implemented in [#204].
 
+### Features
+* New user option `apheleia-mode-predicates`. The default value
+  handles `mhtml-mode` correctly by always using whatever formatter
+  you have configured for that mode, rather than using `css-mode`,
+  `html-mode`, etc formatters depending on the position of point
+  ([#302]).
+
 ### Enhancements
 * There is a new keyword argument to `apheleia-format-buffer` which is
   a more powerful callback that is guaranteed to be called except in
@@ -43,6 +50,7 @@ The format is based on [Keep a Changelog].
 [#286]: https://github.com/radian-software/apheleia/pull/286
 [#285]: https://github.com/radian-software/apheleia/issues/285
 [#290]: https://github.com/radian-software/apheleia/pull/290
+[#302]: https://github.com/radian-software/apheleia/issues/302
 [#304]: https://github.com/radian-software/apheleia/pull/304
 
 ## 4.1 (released 2024-02-25)

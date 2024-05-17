@@ -95,3 +95,53 @@
        "solves issue #290"
        ("      | <div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n  <svg\n"
         "|<div class=\"left-[40rem] fixed inset-y-0 right-0 z-0 hidden lg:block xl:left-[50rem]\">\n <svg")))))
+
+(describe "apheleia--get-formatters"
+  (cl-macrolet ((testcases
+                 (description mode-alist pred-list &rest specs)
+                 `(cl-flet ((fmt-error
+                             (mode fname expected)
+                             (with-temp-buffer
+                               (setq major-mode mode)
+                               (setq-local buffer-file-name fname)
+                               (let ((real (apheleia--get-formatters)))
+                                 (unless (equal real expected)
+                                   real)))))
+                    (it ,description
+                      ,@(mapcar
+                         (lambda (spec)
+                           `(let ((apheleia-mode-alist ,mode-alist)
+                                  (apheleia-mode-predicates ,pred-list))
+                              (expect
+                               (fmt-error ,@spec)
+                               :to-be nil)))
+                         specs)))))
+    (testcases
+     "always returns nil when user options are nil"
+     nil nil
+     ('text-mode "foo.txt" nil)
+     ('fundamental-mode nil nil)
+     ('cc-mode "foo.c" nil)
+     ('mhtml-mode "foo.html" nil))
+    (testcases
+     "selects based on mode, filename, and predicates"
+     '(("\\.foobar\\'" . fmt-foobar)
+       (sgml-mode . fmt-sgml)
+       (html-mode . (fmt-html fmt-html-again))
+       (text-mode . fmt-text)
+       (blah-mode . fmt-blah)
+       ("\\.foobaz\\'" . fmt-foobaz))
+     '((lambda ()
+         (when (and buffer-file-name
+                    (string-match-p "\\.blah" buffer-file-name))
+           'blah-mode)))
+     ('fundamental-mode nil nil)
+     ('fundamental-mode "ok.foobar" '(fmt-foobar))
+     ('text-mode nil '(fmt-text))
+     ('sgml-mode nil '(fmt-sgml))
+     ('html-mode nil '(fmt-html fmt-html-again))
+     ('html-mode "ok.foobar" '(fmt-foobar))
+     ('html-mode "ok.foobaz" '(fmt-html fmt-html-again))
+     ('html-mode "ok.blah" '(fmt-blah))
+     ('html-mode "ok.blah.foobar" '(fmt-foobar))
+     ('html-mode "ok.blah.foobaz" '(fmt-blah)))))
