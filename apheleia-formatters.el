@@ -417,6 +417,7 @@ in the buffer."
          'mhtml-submode)
     #'mhtml-mode))
 
+;;;###autoload
 (defcustom apheleia-mode-predicates '(apheleia-mhtml-mode-predicate)
   "List of predicates that check for sneaky major modes.
 Sometimes a major mode will set `major-mode' to something other
