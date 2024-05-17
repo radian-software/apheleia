@@ -30,7 +30,7 @@ The format is based on [Keep a Changelog].
   calling major-mode. Also includes setting for `indent-tabs-mode` ([#286]).
 * [Formatter scripts](scripts/formatters) will now work on Windows if Emacs
   can find the executable defined in the shebang.
-* `.heex` files are now properly formatted
+* `.heex` files are now properly formatted ([#304]).
 
 ### Internal
 * Major internal refactoring has occurred to make it possible to write
@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog].
 [#286]: https://github.com/radian-software/apheleia/pull/286
 [#285]: https://github.com/radian-software/apheleia/issues/285
 [#290]: https://github.com/radian-software/apheleia/pull/290
+[#304]: https://github.com/radian-software/apheleia/pull/304
 
 ## 4.1 (released 2024-02-25)
 ### Enhancements
