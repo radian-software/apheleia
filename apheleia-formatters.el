@@ -91,7 +91,8 @@
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("apheleia-from-project-root"
-                   ".formatter.exs" "mix" "format" "-"))
+                   ".formatter.exs" "mix" "format"
+		   "--stdin-filename" filepath "-"))
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
@@ -320,6 +321,7 @@ rather than using this system."
     (graphql-mode . prettier-graphql)
     (haskell-mode . brittany)
     (hcl-mode . hclfmt)
+    (heex-ts-mode . mix-format)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
     (java-mode . google-java-format)
