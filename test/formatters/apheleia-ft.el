@@ -301,7 +301,7 @@ returned context."
           ;; this from the contents of the file so we set this to force it.
           (rename-buffer (file-name-nondirectory in-file))
           (setq stdout-buffer (get-buffer-create
-                               (format "*apheleia-ft-stdout-%S%s" formatter in-file)))
+                               (format "*apheleia-ft-stdout-%S%s" formatter extension)))
           (with-current-buffer stdout-buffer
             (erase-buffer))
           (if (functionp command)
