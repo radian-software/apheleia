@@ -321,6 +321,7 @@ rather than using this system."
     (graphql-mode . prettier-graphql)
     (haskell-mode . brittany)
     (hcl-mode . hclfmt)
+    (heex-ts-mode . mix-format)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
     (java-mode . google-java-format)
