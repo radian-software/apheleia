@@ -358,7 +358,8 @@ returned context."
             (apheleia-ft--print-diff
              "expected" expected-out-text
              "actual" out-text)
-            (error "Formatter %s did not format as expected" formatter)))
+            (error "Formatter %s did not format %s as expected"
+                   formatter (file-name-nondirectory in-file))))
         (princ (format
                 "[format-test] success: formatter %s (file %s)\n"
                 formatter (file-name-nondirectory in-file)))))))
