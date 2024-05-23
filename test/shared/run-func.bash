@@ -10,5 +10,7 @@ shift
 
 cd "$(dirname "$0")/../.."
 
-exec emacs --batch -L . "$@" \
-     --eval "(setq debug-on-error t)" -f "${func}"
+exec emacs --batch -L . "$@"                  \
+     --eval "(setq debug-on-error t)"         \
+     --eval "(setq backtrace-line-length 0)"  \
+     -f     "${func}"
