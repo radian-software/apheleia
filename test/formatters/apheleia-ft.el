@@ -299,6 +299,8 @@ returned context."
           ;; Some formatters use the current file-name or buffer-name to interpret the
           ;; type of file that is being formatted. Some may not be able to determine
           ;; this from the contents of the file so we set this to force it.
+          (ignore-errors
+            (kill-buffer (file-name-nondirectory in-file)))
           (rename-buffer (file-name-nondirectory in-file))
           (setq stdout-buffer (get-buffer-create
                                (format "*apheleia-ft-stdout-%S%s" formatter extension)))
