@@ -155,12 +155,12 @@ Return the filename."
 
 (defun apheleia-ft--input-files (formatter)
   "For given FORMATTER, return list of input files used in test cases.
-These are absolute filepaths beginning with \"in.\"."
-  (directory-files
+These are absolute filepaths beginning with \"in.\". FORMATTER is
+a string."
+  (directory-files-recursively
    (apheleia-ft--path-join
     apheleia-ft--test-dir
     "samplecode" formatter)
-   'full
    "^in\\."))
 
 (defun apheleia-ft--path-join (component &rest components)
@@ -294,7 +294,15 @@ returned context."
                             ;; Borrowed with love from Magit
                             (let ((load-suffixes '(".el")))
                               (locate-library "apheleia"))))))
-                      exec-path)))
+                      exec-path))
+             (display-fname
+              (replace-regexp-in-string
+               (concat "^" (regexp-quote
+                            (apheleia-ft--path-join
+                             apheleia-ft--test-dir
+                             "samplecode" formatter))
+                       "/")
+               "" in-file)))
         (with-current-buffer (find-file-noselect in-temp-file)
           ;; Some formatters use the current file-name or buffer-name to interpret the
           ;; type of file that is being formatted. Some may not be able to determine
@@ -361,9 +369,9 @@ returned context."
              "expected" expected-out-text
              "actual" out-text)
             (error "Formatter %s did not format %s as expected"
-                   formatter (file-name-nondirectory in-file))))
+                   formatter display-fname)))
         (princ (format
                 "[format-test] success: formatter %s (file %s)\n"
-                formatter (file-name-nondirectory in-file)))))))
+                formatter display-fname))))))
 
 (provide 'apheleia-ft)
