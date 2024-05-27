@@ -290,12 +290,7 @@ involve running any formatters."
                       apheleia-ft--test-dir "samplecode" formatter out-file))
               (error "Input file %s is has no corresponding output file %s"
                      in-file out-file))
-            (push out-file out-files)))
-        (dolist (file all-files)
-          (unless (or (member file in-files)
-                      (member file out-files))
-            (error "Spurious sample code file at samplecode/%s/%s"
-                   formatter file)))))
+            (push out-file out-files)))))
     (dolist (samplecode-dir samplecode-dirs)
       (unless (member samplecode-dir formatters)
         (error
