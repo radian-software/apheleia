@@ -412,6 +412,8 @@ returned context."
                    formatter display-fname)))
         (princ (format
                 "[format-test] success: formatter %s (file %s)\n"
-                formatter display-fname))))))
+                formatter display-fname))
+        ;; https://stackoverflow.com/a/66558297
+        (set-binary-mode 'stdout nil)))))
 
 (provide 'apheleia-ft)
