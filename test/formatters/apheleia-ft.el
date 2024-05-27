@@ -20,6 +20,10 @@
   "Root directory of the Git repository.
 Guaranteed to be absolute and expanded.")
 
+(defvar apheleia-ft--temp-dir
+  (expand-file-name "apheleia-ft" (temporary-file-directory))
+  "Directory for storing temporary files.")
+
 (defun apheleia-ft--relative-truename (path)
   "Given PATH relative to repo root, resolve symlinks.
 Return another path relative to repo root."
@@ -155,13 +159,57 @@ Return the filename."
 
 (defun apheleia-ft--input-files (formatter)
   "For given FORMATTER, return list of input files used in test cases.
-These are absolute filepaths beginning with \"in.\". FORMATTER is
-a string."
+These are absolute filepaths whose basenames begin with \"in.\".
+FORMATTER is a string."
   (directory-files-recursively
    (apheleia-ft--path-join
     apheleia-ft--test-dir
     "samplecode" formatter)
    "^in\\."))
+
+(defun apheleia-ft--copy-inputs (formatter in-file)
+  "Prepare FORMATTER for testing by copying IN-FILE and related.
+FORMATTER is a string, IN-FILE is an absolute filepath whose
+basename begins with \"in.\". All files from the samplecode
+subdirectory for FORMATTER are copied to the toplevel of
+`apheleia-ft--temp-dir', replicating the directory structure,
+except that all the actual \"in.\" and \"out.\" files are not
+copied, except for IN-FILE, which is left in the corresponding
+place in the directory structure. Any existing files or
+directories in `apheleia-ft--temp-dir' are removed. Return the
+absolute filepath to which IN-FILE was copied in the temporary
+directory."
+  (delete-directory apheleia-ft--temp-dir 'recursive)
+  (unless (zerop
+           (call-process
+            "cp" nil nil nil
+            (apheleia-ft--path-join
+             apheleia-ft--test-dir
+             "samplecode" formatter)
+            apheleia-ft--temp-dir
+            "-RTL"))
+    (error "cp failed"))
+  (with-temp-file (expand-file-name ".dir-locals.el" apheleia-ft--temp-dir)
+    (prin1 '((nil . ((indent-tabs-mode . nil)
+                     (apheleia-formatters-respect-fill-column . nil)
+                     (apheleia-formatters-respect-indent-level . nil))))
+           (current-buffer)))
+  (let ((new-file
+         (expand-file-name
+          (replace-regexp-in-string
+           (concat "^" (regexp-quote
+                        (apheleia-ft--path-join
+                         apheleia-ft--test-dir
+                         "samplecode" formatter))
+                   "/")
+           "" in-file)
+          apheleia-ft--temp-dir)))
+    (prog1 new-file
+      (dolist (fname (directory-files-recursively
+                      apheleia-ft--temp-dir
+                      "^\\(in\\|out\\)\\."))
+        (unless (string= fname new-file)
+          (delete-file fname))))))
 
 (defun apheleia-ft--path-join (component &rest components)
   "Join COMPONENT and COMPONENTS together, left to right.
@@ -270,13 +318,11 @@ returned context."
   (interactive
    (unless (or current-prefix-arg noninteractive)
      (list (completing-read "Formatter: " (apheleia-ft--get-formatters)))))
-  (setq-default indent-tabs-mode nil)
   (dolist (formatter (or formatters (apheleia-ft--get-formatters)))
     (dolist (in-file (apheleia-ft--input-files formatter))
       (let* ((extension (file-name-extension in-file))
              (in-text (apheleia-ft--read-file in-file))
-             (in-temp-file (apheleia-ft--write-temp-file
-                            in-text extension))
+             (in-temp-file (apheleia-ft--copy-inputs formatter in-file))
              (out-temp-file nil)
              (command (alist-get (intern formatter) apheleia-formatters))
              (syms nil)
