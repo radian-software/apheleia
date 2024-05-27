@@ -13,4 +13,5 @@ cd "$(dirname "$0")/../.."
 exec emacs --batch -L . "$@"                  \
      --eval "(setq debug-on-error t)"         \
      --eval "(setq backtrace-line-length 0)"  \
-     -f     "${func}"
+     -f     "${func}"                         \
+     2>&1 | sed -E 's/^(.{640}).+$/\1...[truncated]/'
