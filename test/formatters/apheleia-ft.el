@@ -209,7 +209,15 @@ directory."
                       apheleia-ft--temp-dir
                       "^\\(in\\|out\\)\\."))
         (unless (string= fname new-file)
-          (delete-file fname))))))
+          (delete-file fname)))
+      (let ((init-script (expand-file-name ".apheleia-ft.bash"
+                                           apheleia-ft--temp-dir)))
+        (when (file-exists-p init-script)
+          (let ((default-directory (file-name-directory init-script)))
+            (unless (zerop
+                     (call-process
+                      "bash" nil nil nil init-script))
+              (error "init script failed: %S" init-script))))))))
 
 (defun apheleia-ft--path-join (component &rest components)
   "Join COMPONENT and COMPONENTS together, left to right.
