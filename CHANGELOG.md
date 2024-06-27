@@ -28,6 +28,10 @@ The format is based on [Keep a Changelog].
   called if provided. See [#204].
 
 ### Formatters
+* [`ocp-indent`](https://github.com/OCamlPro/ocp-indent) for
+  [Ocaml](https://ocaml.org/) ([#306]).
+* [`ocp-indent`](http://www.typerex.org/ocp-indent.html) for [Python](https://python.org) imports using ruff ([#279]).
+
 ### Bugs fixed
 * The point alignment algorithm, which has been slightly wrong since
   2019, has been fixed to more correctly use dynamic programming to
