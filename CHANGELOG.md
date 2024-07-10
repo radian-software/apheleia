@@ -28,6 +28,9 @@ The format is based on [Keep a Changelog].
   called if provided. See [#204].
 
 ### Formatters
+* `snakefmt` official formatter for
+  [Snakemake](https://snakemake.readthedocs.io) ([#307]).
+
 ### Bugs fixed
 * The point alignment algorithm, which has been slightly wrong since
   2019, has been fixed to more correctly use dynamic programming to
