@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog].
   calling major-mode. Also includes setting for `indent-tabs-mode` ([#286]).
 * [Formatter scripts](scripts/formatters) will now work on Windows if Emacs
   can find the executable defined in the shebang.
+* Beancount files are formatted without an error ([#310]).
 
 ### Internal
 * Major internal refactoring has occurred to make it possible to write
