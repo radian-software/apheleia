@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.2 (released 2024-08-03)
 ### Changes
 * Custom Emacs Lisp formatting functions have the option to report an
   error asynchronously by invoking their callback with an error as
