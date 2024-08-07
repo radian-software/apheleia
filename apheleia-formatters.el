@@ -175,6 +175,9 @@
                    "--fix" "--fix-only"
                    "--stdin-filename" filepath
                    "-"))
+    (snakefmt . ("snakefmt"
+                 (apheleia-formatters-fill-column "--line-length")
+                 "-"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
@@ -354,6 +357,7 @@ rather than using this system."
     (rustic-mode . rustfmt)
     (rust-mode . rustfmt)
     (rust-ts-mode . rustfmt)
+    (snakemake-mode . snakefmt)
     (scss-mode . prettier-scss)
     (sql-mode . pgformatter)
     (svelte-mode . prettier-svelte)
