@@ -194,6 +194,7 @@
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-"))
     (treefmt . ("treefmt" "--stdin" filepath))
+    (typstyle . ("typstyle"))
     (xmllint . ("xmllint" "--format" "-"))
     (yapf . ("yapf"))
     (yq-csv . ("yq" "--prettyPrint" "--no-colors"
@@ -364,6 +365,8 @@ rather than using this system."
     (tuareg-mode . ocamlformat)
     (typescript-mode . prettier-typescript)
     (typescript-ts-mode . prettier-typescript)
+    (typst-mode . typstyle)
+    (typst-ts-mode . typstyle)
     (web-mode . prettier)
     (yaml-mode . prettier-yaml)
     (yaml-ts-mode . prettier-yaml)

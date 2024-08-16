@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Formatters
+* [`typstyle`](https://github.com/Enter-tainer/typstyle) for
+  [typst](https://typst.app/) ([#313]).
+
+[#313]: https://github.com/radian-software/apheleia/pull/313
+
 ## 4.2 (released 2024-08-03)
 ### Changes
 * Custom Emacs Lisp formatting functions have the option to report an
