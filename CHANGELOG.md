@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Formatters
+* [`rubocop`](https://github.com/rubocop/rubocop) changed to use `--autocorrect` instead of deprecated `--auto-correct` ([#316]).
+
+[#316]: https://github.com/radian-software/apheleia/pull/316
+
 ## 4.2 (released 2024-08-03)
 ### Changes
 * Custom Emacs Lisp formatting functions have the option to report an
