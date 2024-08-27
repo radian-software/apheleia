@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog].
 
 ## Unreleased
 ### Formatters
-* [`rubocop`](https://github.com/rubocop/rubocop) changed to use `--autocorrect` instead of deprecated `--auto-correct` ([#316]).
+* [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a` instead of deprecated `--auto-correct` ([#316]).
 
 [#316]: https://github.com/radian-software/apheleia/pull/316
 
