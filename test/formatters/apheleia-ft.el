@@ -353,6 +353,8 @@ returned context."
                        "/")
                "" in-file)))
         (with-current-buffer (find-file-noselect in-temp-file)
+          (when (file-executable-p ".apheleia-ft.bash")
+            (message "%s" (shell-command-to-string "./.apheleia-ft.bash")))
           (setq stdout-buffer (get-buffer-create
                                (format "*apheleia-ft-stdout-%S%s" formatter extension)))
           (with-current-buffer stdout-buffer
