@@ -111,6 +111,10 @@ fmt-changed: ## Get list of changed formatters on this PR
 fmt-test: ## Actually run formatter tests
 	@test/shared/run-func.bash apheleia-ft-test $(APHELEIA_FT)
 
+.PHONY: fmt-emacs  # env var: FILE
+fmt-emacs: ## Start an Emacs instance for testing formatters
+	@emacs -L . -L test/formatters -l apheleia-ft -f apheleia-global-mode $(FILE)
+
 .PHONY: lint-changelog
 lint-changelog: ## Report an error if the changelog wasn't updated
 	@scripts/lint-changelog.bash

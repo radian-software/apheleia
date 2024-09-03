@@ -221,6 +221,25 @@ Apheleia exposes some hooks for advanced customization:
   one of these returns non-nil then `apheleia-mode` is not enabled in
   the buffer.
 
+### Formatter configuration
+
+There is no configuration interface in Apheleia for formatter
+behavior. The way to configure a formatter is by editing a standard
+config file that it reads (e.g. `.prettierrc.json`), or setting an
+environment variable that it reads, or by changing the entry in
+`apheleia-formatters` to customize the command-line arguments.
+
+There is one exception to this, which is that Apheleia's default
+command-line arguments for the built-in formatters will automatically
+check Emacs' indentation options for the corresponding major mode, and
+pass that information to the formatter. This way, the indentation
+(tabs vs spaces, and how many) applied by the formatter will match
+what electric indentation in Emacs is doing, preventing a shuffle back
+and forth as you type.
+
+This behavior can be disabled by setting
+`apheleia-formatters-respect-indent-level` to nil.
+
 ## Troubleshooting
 
 Try running your formatter outside of Emacs to verify it works there.
