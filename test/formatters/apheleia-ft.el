@@ -210,8 +210,10 @@ directory."
                       "^\\(in\\|out\\)\\."))
         (unless (string= fname new-file)
           (delete-file fname)))
-      (let ((init-script (expand-file-name ".apheleia-ft.bash"
-                                           apheleia-ft--temp-dir)))
+      (let ((init-script (expand-file-name
+                          ".apheleia-ft.bash"
+                          (file-name-directory
+                           new-file))))
         (when (file-exists-p init-script)
           (let ((default-directory (file-name-directory init-script)))
             (unless (zerop
@@ -355,8 +357,6 @@ returned context."
         (when-let ((buf (get-file-buffer in-temp-file)))
           (kill-buffer buf))
         (with-current-buffer (find-file-noselect in-temp-file)
-          (when (file-executable-p ".apheleia-ft.bash")
-            (message "%s" (shell-command-to-string "./.apheleia-ft.bash")))
           (setq stdout-buffer (get-buffer-create
                                (format "*apheleia-ft-stdout-%S%s" formatter extension)))
           (with-current-buffer stdout-buffer
