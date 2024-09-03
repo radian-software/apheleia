@@ -352,6 +352,8 @@ returned context."
                              "samplecode" formatter))
                        "/")
                "" in-file)))
+        (when-let ((buf (get-file-buffer in-temp-file)))
+          (kill-buffer buf))
         (with-current-buffer (find-file-noselect in-temp-file)
           (when (file-executable-p ".apheleia-ft.bash")
             (message "%s" (shell-command-to-string "./.apheleia-ft.bash")))
