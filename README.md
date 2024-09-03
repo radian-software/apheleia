@@ -54,6 +54,23 @@ to install it using
 However, you may install using any other package manager if you
 prefer.
 
+### Dependencies
+
+Emacs 27 or later is supported. Apheleia does not include any
+formatters. You must install any formatter separately that you wish to
+use. As long as it is on `$PATH` then Apheleia will pick it up
+automatically; missing formatters will silently be skipped, but errors
+from invoking installed formatters will be reported on buffer save.
+
+It is recommended to have Bash installed, as this is used as a
+dependency for Apheleia to invoke certain formatters (e.g.
+Node.js-based formatters).
+
+Windows support is not guaranteed due to lack of support for common
+open standards on this platform. Pull requests adjusting Apheleia for
+improved cross-platform portability will be accepted, but no
+guarantees are made about stability on Windows.
+
 ## User guide
 
 To your init-file, add the following form:
