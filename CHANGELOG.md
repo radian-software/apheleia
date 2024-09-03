@@ -5,8 +5,23 @@ The format is based on [Keep a Changelog].
 
 ## Unreleased
 ### Formatters
-* [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a` instead of deprecated `--auto-correct` ([#316]).
+* [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a`
+  instead of deprecated `--auto-correct` ([#316]).
 
+### Bugs fixed
+* `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
+  loader ([#301]).
+* `apheleia-npx` did not correctly guard against word splitting and
+  would fail when directory names contained spaces ([#301]).
+* `apheleia-npx` was sometimes not able to find formatters in a Yarn
+  PnP project if there was also a `node_modules` folder at the root of
+  the project ([#301]).
+
+## Internal
+* Improvements to formatter test framework, it is now possible to
+  write tests that have additional data files ([#301]).
+
+[#301]: https://github.com/radian-software/apheleia/pull/301
 [#316]: https://github.com/radian-software/apheleia/pull/316
 
 ## 4.2 (released 2024-08-03)
@@ -33,7 +48,6 @@ The format is based on [Keep a Changelog].
   information about errors, is still supported and will continue to be
   called if provided. See [#204].
 
-### Formatters
 ### Bugs fixed
 * The point alignment algorithm, which has been slightly wrong since
   2019, has been fixed to more correctly use dynamic programming to
@@ -43,13 +57,6 @@ The format is based on [Keep a Changelog].
   calling major-mode. Also includes setting for `indent-tabs-mode` ([#286]).
 * [Formatter scripts](scripts/formatters) will now work on Windows if Emacs
   can find the executable defined in the shebang.
-* `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
-  loader. ([#301])
-* `apheleia-npx` did not correctly guard against word splitting.
-  ([#301])
-* `apheleia-npx` was sometimes not able to find formatters in a Yarn
-  PnP project if there was also a node_modules folder at the root of
-  the project ([#301]).
 
 ### Internal
 * Major internal refactoring has occurred to make it possible to write
@@ -62,7 +69,6 @@ The format is based on [Keep a Changelog].
 [#286]: https://github.com/radian-software/apheleia/pull/286
 [#285]: https://github.com/radian-software/apheleia/issues/285
 [#290]: https://github.com/radian-software/apheleia/pull/290
-[#301]: https://github.com/radian-software/apheleia/pull/301
 [#302]: https://github.com/radian-software/apheleia/issues/302
 
 ## 4.1 (released 2024-02-25)
