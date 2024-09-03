@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog].
 
 ## Unreleased
 ### Formatters
+* [`typstyle`](https://github.com/Enter-tainer/typstyle) for
+  [typst](https://typst.app/) ([#313]).
 * [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a`
   instead of deprecated `--auto-correct` ([#316]).
 
@@ -22,6 +24,7 @@ The format is based on [Keep a Changelog].
   write tests that have additional data files ([#301]).
 
 [#301]: https://github.com/radian-software/apheleia/pull/301
+[#313]: https://github.com/radian-software/apheleia/pull/313
 [#316]: https://github.com/radian-software/apheleia/pull/316
 
 ## 4.2 (released 2024-08-03)
