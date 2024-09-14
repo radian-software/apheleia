@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Features
+* New user option `apheleia-skip-functions`, like
+  `apheleia-inhibit-functions` but for skipping a formatter run even
+  when `apheleia-mode` is generally enabled ([#317]).
+
 ### Formatters
 * [`typstyle`](https://github.com/Enter-tainer/typstyle) for
   [typst](https://typst.app/) ([#313]).
@@ -26,6 +31,7 @@ The format is based on [Keep a Changelog].
 [#301]: https://github.com/radian-software/apheleia/pull/301
 [#313]: https://github.com/radian-software/apheleia/pull/313
 [#316]: https://github.com/radian-software/apheleia/pull/316
+[#317]: https://github.com/radian-software/apheleia/issues/317
 
 ## 4.2 (released 2024-08-03)
 ### Changes

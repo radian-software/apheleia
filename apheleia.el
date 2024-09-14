@@ -45,13 +45,26 @@
       (buffer-hash)
     (md5 (current-buffer))))
 
+(defcustom apheleia-skip-functions nil
+  "List of functions that prevent Apheleia from running when enabled.
+These are invoked every time Apheleia wants to format a buffer,
+and the formatting operation is skipped if any of them return
+non-nil. See also `apheleia-inhibit-functions' for functions that
+prevent `apheleia-mode' from being turned on in the first place."
+  :type '(repeat function)
+  :group 'apheleia)
+
 (defun apheleia--disallowed-p ()
   "Return an error message if Apheleia cannot be run, else nil."
-  (when (and buffer-file-name
-             (file-remote-p (or buffer-file-name
-                                default-directory))
-             (eq apheleia-remote-algorithm 'cancel))
-    "Apheleia refused to run formatter due to `apheleia-remote-algorithm'"))
+  (cond
+   ((and buffer-file-name
+         (file-remote-p (or buffer-file-name
+                            default-directory))
+         (eq apheleia-remote-algorithm 'cancel))
+    "Apheleia refused to run formatter due to `apheleia-remote-algorithm'")
+   ((run-hook-with-args-until-success
+     'apheleia-skip-functions)
+    "Apheleia skipped running formatter due to `apheleia-skip-functions'")))
 
 (defmacro apheleia--with-on-error (on-error &rest body)
   "Call ON-ERROR with an error if BODY throws an error.
@@ -211,7 +224,8 @@ enabled in a buffer, even if `apheleia-global-mode' is on. You
 can still manually enable `apheleia-mode' in such a buffer.
 
 See also `apheleia-inhibit' for another way to accomplish a
-similar task."
+similar task. See also `apheleia-skip-functions' for functions
+that prevent Apheleia from running even when the mode is enabled."
   :type '(repeat function)
   :group 'apheleia)
 
