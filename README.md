@@ -238,6 +238,10 @@ Apheleia exposes some hooks for advanced customization:
   one of these returns non-nil then `apheleia-mode` is not enabled in
   the buffer.
 
+* `apheleia-skip-functions`: List of functions to run before *each*
+  Apheleia formatter invocation. If one of these returns non-nil then
+  the formatter is not run, even if `apheleia-mode` is enabled.
+
 ### Formatter configuration
 
 There is no configuration interface in Apheleia for formatter
