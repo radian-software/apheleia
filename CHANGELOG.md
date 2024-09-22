@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog].
 * New user option `apheleia-skip-functions`, like
   `apheleia-inhibit-functions` but for skipping a formatter run even
   when `apheleia-mode` is generally enabled ([#317]).
+* [`ocp-indent`](https://github.com/OCamlPro/ocp-indent) for
+  [Ocaml](https://ocaml.org/) ([#306]).
 
 ### Formatters
 * [`typstyle`](https://github.com/Enter-tainer/typstyle) for
