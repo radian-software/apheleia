@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Features
+* New user option `apheleia-skip-functions`, like
+  `apheleia-inhibit-functions` but for skipping a formatter run even
+  when `apheleia-mode` is generally enabled ([#317]).
+* [`ocp-indent`](https://github.com/OCamlPro/ocp-indent) for
+  [Ocaml](https://ocaml.org/) ([#306]).
+
+### Formatters
+* [`typstyle`](https://github.com/Enter-tainer/typstyle) for
+  [typst](https://typst.app/) ([#313]).
+* [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a`
+  instead of deprecated `--auto-correct` ([#316]).
+
+### Bugs fixed
+* `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
+  loader ([#301]).
+* `apheleia-npx` did not correctly guard against word splitting and
+  would fail when directory names contained spaces ([#301]).
+* `apheleia-npx` was sometimes not able to find formatters in a Yarn
+  PnP project if there was also a `node_modules` folder at the root of
+  the project ([#301]).
+
+## Internal
+* Improvements to formatter test framework, it is now possible to
+  write tests that have additional data files ([#301]).
+
+[#301]: https://github.com/radian-software/apheleia/pull/301
+[#313]: https://github.com/radian-software/apheleia/pull/313
+[#316]: https://github.com/radian-software/apheleia/pull/316
+[#317]: https://github.com/radian-software/apheleia/issues/317
+
+## 4.2 (released 2024-08-03)
 ### Changes
 * Custom Emacs Lisp formatting functions have the option to report an
   error asynchronously by invoking their callback with an error as
@@ -26,11 +58,6 @@ The format is based on [Keep a Changelog].
   The old callback, which is only invoked on success and receives no
   information about errors, is still supported and will continue to be
   called if provided. See [#204].
-
-### Formatters
-* [`ocp-indent`](https://github.com/OCamlPro/ocp-indent) for
-  [Ocaml](https://ocaml.org/) ([#306]).
-* [`ocp-indent`](http://www.typerex.org/ocp-indent.html) for [Python](https://python.org) imports using ruff ([#279]).
 
 ### Bugs fixed
 * The point alignment algorithm, which has been slightly wrong since
