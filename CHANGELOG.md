@@ -25,12 +25,16 @@ The format is based on [Keep a Changelog].
 * `apheleia-npx` was sometimes not able to find formatters in a Yarn
   PnP project if there was also a `node_modules` folder at the root of
   the project ([#301]).
+* Ormolu is now passed the `--stdin-input-file` argument, which has
+  become required ([#312]).
 
 ## Internal
 * Improvements to formatter test framework, it is now possible to
   write tests that have additional data files ([#301]).
 
 [#301]: https://github.com/radian-software/apheleia/pull/301
+[#306]: https://github.com/radian-software/apheleia/pull/306
+[#312]: https://github.com/radian-software/apheleia/issues/312
 [#313]: https://github.com/radian-software/apheleia/pull/313
 [#316]: https://github.com/radian-software/apheleia/pull/316
 [#317]: https://github.com/radian-software/apheleia/issues/317

@@ -96,7 +96,7 @@
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
     (ocp-indent . ("ocp-indent"))
-    (ormolu . ("ormolu"))
+    (ormolu . ("ormolu" "--stdin-input-file" filepath))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"
                  (apheleia-formatters-indent "-t" "-i")
                  (apheleia-formatters-fill-column "-l")))
@@ -320,7 +320,7 @@ rather than using this system."
     (go-mode . gofmt)
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
-    (haskell-mode . brittany)
+    (haskell-mode . ormolu)
     (hcl-mode . hclfmt)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
