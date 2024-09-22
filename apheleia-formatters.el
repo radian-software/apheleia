@@ -320,7 +320,7 @@ rather than using this system."
     (go-mode . gofmt)
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
-    (haskell-mode . brittany)
+    (haskell-mode . ormolu)
     (hcl-mode . hclfmt)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
