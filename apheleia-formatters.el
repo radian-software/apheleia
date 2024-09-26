@@ -91,7 +91,7 @@
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("apheleia-from-project-root"
-                   ".formatter.exs" "mix" "format" "-"))
+                   ".formatter.exs" "apheleia-mix-format" filepath))
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
@@ -1063,17 +1063,22 @@ purposes."
   ;; resolve for the whole formatting process (for example
   ;; `apheleia--current-process').
   (with-current-buffer buffer
-    (when-let ((exec-path
-                (append `(,(expand-file-name
-                            "scripts/formatters"
-                            (file-name-directory
-                             (file-truename
-                              ;; Borrowed with love from Magit
-                              (let ((load-suffixes '(".el")))
-                                (locate-library "apheleia"))))))
-                        exec-path))
-               (ctx
-                (apheleia--formatter-context formatter command remote stdin)))
+    (when-let* ((script-dir (expand-file-name
+                             "scripts/formatters"
+                             (file-name-directory
+                              (file-truename
+                               ;; Borrowed with love from Magit
+                               (let ((load-suffixes '(".el")))
+                                 (locate-library "apheleia"))))))
+                ;; Gotta set both `exec-path' and the PATH env-var,
+                ;; the former is for Emacs itself while the latter is
+                ;; for subprocesses of the proc we start.
+                (exec-path (cons script-dir exec-path))
+                (process-environment
+                 (cons (concat "PATH=" script-dir ":" (getenv "PATH"))
+                       process-environment))
+                (ctx
+                 (apheleia--formatter-context formatter command remote stdin)))
       (if (executable-find (apheleia-formatter--arg1 ctx)
                            (eq apheleia-remote-algorithm 'remote))
           (apheleia--execute-formatter-process

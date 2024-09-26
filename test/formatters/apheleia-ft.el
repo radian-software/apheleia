@@ -323,6 +323,12 @@ returned context."
   (interactive
    (unless (or current-prefix-arg noninteractive)
      (list (completing-read "Formatter: " (apheleia-ft--get-formatters)))))
+  ;; Yeah this code is super duplicative and really we should just
+  ;; refactor the original `apheleia--run-formatter-process' to be
+  ;; testable and run that instead. It would better ensure that
+  ;; behavior is the same between the test suite and the actual
+  ;; runtime. That is a future project. Or it could be a now project
+  ;; if you, dear reader, are feeling up to it.
   (dolist (formatter (or formatters (apheleia-ft--get-formatters)))
     (dolist (in-file (apheleia-ft--input-files formatter))
       (let* ((extension (file-name-extension in-file))
@@ -337,15 +343,17 @@ returned context."
              (exit-status nil)
              (out-file (replace-regexp-in-string
                         "/in\\([^/]+\\)" "/out\\1" in-file 'fixedcase))
-             (exec-path
-              (append `(,(expand-file-name
+             (script-dir (expand-file-name
                           "scripts/formatters"
                           (file-name-directory
                            (file-truename
                             ;; Borrowed with love from Magit
                             (let ((load-suffixes '(".el")))
                               (locate-library "apheleia"))))))
-                      exec-path))
+             (exec-path (cons script-dir exec-path))
+             (process-environment
+              (cons (concat "PATH=" script-dir ":" (getenv "PATH"))
+                    process-environment))
              (display-fname
               (replace-regexp-in-string
                (concat "^" (regexp-quote

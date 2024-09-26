@@ -27,6 +27,9 @@ The format is based on [Keep a Changelog].
   the project ([#301]).
 * Ormolu is now passed the `--stdin-input-file` argument, which has
   become required ([#312]).
+* `mix format` is now passed the `--stdin-filename` argument which is
+  required in some cases. The version of Mix is autodetected and this
+  option is only passed when it is supported ([#319]).
 
 ## Internal
 * Improvements to formatter test framework, it is now possible to
@@ -38,6 +41,7 @@ The format is based on [Keep a Changelog].
 [#313]: https://github.com/radian-software/apheleia/pull/313
 [#316]: https://github.com/radian-software/apheleia/pull/316
 [#317]: https://github.com/radian-software/apheleia/issues/317
+[#319]: https://github.com/radian-software/apheleia/pull/319
 
 ## 4.2 (released 2024-08-03)
 ### Changes
