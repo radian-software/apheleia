@@ -17,7 +17,9 @@ ver_file="${cache_dir}/mix-format-version-${checksum}"
 
 if [[ ! -f "${ver_file}" ]]; then
     mkdir -p "$(dirname "${ver_file}")"
-    mix --version </dev/null | grep -Eo 'Mix [^ ]+' | awk '{print $2}' > "${ver_file}"
+    mix --version </dev/null | \
+        grep -Eo 'Mix [^ ]+' | \
+        awk '{print $2}' > "${ver_file}"
 fi
 
 ver="$(< "${ver_file}")"
