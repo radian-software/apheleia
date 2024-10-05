@@ -91,11 +91,12 @@
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("apheleia-from-project-root"
-                   ".formatter.exs" "mix" "format" "-"))
+                   ".formatter.exs" "apheleia-mix-format" filepath))
     (nixfmt . ("nixfmt"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
-    (ormolu . ("ormolu"))
+    (ocp-indent . ("ocp-indent"))
+    (ormolu . ("ormolu" "--stdin-input-file" filepath))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"
                  (apheleia-formatters-indent "-t" "-i")
                  (apheleia-formatters-fill-column "-l")))
@@ -158,7 +159,7 @@
     (python3-json
      . ("python3" "-m" "json.tool"
         (apheleia-formatters-indent "--tab" "--indent")))
-    (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
+    (rubocop . ("rubocop" "--stdin" filepath "-a"
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
                       "--format" "quiet" "--fail-level" "fatal"))
@@ -194,6 +195,7 @@
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (terraform . ("terraform" "fmt" "-"))
     (treefmt . ("treefmt" "--stdin" filepath))
+    (typstyle . ("typstyle"))
     (xmllint . ("xmllint" "--format" "-"))
     (yapf . ("yapf"))
     (yq-csv . ("yq" "--prettyPrint" "--no-colors"
@@ -318,7 +320,7 @@ rather than using this system."
     (go-mode . gofmt)
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
-    (haskell-mode . brittany)
+    (haskell-mode . ormolu)
     (hcl-mode . hclfmt)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
@@ -364,6 +366,8 @@ rather than using this system."
     (tuareg-mode . ocamlformat)
     (typescript-mode . prettier-typescript)
     (typescript-ts-mode . prettier-typescript)
+    (typst-mode . typstyle)
+    (typst-ts-mode . typstyle)
     (web-mode . prettier)
     (yaml-mode . prettier-yaml)
     (yaml-ts-mode . prettier-yaml)
@@ -1059,17 +1063,22 @@ purposes."
   ;; resolve for the whole formatting process (for example
   ;; `apheleia--current-process').
   (with-current-buffer buffer
-    (when-let ((exec-path
-                (append `(,(expand-file-name
-                            "scripts/formatters"
-                            (file-name-directory
-                             (file-truename
-                              ;; Borrowed with love from Magit
-                              (let ((load-suffixes '(".el")))
-                                (locate-library "apheleia"))))))
-                        exec-path))
-               (ctx
-                (apheleia--formatter-context formatter command remote stdin)))
+    (when-let* ((script-dir (expand-file-name
+                             "scripts/formatters"
+                             (file-name-directory
+                              (file-truename
+                               ;; Borrowed with love from Magit
+                               (let ((load-suffixes '(".el")))
+                                 (locate-library "apheleia"))))))
+                ;; Gotta set both `exec-path' and the PATH env-var,
+                ;; the former is for Emacs itself while the latter is
+                ;; for subprocesses of the proc we start.
+                (exec-path (cons script-dir exec-path))
+                (process-environment
+                 (cons (concat "PATH=" script-dir ":" (getenv "PATH"))
+                       process-environment))
+                (ctx
+                 (apheleia--formatter-context formatter command remote stdin)))
       (if (executable-find (apheleia-formatter--arg1 ctx)
                            (eq apheleia-remote-algorithm 'remote))
           (apheleia--execute-formatter-process

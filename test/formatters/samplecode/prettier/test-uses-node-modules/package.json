@@ -1,0 +1,12 @@
+{
+  "name": "apheleia-ft-prettier-test-uses-node-modules",
+  "version": "1.0.0",
+  "description": "Prettier should be used from node_modules",
+  "main": "index.js",
+  "author": "Radian LLC <contact+apheleia@radian.codes>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "prettier": "^2.8.8"
+  }
+}
