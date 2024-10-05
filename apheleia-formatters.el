@@ -24,7 +24,7 @@
   '((astyle . ("astyle" (apheleia-formatters-locate-file
                          "--options" ".astylerc")))
     (asmfmt . ("asmfmt"))
-    (bean-format . ("bean-format"))
+    (bean-format . ("bean-format" input))
     (beautysh . ("beautysh"
                  (apheleia-formatters-indent
                   "--tab" "--indent-size" 'sh-basic-offset)

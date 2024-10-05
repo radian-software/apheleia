@@ -30,6 +30,7 @@ The format is based on [Keep a Changelog].
 * `mix format` is now passed the `--stdin-filename` argument which is
   required in some cases. The version of Mix is autodetected and this
   option is only passed when it is supported ([#319]).
+* Beancount files are formatted without an error ([#309]).
 
 ## Internal
 * Improvements to formatter test framework, it is now possible to
@@ -37,6 +38,7 @@ The format is based on [Keep a Changelog].
 
 [#301]: https://github.com/radian-software/apheleia/pull/301
 [#306]: https://github.com/radian-software/apheleia/pull/306
+[#309]: https://github.com/radian-software/apheleia/issues/309
 [#312]: https://github.com/radian-software/apheleia/issues/312
 [#313]: https://github.com/radian-software/apheleia/pull/313
 [#316]: https://github.com/radian-software/apheleia/pull/316
