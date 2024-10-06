@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog].
   [typst](https://typst.app/) ([#313]).
 * [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a`
   instead of deprecated `--auto-correct` ([#316]).
+* `snakefmt` official formatter for
+  [Snakemake](https://snakemake.readthedocs.io) ([#307]).
 
 ### Bugs fixed
 * `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
@@ -38,6 +40,7 @@ The format is based on [Keep a Changelog].
 
 [#301]: https://github.com/radian-software/apheleia/pull/301
 [#306]: https://github.com/radian-software/apheleia/pull/306
+[#307]: https://github.com/radian-software/apheleia/pull/307
 [#309]: https://github.com/radian-software/apheleia/issues/309
 [#312]: https://github.com/radian-software/apheleia/issues/312
 [#313]: https://github.com/radian-software/apheleia/pull/313
