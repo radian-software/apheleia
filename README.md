@@ -54,6 +54,23 @@ to install it using
 However, you may install using any other package manager if you
 prefer.
 
+### Dependencies
+
+Emacs 27 or later is supported. Apheleia does not include any
+formatters. You must install any formatter separately that you wish to
+use. As long as it is on `$PATH` then Apheleia will pick it up
+automatically; missing formatters will silently be skipped, but errors
+from invoking installed formatters will be reported on buffer save.
+
+It is recommended to have Bash installed, as this is used as a
+dependency for Apheleia to invoke certain formatters (e.g.
+Node.js-based formatters).
+
+Windows support is not guaranteed due to lack of support for common
+open standards on this platform. Pull requests adjusting Apheleia for
+improved cross-platform portability will be accepted, but no
+guarantees are made about stability on Windows.
+
 ## User guide
 
 To your init-file, add the following form:
@@ -220,6 +237,29 @@ Apheleia exposes some hooks for advanced customization:
   turning on Apheleia automatically from `apheleia-global-mode`. If
   one of these returns non-nil then `apheleia-mode` is not enabled in
   the buffer.
+
+* `apheleia-skip-functions`: List of functions to run before *each*
+  Apheleia formatter invocation. If one of these returns non-nil then
+  the formatter is not run, even if `apheleia-mode` is enabled.
+
+### Formatter configuration
+
+There is no configuration interface in Apheleia for formatter
+behavior. The way to configure a formatter is by editing a standard
+config file that it reads (e.g. `.prettierrc.json`), or setting an
+environment variable that it reads, or by changing the entry in
+`apheleia-formatters` to customize the command-line arguments.
+
+There is one exception to this, which is that Apheleia's default
+command-line arguments for the built-in formatters will automatically
+check Emacs' indentation options for the corresponding major mode, and
+pass that information to the formatter. This way, the indentation
+(tabs vs spaces, and how many) applied by the formatter will match
+what electric indentation in Emacs is doing, preventing a shuffle back
+and forth as you type.
+
+This behavior can be disabled by setting
+`apheleia-formatters-respect-indent-level` to nil.
 
 ## Troubleshooting
 

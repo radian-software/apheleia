@@ -12,5 +12,4 @@ gem install rbs -v 3.1.3
 gem install prettier_print syntax_tree syntax_tree-haml syntax_tree-rbs
 
 # Install the plugin
-cd /tmp
-npm install --save-dev prettier @prettier/plugin-ruby
+npm install -g prettier @prettier/plugin-ruby
