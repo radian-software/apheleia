@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog].
   [Ocaml](https://ocaml.org/) ([#306]).
 
 ### Formatters
+* `vfmt` for
+  [vlang](https://vlang.io/) ([#324]).
 * [`typstyle`](https://github.com/Enter-tainer/typstyle) for
   [typst](https://typst.app/) ([#313]).
 * [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a`
