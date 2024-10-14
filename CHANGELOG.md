@@ -32,7 +32,10 @@ The format is based on [Keep a Changelog].
 * `mix format` is now passed the `--stdin-filename` argument which is
   required in some cases. The version of Mix is autodetected and this
   option is only passed when it is supported ([#319]).
+* `mix format` is now run with `MIX_QUIET` to supress compilation
+  output ([#326])
 * Beancount files are formatted without an error ([#309]).
+
 
 ## Internal
 * Improvements to formatter test framework, it is now possible to
