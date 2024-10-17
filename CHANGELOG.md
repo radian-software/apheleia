@@ -36,7 +36,6 @@ The format is based on [Keep a Changelog].
   output ([#326])
 * Beancount files are formatted without an error ([#309]).
 
-
 ## Internal
 * Improvements to formatter test framework, it is now possible to
   write tests that have additional data files ([#301]).
@@ -50,6 +49,7 @@ The format is based on [Keep a Changelog].
 [#316]: https://github.com/radian-software/apheleia/pull/316
 [#317]: https://github.com/radian-software/apheleia/issues/317
 [#319]: https://github.com/radian-software/apheleia/pull/319
+[#326]: https://github.com/radian-software/apheleia/pull/326
 
 ## 4.2 (released 2024-08-03)
 ### Changes
