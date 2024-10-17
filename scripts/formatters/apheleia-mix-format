@@ -32,4 +32,4 @@ if [[ "${ver}" == "${higher_ver}" ]]; then
 fi
 args+=(-)
 
-exec "${args[@]}"
+MIX_QUIET=1 exec "${args[@]}"
