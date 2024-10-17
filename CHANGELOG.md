@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog].
   instead of deprecated `--auto-correct` ([#316]).
 * `snakefmt` official formatter for
   [Snakemake](https://snakemake.readthedocs.io) ([#307]).
+* `zig fmt` official formatter for 
+  [zig](https://ziglang.org/) ([#327]).
 
 ### Bugs fixed
 * `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
