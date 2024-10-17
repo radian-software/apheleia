@@ -199,7 +199,7 @@
     (terraform . ("terraform" "fmt" "-"))
     (treefmt . ("treefmt" "--stdin" filepath))
     (typstyle . ("typstyle"))
-    (vfmt . ("v" "fmt" "-"))
+    (vfmt . ("v" "fmt"))
     (xmllint . ("xmllint" "--format" "-"))
     (yapf . ("yapf"))
     (yq-csv . ("yq" "--prettyPrint" "--no-colors"
