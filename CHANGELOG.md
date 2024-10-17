@@ -34,6 +34,8 @@ The format is based on [Keep a Changelog].
 * `mix format` is now passed the `--stdin-filename` argument which is
   required in some cases. The version of Mix is autodetected and this
   option is only passed when it is supported ([#319]).
+* `mix format` is now run with `MIX_QUIET` to supress compilation
+  output ([#326])
 * Beancount files are formatted without an error ([#309]).
 
 ## Internal
@@ -49,6 +51,7 @@ The format is based on [Keep a Changelog].
 [#316]: https://github.com/radian-software/apheleia/pull/316
 [#317]: https://github.com/radian-software/apheleia/issues/317
 [#319]: https://github.com/radian-software/apheleia/pull/319
+[#326]: https://github.com/radian-software/apheleia/pull/326
 [#327]: https://github.com/radian-software/apheleia/pull/327
 
 ## 4.2 (released 2024-08-03)
