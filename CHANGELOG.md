@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog].
   [Ocaml](https://ocaml.org/) ([#306]).
 
 ### Formatters
+* `vfmt` for
+  [vlang](https://vlang.io/) ([#324]).
 * [`typstyle`](https://github.com/Enter-tainer/typstyle) for
   [typst](https://typst.app/) ([#313]).
 * [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a`
@@ -53,6 +55,7 @@ The format is based on [Keep a Changelog].
 [#316]: https://github.com/radian-software/apheleia/pull/316
 [#317]: https://github.com/radian-software/apheleia/issues/317
 [#319]: https://github.com/radian-software/apheleia/pull/319
+[#324]: https://github.com/radian-software/apheleia/pull/324
 [#325]: https://github.com/radian-software/apheleia/pull/325
 [#326]: https://github.com/radian-software/apheleia/pull/326
 [#327]: https://github.com/radian-software/apheleia/pull/327

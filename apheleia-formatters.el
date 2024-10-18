@@ -200,6 +200,7 @@
     (terraform . ("terraform" "fmt" "-"))
     (treefmt . ("treefmt" "--stdin" filepath))
     (typstyle . ("typstyle"))
+    (vfmt . ("v" "fmt"))
     (xmllint . ("xmllint" "--format" "-"))
     (yapf . ("yapf"))
     (yq-csv . ("yq" "--prettyPrint" "--no-colors"
@@ -375,6 +376,7 @@ rather than using this system."
     (typescript-ts-mode . prettier-typescript)
     (typst-mode . typstyle)
     (typst-ts-mode . typstyle)
+    (v-mode . vfmt)
     (web-mode . prettier)
     (yaml-mode . prettier-yaml)
     (yaml-ts-mode . prettier-yaml)
