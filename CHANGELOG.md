@@ -20,6 +20,10 @@ The format is based on [Keep a Changelog].
   instead of deprecated `--auto-correct` ([#316]).
 * `snakefmt` official formatter for
   [Snakemake](https://snakemake.readthedocs.io) ([#307]).
+* [`gleam`](https://github.com/gleam-lang/gleam) official formatter for
+  [`gleam`](https://github.com/gleam-lang/gleam) ([#325])
+* `zig fmt` official formatter for 
+  [zig](https://ziglang.org/) ([#327]).
 
 ### Bugs fixed
 * `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
@@ -34,6 +38,8 @@ The format is based on [Keep a Changelog].
 * `mix format` is now passed the `--stdin-filename` argument which is
   required in some cases. The version of Mix is autodetected and this
   option is only passed when it is supported ([#319]).
+* `mix format` is now run with `MIX_QUIET` to supress compilation
+  output ([#326])
 * Beancount files are formatted without an error ([#309]).
 
 ## Internal
@@ -50,6 +56,9 @@ The format is based on [Keep a Changelog].
 [#317]: https://github.com/radian-software/apheleia/issues/317
 [#319]: https://github.com/radian-software/apheleia/pull/319
 [#324]: https://github.com/radian-software/apheleia/pull/324
+[#325]: https://github.com/radian-software/apheleia/pull/325
+[#326]: https://github.com/radian-software/apheleia/pull/326
+[#327]: https://github.com/radian-software/apheleia/pull/327
 
 ## 4.2 (released 2024-08-03)
 ### Changes

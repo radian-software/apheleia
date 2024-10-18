@@ -63,6 +63,7 @@
     (fish-indent . ("fish_indent"))
     (fourmolu . ("fourmolu"))
     (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
+    (gleam . ("gleam" "format" "--stdin"))
     (gofmt . ("gofmt"))
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
@@ -216,7 +217,8 @@
                (apheleia-formatters-indent nil "--indent")))
     (yq-yaml . ("yq" "--prettyPrint" "--no-colors" "--no-doc"
                 "--input-format" "yaml" "--output-format" "yaml"
-                (apheleia-formatters-indent nil "--indent"))))
+                (apheleia-formatters-indent nil "--indent")))
+    (zig-fmt . ("zig" "fmt" "--stdin")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell
 commands, lists of strings and symbols, or a function symbol.
@@ -321,6 +323,7 @@ rather than using this system."
     (elm-mode . elm-format)
     (emacs-lisp-mode . lisp-indent)
     (fish-mode . fish-indent)
+    (gleam-ts-mode . gleam)
     (go-mode . gofmt)
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
@@ -377,7 +380,9 @@ rather than using this system."
     (web-mode . prettier)
     (yaml-mode . prettier-yaml)
     (yaml-ts-mode . prettier-yaml)
-    (yang-mode . pyang))
+    (yang-mode . pyang)
+    (zig-mode . zig-fmt)
+    (zig-ts-mode . zig-fmt))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode
