@@ -49,6 +49,7 @@ The format is based on [Keep a Changelog].
 [#316]: https://github.com/radian-software/apheleia/pull/316
 [#317]: https://github.com/radian-software/apheleia/issues/317
 [#319]: https://github.com/radian-software/apheleia/pull/319
+[#324]: https://github.com/radian-software/apheleia/pull/324
 
 ## 4.2 (released 2024-08-03)
 ### Changes
