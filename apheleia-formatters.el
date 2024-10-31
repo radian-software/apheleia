@@ -44,6 +44,7 @@
     (cljfmt . ("cljfmt" "fix" "-"))
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
+    (csharpier . ("dotnet-csharpier" "--write-stdout"))
     (css-beautify "css-beautify" "--file" "-" "--end-with-newline"
                   (apheleia-formatters-indent
                    "--indent-with-tabs" "--indent-size"))
