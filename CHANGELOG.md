@@ -24,6 +24,8 @@ The format is based on [Keep a Changelog].
   [`gleam`](https://github.com/gleam-lang/gleam) ([#325])
 * `zig fmt` official formatter for 
   [zig](https://ziglang.org/) ([#327]).
+* `csharpier` for
+  [C#](https://learn.microsoft.com/en-us/dotnet/csharp/) ([#328]).
 
 ### Bugs fixed
 * `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
