@@ -177,7 +177,8 @@
                    "--fix" "--fix-only"
                    "--stdin-filename" filepath
                    "-"))
-    (runic . ("julia" "--project=@runic" "-e" "using Runic; exit(Runic.main(ARGS))" "--"))
+    (runic . ("julia" "--project=@runic" "-e"
+              "using Runic; exit(Runic.main(ARGS))" "--"))
     (snakefmt . ("snakefmt"
                  (apheleia-formatters-fill-column "--line-length")
                  "-"))
