@@ -177,6 +177,7 @@
                    "--fix" "--fix-only"
                    "--stdin-filename" filepath
                    "-"))
+    (runic . ("julia" "--project=@runic" "-e" "using Runic; exit(Runic.main(ARGS))" "--"))
     (snakefmt . ("snakefmt"
                  (apheleia-formatters-fill-column "--line-length")
                  "-"))
@@ -340,6 +341,7 @@ rather than using this system."
     (js-ts-mode . prettier-javascript)
     (json-mode . prettier-json)
     (json-ts-mode . prettier-json)
+    (julia-mode . runic)
     (kotlin-mode . ktlint)
     (kotlin-ts-mode . ktlint)
     (latex-mode . latexindent)
