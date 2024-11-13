@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.3 (released 2024-11-12)
 ### Features
 * New user option `apheleia-skip-functions`, like
   `apheleia-inhibit-functions` but for skipping a formatter run even
@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog].
   [Snakemake](https://snakemake.readthedocs.io) ([#307]).
 * [`gleam`](https://github.com/gleam-lang/gleam) official formatter for
   [`gleam`](https://github.com/gleam-lang/gleam) ([#325])
-* `zig fmt` official formatter for 
+* `zig fmt` official formatter for
   [zig](https://ziglang.org/) ([#327]).
 
 ### Bugs fixed
