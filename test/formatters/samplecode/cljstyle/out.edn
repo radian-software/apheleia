@@ -1,0 +1,2 @@
+{:deps {clojure.java-time/clojure.java-time
+        {:mvn/version "1.1.0"}}}
