@@ -1,6 +1,6 @@
 BEGIN {
 
-print "Users and thier corresponding home"
+print "Users and their corresponding home"
 
 print " UserName \t HomePath"
 

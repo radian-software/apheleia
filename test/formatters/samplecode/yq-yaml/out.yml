@@ -1,0 +1,7 @@
+- hosts: all
+  tasks:
+    - name: Get software for apt repository management.
+      apt:
+        state: present
+        name:
+          - python3-pycurl

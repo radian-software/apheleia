@@ -1,0 +1,1 @@
+../prettier-typescript/in.ts

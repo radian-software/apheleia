@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+# USAGE: apheleia-from-project-root ROOT-FNAME CMD...
+#
+# If there is a file called ROOT-FNAME in the current directory or any
+# parent directory up to the root of the filesystem, first change to
+# that directory. If not, no worries, proceed without error. Then
+# execute CMD with provided args.
+#
+# This can be used to make sure that a formatter is executed in the
+# root directory of a project, if the file is within a project. For
+# example, ROOT-FNAME could be ".git" or ".formatter.exs" or
+# "package.json" or "pyproject.toml".
+
+if (( "$#" <= 1 )); then
+    echo >&2 "usage: apheleia-from-project-root ROOT-FNAME CMD..."
+    exit 1
+fi
+
+# This function prints the name of the current directory if it
+# contains a file or directory named after the first argument, or the
+# parent directory if it contains such a file, or the parent's parent,
+# and so on. If no such file is found it returns nonzero.
+# https://unix.stackexchange.com/a/22215
+find_upwards() {
+    fname="$1"
+
+    path="${PWD}"
+    while [[ -n "${path}" && ! -e "${path}/${fname}" ]]; do
+        path="${path%/*}"
+    done
+    [[ -n "${path}" ]] && echo "${path}"
+}
+
+if dir="$(find_upwards "$1")"; then
+    cd -- "${dir}" || exit
+fi
+
+shift
+exec "$@"
