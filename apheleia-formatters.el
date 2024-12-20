@@ -826,6 +826,15 @@ See `make-temp-file' for a description of PREFIX, DIR-FLAG, and SUFFIX."
      #'make-temp-file)
    prefix dir-flag suffix))
 
+(defun apheleia--make-temp-file-for-rcs-patch-windows (buffer &optional filename remote)
+  "Create a temporary file for the given BUFFER, using `apheleia--make-temp-file`.
+If FILENAME is provided, it will be used as the name of the temp file.
+If REMOTE is non-nil, the file will be created on a remote machine."
+  (let ((temp-file (apheleia--make-temp-file remote "apheleia-rcs-patch-" nil ".txt")))
+    (with-current-buffer buffer
+      (write-region (point-min) (point-max) temp-file))
+    temp-file))
+
 (defun apheleia--create-rcs-patch (old-buffer new-buffer remote callback)
   "Generate RCS patch from text in OLD-BUFFER to text in NEW-BUFFER.
 Once finished, invoke CALLBACK with a buffer containing the patch
@@ -876,16 +885,23 @@ See `apheleia--run-formatters' for a description of REMOTE."
       (unless (or old-fname new-fname)
         (setq new-fname (apheleia--make-temp-file-for-rcs-patch new-buffer))))
 
-    (let ((ctx (apheleia-formatter--context)))
-      (setf (apheleia-formatter--name ctx) nil ; Skip logging on failure
-            (apheleia-formatter--arg1 ctx) "diff"
-            (apheleia-formatter--argv ctx) `("--rcs" "--strip-trailing-cr" "--"
-                                             ,(or old-fname "-")
-                                             ,(or new-fname "-"))
-            (apheleia-formatter--remote ctx) remote
-            (apheleia-formatter--stdin ctx)
-            (if new-fname old-buffer new-buffer))
 
+    (let ((ctx (apheleia-formatter--context)))
+      (setf (apheleia-formatter--name ctx) nil  ; Skip logging on failure
+            (apheleia-formatter--arg1 ctx) "diff"  ; Set the first argument to "diff"
+            (apheleia-formatter--argv ctx)
+            (if (eq system-type 'windows-nt)  ; Check if we're on Windows
+                (if (or old-fname new-fname)  ; If files exist, use them
+                    `("--rcs" "--strip-trailing-cr" "--"
+                      ,(or old-fname (apheleia--make-temp-file-for-rcs-patch-windows old-buffer))  ; Ensure temp file if none exists
+                      ,(or new-fname (apheleia--make-temp-file-for-rcs-patch-windows new-buffer))))  ; Same for new-fname
+              `("--rcs" "--strip-trailing-cr" "--"
+                ,(or old-fname "-")  ; Use "-" for stdin on Unix-like systems
+                ,(or new-fname "-")))  ; Same for second file
+            (apheleia-formatter--remote ctx) remote  ; Set the remote variable
+            (apheleia-formatter--stdin ctx)
+            (if new-fname old-buffer new-buffer))  ; Use buffers as needed
+  
       (apheleia--execute-formatter-process
        :ctx ctx
        :callback callback
@@ -893,9 +909,8 @@ See `apheleia--run-formatters' for a description of REMOTE."
        (lambda ()
          (dolist (file clear-files)
            (ignore-errors
-             (delete-file file))))
-       ;; Exit status is 0 if no changes, 1 if some changes, and 2 if
-       ;; error.
+             (delete-file file))))  ;; Clean up temporary files
+       ;; Exit status is 0 if no changes, 1 if some changes, and 2 if error.
        :exit-status (lambda (status) (memq status '(0 1)))))))
 
 (defun apheleia--safe-buffer-name ()
