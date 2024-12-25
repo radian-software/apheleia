@@ -35,6 +35,7 @@
               "-"))
     (brittany . ("brittany"))
     (buildifier . ("buildifier"))
+    (biome . ("apheleia-npx" "biome" "format" "--stdin-file-path" filepath))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
