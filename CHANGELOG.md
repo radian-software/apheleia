@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Bugs fixed
+* Absolute paths to formatter executables are now resolved prior to
+  calling them.
+
 ## 4.3 (released 2024-11-12)
 ### Features
 * New user option `apheleia-skip-functions`, like
