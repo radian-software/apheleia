@@ -25,7 +25,8 @@ the following keys:
 - `lines': number of lines to be inserted or removed
 - `text': the string to be inserted, only for `addition'
 
-See <https://tools.ietf.org/doc/tcllib/html/rcs.html#section4>
+See
+<https://web.archive.org/web/20220527003730/https://tools.ietf.org/doc/tcllib/html/rcs.html#section4>
 for documentation on the RCS patch format."
   (save-excursion
     (goto-char (point-min))
@@ -206,3 +207,7 @@ contains the patch."
 (provide 'apheleia-rcs)
 
 ;;; apheleia-rcs.el ends here
+
+;; Local Variables:
+;; byte-compile-docstring-max-column: 160
+;; End:
