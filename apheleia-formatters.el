@@ -35,6 +35,7 @@
               "-"))
     (brittany . ("brittany"))
     (buildifier . ("buildifier"))
+    (biome . ("apheleia-npx" "biome" "format" "--stdin-file-path" filepath))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
@@ -1177,7 +1178,7 @@ For more implementation detail, see
     (setq-local indent-line-function
                 (buffer-local-value 'indent-line-function buffer))
     (setq-local lisp-indent-function
-		(buffer-local-value 'lisp-indent-function buffer))
+                (buffer-local-value 'lisp-indent-function buffer))
     (setq-local indent-tabs-mode
                 (buffer-local-value 'indent-tabs-mode buffer))
     (goto-char (point-min))
