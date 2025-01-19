@@ -6,8 +6,10 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Formatters
 * `biome` ([#339]).
+* `prettier-json-stringify` ([#183]).
 
 [#339]: https://github.com/radian-software/apheleia/pull/339
+[#183]: https://github.com/radian-software/apheleia/pull/183
 
 ## 4.3 (released 2024-11-12)
 ### Features
