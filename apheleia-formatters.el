@@ -130,6 +130,10 @@
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
         "--parser=json"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+    (prettier-json-stringify
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=json-stringify"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
         "--parser=markdown"
