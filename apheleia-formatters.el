@@ -43,6 +43,7 @@
                          (apheleia-formatters-mode-extension)
                          ".c")))
     (cljfmt . ("cljfmt" "fix" "-"))
+    (cljstyle . ("cljstyle" "pipe"))
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
     (css-beautify "css-beautify" "--file" "-" "--end-with-newline"

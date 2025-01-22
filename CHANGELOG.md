@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog].
 
 ## Unreleased
 ### Formatters
+* [cljstyle](https://github.com/greglook/cljstyle)
+  for clojure, clojurescript, edn files.
 * `biome` ([#339]).
 * `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
 * `prettier-json-stringify` ([#183]).
