@@ -7,6 +7,13 @@ The format is based on [Keep a Changelog].
 ### Formatters
 * [cljstyle](https://github.com/greglook/cljstyle)
   for clojure, clojurescript, edn files.
+* `biome` ([#339]).
+* `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
+* `prettier-json-stringify` ([#183]).
+
+[#183]: https://github.com/radian-software/apheleia/pull/183
+[#339]: https://github.com/radian-software/apheleia/pull/339
+[#342]: https://github.com/radian-software/apheleia/pull/342
 
 ## 4.3 (released 2024-11-12)
 ### Features
