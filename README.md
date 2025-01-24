@@ -95,7 +95,8 @@ following code will enable Apheleia globally to use the popular
 formatters in `apheleia-formatters` if associated with popular modes
 in `apheleia-mode-alist`.
 
-* `apheleia-formatters`: Alist mapping names of formatters (symbols
+- `apheleia-formatters`: Alist mapping names of formatters (symbols
+
 ```elisp
 (use-package apheleia
   :ensure t
@@ -167,12 +168,13 @@ This warning is expected and does not affect functionality.
 ### **Default Formatters**
 
 By default, Apheleia is configured to format files on save using popular formatters such as:
-  like `black` and `prettier`) to commands used to run those
-  formatters (such as `("black" "-")` and `(npx "prettier" input)`).
-  See the docstring for more information.
-    * You can manipulate this alist using standard Emacs functions.
-      For example, to add some command-line options to Black, you
-      could use:
+like `black` and `prettier`) to commands used to run those
+formatters (such as `("black" "-")` and `(npx "prettier" input)`).
+See the docstring for more information.
+
+You can manipulate this alist using standard Emacs functions.
+
+    * For example, to add some command-line options to Black, you could use:
 
       ```elisp
       (setf (alist-get 'black apheleia-formatters)
@@ -220,44 +222,47 @@ By default, Apheleia is configured to format files on save using popular formatt
       external command. This can be useful to integrate with e.g.
       language servers. See the docstring for more information on the
       expected interface for Elisp formatters.
-* `apheleia-mode-alist`: Alist mapping major modes and filename
+
+- `apheleia-mode-alist`: Alist mapping major modes and filename
   regexps to names of formatters to use in those modes and files. See
   the docstring for more information.
-    * You can use this variable to configure multiple formatters for
-      the same buffer by setting the `cdr` of an entry to a list of
-      formatters to run instead of a single formatter. For example you
-      may want to run `isort` and `black` one after the other.
 
-      ```elisp
-      (setf (alist-get 'isort apheleia-formatters)
-            '("isort" "--stdout" "-"))
-      (setf (alist-get 'python-mode apheleia-mode-alist)
-            '(isort black))
-      ```
+  - You can use this variable to configure multiple formatters for
+    the same buffer by setting the `cdr` of an entry to a list of
+    formatters to run instead of a single formatter. For example you
+    may want to run `isort` and `black` one after the other.
 
-      This will make apheleia run `isort` on the current buffer and then
-      `black` on the result of `isort` and then use the final output to
-      format the current buffer.
+    ```elisp
+    (setf (alist-get 'isort apheleia-formatters)
+          '("isort" "--stdout" "-"))
+    (setf (alist-get 'python-mode apheleia-mode-alist)
+          '(isort black))
+    ```
 
-      **Warning**: At the moment there's no smart or configurable
-      error handling in place. This means if one of the configured
-      formatters fail (for example if `isort` isn't installed) then
-      apheleia just doesn't format the buffer at all, even if `black`
-      is installed.
+    This will make apheleia run `isort` on the current buffer and then
+    `black` on the result of `isort` and then use the final output to
+    format the current buffer.
 
-      **Warning:** If a formatter uses `file` (rather than `filepath`
-      or `input` or none of these keywords), it can't be chained after
-      another formatter, because `file` implies that the formatter
-      must read from the *original* file, not an intermediate
-      temporary file. For this reason it's suggested to avoid the use
-      of `file` in general.
-* `apheleia-formatter`: Optional buffer-local variable specifying the
+    **Warning**: At the moment there's no smart or configurable
+    error handling in place. This means if one of the configured
+    formatters fail (for example if `isort` isn't installed) then
+    apheleia just doesn't format the buffer at all, even if `black`
+    is installed.
+
+    **Warning:** If a formatter uses `file` (rather than `filepath`
+    or `input` or none of these keywords), it can't be chained after
+    another formatter, because `file` implies that the formatter
+    must read from the _original_ file, not an intermediate
+    temporary file. For this reason it's suggested to avoid the use
+    of `file` in general.
+
+- `apheleia-formatter`: Optional buffer-local variable specifying the
   formatter to use in this buffer. Overrides `apheleia-mode-alist`.
   You can set this in a local variables list, or in `.dir-locals.el`
   (e.g. `((python-mode . ((apheleia-formatter . (isort black)))))`),
   or in a custom hook of your own that sets the local variable
   conditionally.
-* `apheleia-inhibit`: Optional buffer-local variable, if set to
+- `apheleia-inhibit`: Optional buffer-local variable, if set to
   non-nil then Apheleia does not turn on automatically even if
   `apheleia-global-mode` is on.
 
@@ -279,45 +284,45 @@ in the message.
 
 You can configure error reporting using the following user options:
 
-* `apheleia-hide-log-buffers`: By default, errors from formatters are
+- `apheleia-hide-log-buffers`: By default, errors from formatters are
   put in buffers named like `*apheleia-cmdname-log*`. If you customize
   this user option to non-nil then a space is prepended to the names
   of these buffers, hiding them by default in `switch-to-buffer` (you
   must type a space to see them).
-* `apheleia-log-only-errors`: By default, only failed formatter runs
+- `apheleia-log-only-errors`: By default, only failed formatter runs
   are logged. If you customize this user option to nil then all runs
   are logged, along with whether or not they succeeded. This could be
   helpful in debugging.
 
 The following user options are also available:
 
-* `apheleia-post-format-hook`: Normal hook run after Apheleia formats
+- `apheleia-post-format-hook`: Normal hook run after Apheleia formats
   a buffer. Run if the formatting is successful, even when no changes
   are made to the buffer.
-* `apheleia-max-alignment-size`: The maximum number of characters that
+- `apheleia-max-alignment-size`: The maximum number of characters that
   a diff region can have to be processed using Apheleia's dynamic
   programming algorithm for point alignment. This cannot be too big or
   Emacs will hang noticeably on large reformatting operations, since
   the DP algorithm is quadratic-time.
-* `apheleia-mode-lighter`: `apheleia-mode` lighter displayed in the
+- `apheleia-mode-lighter`: `apheleia-mode` lighter displayed in the
   mode-line. If you don't want to display it, use nil. Otherwise, its
   value must be a string.
 
 Apheleia exposes some hooks for advanced customization:
 
-* `apheleia-formatter-exited-hook`: Abnormal hook which is run after a
+- `apheleia-formatter-exited-hook`: Abnormal hook which is run after a
   formatter has completely finished running for a buffer. Not run if
   the formatting was interrupted and no action was taken. Receives two
   arguments: the symbol for the formatter that was run (e.g. `black`,
   or it could be a list if multiple formatters were run in a chain),
   and a boolean for whether there was an error.
 
-* `apheleia-inhibit-functions`: List of functions to run before
+- `apheleia-inhibit-functions`: List of functions to run before
   turning on Apheleia automatically from `apheleia-global-mode`. If
   one of these returns non-nil then `apheleia-mode` is not enabled in
   the buffer.
 
-* `apheleia-skip-functions`: List of functions to run before *each*
+- `apheleia-skip-functions`: List of functions to run before _each_
   Apheleia formatter invocation. If one of these returns non-nil then
   the formatter is not run, even if `apheleia-mode` is enabled.
 
@@ -353,7 +358,7 @@ most operations performed by Apheleia.
 
 ### Known issues
 
-* `process aphelieia-whatever no longer connected to pipe; closed it`:
+- `process aphelieia-whatever no longer connected to pipe; closed it`:
   This happens on older Emacs versions when formatting a buffer with
   size greater than 65,536 characters. There is no known workaround
   besides disabling `apheleia-mode` for the affected buffer, or
@@ -391,7 +396,7 @@ just follow these steps:
    file at `test/formatters/samplecode/yourformatter/in.whatever` and
    `test/formatters/samplecode/yourformatter/out.whatever`.
 8. Verify that the tests are passing, using `make fmt-test
-   FORMATTERS=yourformatter` from inside the `fmt-docker` shell.
+FORMATTERS=yourformatter` from inside the `fmt-docker` shell.
 9. Submit a pull request, CI should now be passing!
 
 ## Acknowledgements
