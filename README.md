@@ -71,14 +71,15 @@ open standards on this platform. Pull requests adjusting Apheleia for
 improved cross-platform portability will be accepted, but no
 guarantees are made about stability on Windows.
 
-## User guide
+## User Guide
 
-To your init-file, add the following form:
+The simplest way to to enable Apheleia globally, is to add the following to your `user-init-file`.
 
-    (apheleia-global-mode +1)
+```elisp
+(apheleia-global-mode +1)
+```
 
-The autoloading has been configured so that this will *not* cause
-Apheleia to be loaded until you save a file.
+### Customization
 
 By default, Apheleia is configured to format with
 [Black](https://github.com/python/black),
@@ -86,8 +87,86 @@ By default, Apheleia is configured to format with
 [Gofmt](https://golang.org/cmd/gofmt/) on save in all relevant major
 modes. To configure this, you can adjust the values of the following
 variables:
+Using `customize` interactively will remember preferences in
+`custom-file`. If you prefer to organize preferences in
+`user-init-file`, a `use-package` is helpful (and also provides
+dependency management, automatic installation, and lazy loading). The
+following code will enable Apheleia globally to use the popular
+formatters in `apheleia-formatters` if associated with popular modes
+in `apheleia-mode-alist`.
 
 * `apheleia-formatters`: Alist mapping names of formatters (symbols
+```elisp
+(use-package apheleia
+  :ensure t
+  :demand t
+  :config
+  (apheleia-global-mode)
+)
+```
+
+### **Enabling a Popular Formatter**
+
+Apheleia includes support for many modes and formatters, but not all
+of them are enabled by default. This example shows how to enable a
+popular formatter for a less popular mode:
+
+```elisp
+(use-package apheleia
+  :ensure t
+  :demand t
+  :config
+  (apheleia-global-mode)
+
+  ;; Enable less popular 'markdown-mode' to use its popular formatter
+  ;; ('prettier-markdown'), as defined in 'apheleia-formatters'.
+  (add-to-list 'apheleia-mode-alist
+           '(markdown-mode . prettier-markdown))
+
+  )
+```
+
+### **Defining and Using a Custom Formatter**
+
+This example shows how to define a custom formatter `prettier-markdown-with-newer-indent` that uses `npx(1)` to run `prettier(1)` and associate it with `markdown-mode`. The formatter was copied from a standard formatter (`prettier-markdown` defined in `apheleia-mode-alist`), then modified to replaces the obsolete `apheleia-formatters-js-indent` function with the newer `apheleia-formatters-indent` function to avoid warnings:
+
+```elisp
+(use-package apheleia
+  :ensure t
+  :demand t
+  :config
+  (apheleia-global-mode)
+
+
+  ;; Define new formatter based on popular formatter
+  ;; `prettier-markdown`, but replacing obsolescent
+  ;; `apheleia-formatters-js-indent` with `apheleia-formatter-indent`.
+  (add-to-list 'apheleia-formatters
+           `(prettier-markdown-with-newer-indent . ("apheleia-npx" "prettier"
+                            "--stdin-filepath" filepath
+                            "--parser=markdown"
+                            (apheleia-formatters-indent "--use-tabs" "--tab-width"))))
+
+  ;; Enable less popular mode ('markdown') to use new formatter
+  (add-to-list 'apheleia-mode-alist
+           '(markdown-mode . prettier-markdown-with-newer-indent))
+
+  )
+```
+
+### **Autoloading Considerations**
+
+Apheleia is configured to load lazily, meaning it will _not_ be loaded
+until you save a file. Note: This deferred loading behavior may trigger
+this warning in some LSP systems (e.g., `eslint`):
+
+> The function ‘apheleia-global-mode’ might not be defined at runtime.
+
+This warning is expected and does not affect functionality.
+
+### **Default Formatters**
+
+By default, Apheleia is configured to format files on save using popular formatters such as:
   like `black` and `prettier`) to commands used to run those
   formatters (such as `("black" "-")` and `(npx "prettier" input)`).
   See the docstring for more information.
