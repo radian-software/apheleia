@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Formatters
+* [cljstyle](https://github.com/greglook/cljstyle)
+  for clojure, clojurescript, edn files.
+* `biome` ([#339]).
+* `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
+* `prettier-json-stringify` ([#183]).
+
+### Internal
+* You can run the formatter tests locally with podman instead of
+  docker now, if you want. Export `USE_PODMAN=1` ([#343]).
+
+[#183]: https://github.com/radian-software/apheleia/pull/183
+[#339]: https://github.com/radian-software/apheleia/pull/339
+[#342]: https://github.com/radian-software/apheleia/pull/342
+[#343]: https://github.com/radian-software/apheleia/pull/343
+
 ## 4.3 (released 2024-11-12)
 ### Features
 * New user option `apheleia-skip-functions`, like
