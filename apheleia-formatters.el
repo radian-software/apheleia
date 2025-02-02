@@ -63,7 +63,7 @@
     (dprint . ("dprint" "fmt" "--stdin" filepath))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
-    (fourmolu . ("fourmolu"))
+    (fourmolu . ("fourmolu" "--stdin-input-file" filepath))
     (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
     (gdformat . ("gdformat" "-"))
     (gleam . ("gleam" "format" "--stdin"))
