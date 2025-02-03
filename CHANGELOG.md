@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog].
 * `biome` ([#339]).
 * `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
 * `prettier-json-stringify` ([#183]).
+* `nix-ts-mode` buffers are now formatted with nixfmt like `nix-mode`
+  buffers are.
 * Fix `foumolu` arguements
 * Both `haskell-mode` and the newly added
   `haskell-ts-mode` buffers are formatted with `fourmolu`

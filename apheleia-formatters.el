@@ -362,6 +362,7 @@ rather than using this system."
     ;; try imposing a standard by default
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
+    (nix-ts-mode . nixfmt)
     (perl-mode . perltidy)
     (php-mode . phpcs)
     (purescript-mode . purs-tidy)
