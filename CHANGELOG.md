@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog].
 * `biome` ([#339]).
 * `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
 * `prettier-json-stringify` ([#183]).
+* Fix `foumolu` arguements
+* Both `haskell-mode` and the newly added
+  `haskell-ts-mode` buffers are formatted with `fourmolu`
 
 ### Internal
 * You can run the formatter tests locally with podman instead of
