@@ -12,6 +12,9 @@ The format is based on [Keep a Changelog].
 * `prettier-json-stringify` ([#183]).
 * `nix-ts-mode` buffers are now formatted with nixfmt like `nix-mode`
   buffers are.
+* Fix `foumolu` arguements
+* Both `haskell-mode` and the newly added
+  `haskell-ts-mode` buffers are formatted with `fourmolu`
 
 ### Internal
 * You can run the formatter tests locally with podman instead of
