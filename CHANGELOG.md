@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog].
 * `biome` ([#339]).
 * `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
 * `prettier-json-stringify` ([#183]).
+* `nix-ts-mode` buffers are now formatted with nixfmt like `nix-mode`
+  buffers are.
 
 ### Internal
 * You can run the formatter tests locally with podman instead of
@@ -110,8 +112,6 @@ The format is based on [Keep a Changelog].
   calling major-mode. Also includes setting for `indent-tabs-mode` ([#286]).
 * [Formatter scripts](scripts/formatters) will now work on Windows if Emacs
   can find the executable defined in the shebang.
-* `nix-ts-mode` buffers are now formatted with nixfmt like `nix-mode`
-  buffers are.
 
 ### Internal
 * Major internal refactoring has occurred to make it possible to write
