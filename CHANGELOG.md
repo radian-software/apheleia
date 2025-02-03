@@ -4,6 +4,80 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Formatters
+* [cljstyle](https://github.com/greglook/cljstyle)
+  for clojure, clojurescript, edn files.
+* `biome` ([#339]).
+* `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
+* `prettier-json-stringify` ([#183]).
+
+### Internal
+* You can run the formatter tests locally with podman instead of
+  docker now, if you want. Export `USE_PODMAN=1` ([#343]).
+
+[#183]: https://github.com/radian-software/apheleia/pull/183
+[#339]: https://github.com/radian-software/apheleia/pull/339
+[#342]: https://github.com/radian-software/apheleia/pull/342
+[#343]: https://github.com/radian-software/apheleia/pull/343
+
+## 4.3 (released 2024-11-12)
+### Features
+* New user option `apheleia-skip-functions`, like
+  `apheleia-inhibit-functions` but for skipping a formatter run even
+  when `apheleia-mode` is generally enabled ([#317]).
+* [`ocp-indent`](https://github.com/OCamlPro/ocp-indent) for
+  [Ocaml](https://ocaml.org/) ([#306]).
+
+### Formatters
+* `vfmt` for
+  [vlang](https://vlang.io/) ([#324]).
+* [`typstyle`](https://github.com/Enter-tainer/typstyle) for
+  [typst](https://typst.app/) ([#313]).
+* [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a`
+  instead of deprecated `--auto-correct` ([#316]).
+* `snakefmt` official formatter for
+  [Snakemake](https://snakemake.readthedocs.io) ([#307]).
+* [`gleam`](https://github.com/gleam-lang/gleam) official formatter for
+  [`gleam`](https://github.com/gleam-lang/gleam) ([#325])
+* `zig fmt` official formatter for
+  [zig](https://ziglang.org/) ([#327]).
+
+### Bugs fixed
+* `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
+  loader ([#301]).
+* `apheleia-npx` did not correctly guard against word splitting and
+  would fail when directory names contained spaces ([#301]).
+* `apheleia-npx` was sometimes not able to find formatters in a Yarn
+  PnP project if there was also a `node_modules` folder at the root of
+  the project ([#301]).
+* Ormolu is now passed the `--stdin-input-file` argument, which has
+  become required ([#312]).
+* `mix format` is now passed the `--stdin-filename` argument which is
+  required in some cases. The version of Mix is autodetected and this
+  option is only passed when it is supported ([#319]).
+* `mix format` is now run with `MIX_QUIET` to supress compilation
+  output ([#326])
+* Beancount files are formatted without an error ([#309]).
+
+## Internal
+* Improvements to formatter test framework, it is now possible to
+  write tests that have additional data files ([#301]).
+
+[#301]: https://github.com/radian-software/apheleia/pull/301
+[#306]: https://github.com/radian-software/apheleia/pull/306
+[#307]: https://github.com/radian-software/apheleia/pull/307
+[#309]: https://github.com/radian-software/apheleia/issues/309
+[#312]: https://github.com/radian-software/apheleia/issues/312
+[#313]: https://github.com/radian-software/apheleia/pull/313
+[#316]: https://github.com/radian-software/apheleia/pull/316
+[#317]: https://github.com/radian-software/apheleia/issues/317
+[#319]: https://github.com/radian-software/apheleia/pull/319
+[#324]: https://github.com/radian-software/apheleia/pull/324
+[#325]: https://github.com/radian-software/apheleia/pull/325
+[#326]: https://github.com/radian-software/apheleia/pull/326
+[#327]: https://github.com/radian-software/apheleia/pull/327
+
+## 4.2 (released 2024-08-03)
 ### Changes
 * Custom Emacs Lisp formatting functions have the option to report an
   error asynchronously by invoking their callback with an error as
@@ -27,7 +101,6 @@ The format is based on [Keep a Changelog].
   information about errors, is still supported and will continue to be
   called if provided. See [#204].
 
-### Formatters
 ### Bugs fixed
 * The point alignment algorithm, which has been slightly wrong since
   2019, has been fixed to more correctly use dynamic programming to

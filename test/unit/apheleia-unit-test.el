@@ -1,6 +1,6 @@
 ;; -*- lexical-binding: t -*-
 
-;; `apheleia-unit-tests' - unit tests using ERT.
+;; `apheleia-unit-tests' - unit tests using Buttercup.
 
 (require 'apheleia)
 

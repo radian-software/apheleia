@@ -14,7 +14,8 @@
 (defcustom apheleia-formatters-respect-indent-level t
   "Whether formatters should respect Emacs' indent configuration."
   :type 'boolean
-  :group 'apheleia)
+  :group 'apheleia
+  :safe #'booleanp)
 
 (defun apheleia-formatters-indent (tab-flag indent-flag &optional indent-var)
   "Set flag for indentation.
@@ -73,7 +74,8 @@ always returns nil to defer to the formatter."
 (defcustom apheleia-formatters-respect-fill-column nil
   "Whether formatters should set `fill-column' related flags."
   :type 'boolean
-  :group 'apheleia)
+  :group 'apheleia
+  :safe #'booleanp)
 
 (defun apheleia-formatters-fill-column (fill-flag)
   "Set flag for wrap column.

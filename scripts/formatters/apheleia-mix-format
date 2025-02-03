@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if (( "$#" != 1 )); then
+    echo >&2 "usage: apheleia-mix-format PATH"
+    exit 1
+fi
+
+path="$1"
+
+mix_binary="$(which mix)"
+checksum="$(md5sum "${mix_binary}" | awk '{print $1}')"
+
+cache_dir="${XDG_CACHE_DIR:-${HOME}/.cache}/apheleia"
+ver_file="${cache_dir}/mix-format-version-${checksum}"
+
+if [[ ! -f "${ver_file}" ]]; then
+    mkdir -p "$(dirname "${ver_file}")"
+    mix --version </dev/null | \
+        grep -Eo 'Mix [^ ]+' | \
+        awk '{print $2}' > "${ver_file}"
+fi
+
+ver="$(< "${ver_file}")"
+needed_ver="1.14.0"
+higher_ver="$( (echo "${ver}"; echo "${needed_ver}") | sort -V | tail -n1)"
+
+args=(mix format)
+if [[ "${ver}" == "${higher_ver}" ]]; then
+    args+=(--stdin-filename "${path}")
+fi
+args+=(-)
+
+MIX_QUIET=1 exec "${args[@]}"
