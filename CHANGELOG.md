@@ -7,7 +7,27 @@ The format is based on [Keep a Changelog].
 ### Bugs fixed
 * `$PATH` was not correctly respected for some remote executables ([#341]).
 
+### Formatters
+* [cljstyle](https://github.com/greglook/cljstyle)
+  for clojure, clojurescript, edn files.
+* `biome` ([#339]).
+* `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
+* `prettier-json-stringify` ([#183]).
+* `nix-ts-mode` buffers are now formatted with nixfmt like `nix-mode`
+  buffers are.
+* Fix `foumolu` arguements
+* Both `haskell-mode` and the newly added
+  `haskell-ts-mode` buffers are formatted with `fourmolu`
+
+### Internal
+* You can run the formatter tests locally with podman instead of
+  docker now, if you want. Export `USE_PODMAN=1` ([#343]).
+
+[#183]: https://github.com/radian-software/apheleia/pull/183
+[#339]: https://github.com/radian-software/apheleia/pull/339
 [#341]: https://github.com/radian-software/apheleia/pull/341
+[#342]: https://github.com/radian-software/apheleia/pull/342
+[#343]: https://github.com/radian-software/apheleia/pull/343
 
 ## 4.3 (released 2024-11-12)
 ### Features

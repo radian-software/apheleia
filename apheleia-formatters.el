@@ -35,6 +35,7 @@
               "-"))
     (brittany . ("brittany"))
     (buildifier . ("buildifier"))
+    (biome . ("apheleia-npx" "biome" "format" "--stdin-file-path" filepath))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
@@ -42,6 +43,7 @@
                          (apheleia-formatters-mode-extension)
                          ".c")))
     (cljfmt . ("cljfmt" "fix" "-"))
+    (cljstyle . ("cljstyle" "pipe"))
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
     (css-beautify "css-beautify" "--file" "-" "--end-with-newline"
@@ -61,8 +63,9 @@
     (dprint . ("dprint" "fmt" "--stdin" filepath))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
-    (fourmolu . ("fourmolu"))
+    (fourmolu . ("fourmolu" "--stdin-input-file" filepath))
     (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
+    (gdformat . ("gdformat" "-"))
     (gleam . ("gleam" "format" "--stdin"))
     (gofmt . ("gofmt"))
     (gofumpt . ("gofumpt"))
@@ -127,6 +130,10 @@
     (prettier-json
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
         "--parser=json"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+    (prettier-json-stringify
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=json-stringify"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
@@ -323,11 +330,14 @@ rather than using this system."
     (elm-mode . elm-format)
     (emacs-lisp-mode . lisp-indent)
     (fish-mode . fish-indent)
+    (gdscript-mode . gdformat)
+    (gdscript-ts-mode . gdformat)
     (gleam-ts-mode . gleam)
     (go-mode . gofmt)
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
-    (haskell-mode . ormolu)
+    (haskell-mode . fourmolu)
+    (haskell-ts-mode . fourmolu)
     (hcl-mode . hclfmt)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
@@ -352,6 +362,7 @@ rather than using this system."
     ;; try imposing a standard by default
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
+    (nix-ts-mode . nixfmt)
     (perl-mode . perltidy)
     (php-mode . phpcs)
     (purescript-mode . purs-tidy)
@@ -1180,7 +1191,7 @@ For more implementation detail, see
     (setq-local indent-line-function
                 (buffer-local-value 'indent-line-function buffer))
     (setq-local lisp-indent-function
-		(buffer-local-value 'lisp-indent-function buffer))
+                (buffer-local-value 'lisp-indent-function buffer))
     (setq-local indent-tabs-mode
                 (buffer-local-value 'indent-tabs-mode buffer))
     (goto-char (point-min))

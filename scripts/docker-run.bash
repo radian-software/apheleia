@@ -4,9 +4,13 @@ set -euo pipefail
 
 repo="$(git rev-parse --show-toplevel)"
 
-docker=(docker)
-if [[ "$OSTYPE" != darwin* ]] && [[ "$EUID" != 0 ]]; then
-    docker=(sudo -E "${docker[@]}")
+if [[ -z "${USE_PODMAN:-}" ]]; then
+    docker=(docker)
+    if [[ "$OSTYPE" != darwin* ]] && [[ "$EUID" != 0 ]]; then
+        docker=(sudo -E "${docker[@]}")
+    fi
+else
+    docker=(podman)
 fi
 
 it=()
