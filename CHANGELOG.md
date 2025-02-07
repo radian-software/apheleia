@@ -5,8 +5,9 @@ The format is based on [Keep a Changelog].
 
 ## Unreleased
 ### Bugs fixed
-* Absolute paths to formatter executables are now resolved prior to
-  calling them.
+* `$PATH` was not correctly respected for some remote executables ([#341]).
+
+[#341]: https://github.com/radian-software/apheleia/pull/341
 
 ## 4.3 (released 2024-11-12)
 ### Features
