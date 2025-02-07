@@ -565,6 +565,9 @@ NO-QUERY, and CONNECTION-TYPE."
   (ignore name noquery connection-type)
   (let* ((run-on-remote (and (eq apheleia-remote-algorithm 'remote)
                              remote))
+	 ;; Resolve the formatter executable's path to ensure it's
+	 ;; found
+	 (command (cons (executable-find (car command) run-on-remote) (cdr command)))
          (stderr-file (apheleia--make-temp-file run-on-remote "apheleia"))
          (args
           (append

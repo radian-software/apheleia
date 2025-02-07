@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Bugs fixed
+* `$PATH` was not correctly respected for some remote executables ([#341]).
+
 ### Formatters
 * [cljstyle](https://github.com/greglook/cljstyle)
   for clojure, clojurescript, edn files.
@@ -22,6 +25,7 @@ The format is based on [Keep a Changelog].
 
 [#183]: https://github.com/radian-software/apheleia/pull/183
 [#339]: https://github.com/radian-software/apheleia/pull/339
+[#341]: https://github.com/radian-software/apheleia/pull/341
 [#342]: https://github.com/radian-software/apheleia/pull/342
 [#343]: https://github.com/radian-software/apheleia/pull/343
 
