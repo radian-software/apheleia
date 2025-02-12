@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.4 (released 2025-02-12)
 ### Bugs fixed
 * `$PATH` was not correctly respected for some remote executables ([#341]).
 
