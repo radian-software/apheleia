@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## 4.5 (unreleased)
+## Unreleased
 ### Formatters
 * Format Bazel files according to their type
 
