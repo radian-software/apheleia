@@ -34,7 +34,13 @@
               (apheleia-formatters-fill-column "--line-length")
               "-"))
     (brittany . ("brittany"))
-    (buildifier . ("buildifier"))
+    (buildifier . ("buildifier" "-type"
+                   (cond
+                    ((eq major-mode 'bazel-workspace-mode) "workspace")
+                    ((eq major-mode 'bazel-module-mode) "module")
+                    ((eq major-mode 'bazel-build-mode) "build")
+                    (t "auto")
+                    )))
     (biome . ("apheleia-npx" "biome" "format" "--stdin-file-path" filepath))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
