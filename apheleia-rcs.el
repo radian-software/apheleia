@@ -100,7 +100,8 @@ contains the patch."
              ;; Account for the off-by-one error in the RCS patch spec
              ;; (namely, text is added *after* the line mentioned in
              ;; the patch).
-             (when (eq (alist-get 'command command) 'addition)
+             (when (and (eq (alist-get 'command command) 'addition)
+                        (> (alist-get 'start command) 0))
                (forward-line))
              (push `(marker . ,(point-marker)) command)
              (push command commands)
