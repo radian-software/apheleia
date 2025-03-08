@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Bugs fixed
+* A formatter that moves a line to the top of the file would sometimes
+  place it as the second line instead ([#299]).
+
 ### Formatters
 * Format Bazel files according to their type
 

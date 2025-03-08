@@ -226,3 +226,21 @@ exit 1
                    (lambda (&rest props)
                      (funcall callback (plist-get props :error))))))
            (expect "The slow brown fox jum|ped over the studious dog\n")))
+
+(apheleia-it-deftest supports-moving-line-to-the-top
+  "Running `apheleia-format-buffer' works when moving a line to the top"
+  :scripts `(("apheleia-it" .
+              ,(apheleia-it-script
+                :allowed-inputs
+                '(("line1\nline2\nline3\nline4" .
+                   "line4\nline1\nline2\nline3")))))
+  :formatters '((apheleia-it . ("apheleia-it")))
+  :steps '((insert "line1\n|line2\nline3\nline4")
+           (with-callback
+            callback
+            (eval (apheleia-format-buffer
+                   'apheleia-it nil
+                   :callback
+                   (lambda (&rest props)
+                     (funcall callback (plist-get props :error))))))
+           (expect "line4\nline1\n|line2\nline3")))
