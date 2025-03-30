@@ -899,7 +899,10 @@ See `apheleia--run-formatters' for a description of REMOTE."
     (let ((ctx (apheleia-formatter--context)))
       (setf (apheleia-formatter--name ctx) nil ; Skip logging on failure
             (apheleia-formatter--arg1 ctx) "diff"
-            (apheleia-formatter--argv ctx) `("--rcs" "--strip-trailing-cr" "--"
+            (apheleia-formatter--argv ctx) `("--rcs"
+                                             "--strip-trailing-cr"
+                                             "--text"
+                                             "--"
                                              ,(or old-fname "-")
                                              ,(or new-fname "-"))
             (apheleia-formatter--remote ctx) remote
