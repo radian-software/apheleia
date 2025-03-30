@@ -571,9 +571,12 @@ NO-QUERY, and CONNECTION-TYPE."
   (ignore name noquery connection-type)
   (let* ((run-on-remote (and (eq apheleia-remote-algorithm 'remote)
                              remote))
-	 ;; Resolve the formatter executable's path to ensure it's
-	 ;; found
-	 (command (cons (executable-find (car command) run-on-remote) (cdr command)))
+         ;; Resolve the formatter executable's path to ensure it's
+         ;; found
+         (command (cons (if (file-name-absolute-p (car command))
+                            (car command)
+                          (executable-find (car command) run-on-remote))
+                        (cdr command)))
          (stderr-file (apheleia--make-temp-file run-on-remote "apheleia"))
          (args
           (append
@@ -630,9 +633,9 @@ NO-QUERY, and CONNECTION-TYPE."
                            (apheleia--log
                             'process
                             "Using process-file to create process %s with %S"
-                            name (list shell "-c" shell-command))
+                            name (list shell "-lc" shell-command))
                            (process-file
-                            shell nil (nth 2 args) nil "-c" shell-command))
+                            shell nil (nth 2 args) nil "-lc" shell-command))
                        (delete-file remote-stdin))))
                   (stdin
                    (apheleia--log
@@ -968,6 +971,13 @@ cmd is to be run."
       (setf (apheleia-formatter--name context) name)
       (setf (apheleia-formatter--stdin context) stdin)
       (setf (apheleia-formatter--remote context) remote)
+
+      ;; Just use npx when buffer is remote or we're running on Windows,
+      ;; since in these cases bash won't be able to find the script
+      (when (and (member "apheleia-npx" command)
+                 (or run-on-remote (eq system-type 'windows-nt)))
+        (setq command (cons 'npx (remove "apheleia-npx" command))))
+
       ;; TODO: Support arbitrary package managers, not just NPM.
       (when (memq 'npx command)
         (setq command (remq 'npx command))
@@ -982,7 +992,7 @@ cmd is to be run."
                      ".bin"
                      (expand-file-name "node_modules" project-dir)))))
               (when (file-executable-p binary)
-                (setcar command binary))))))
+                (setcar command (file-local-name binary)))))))
 
       (when (or (memq 'file command) (memq 'filepath command))
         ;; Fail when using file but not as the first formatter in this
@@ -1110,8 +1120,9 @@ purposes."
                        process-environment))
                 (ctx
                  (apheleia--formatter-context formatter command remote stdin)))
-      (if (executable-find (apheleia-formatter--arg1 ctx)
-                           (eq apheleia-remote-algorithm 'remote))
+      (if (or (file-name-absolute-p (apheleia-formatter--arg1 ctx))
+              (executable-find (apheleia-formatter--arg1 ctx)
+                               (eq apheleia-remote-algorithm 'remote)))
           (apheleia--execute-formatter-process
            :ctx ctx
            :callback
