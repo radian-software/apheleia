@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog].
 ### Bugs fixed
 * A formatter that moves a line to the top of the file would sometimes
   place it as the second line instead ([#299]).
+* Handle remote buffers using default formatters.
 
 ### Formatters
 * Format Bazel files according to their type
