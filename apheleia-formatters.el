@@ -1109,7 +1109,8 @@ purposes."
                 ;; for subprocesses of the proc we start.
                 (exec-path (cons script-dir exec-path))
                 (process-environment
-                 (cons (concat "PATH=" script-dir path-separator (getenv "PATH"))
+                 (cons (concat
+                        "PATH=" script-dir path-separator (getenv "PATH"))
                        process-environment))
                 (ctx
                  (apheleia--formatter-context formatter command remote stdin)))
