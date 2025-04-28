@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Enhancements
+* Black will respect configuration in `pyproject.toml` when run via
+  Apheleia.
+
 ### Bugs fixed
 * A formatter that moves a line to the top of the file would sometimes
   place it as the second line instead ([#299]).
 * Fix invoking the diff command on Windows by always passing the --text
-flag
+  flag.
 
 ### Formatters
 * Format Bazel files according to their type

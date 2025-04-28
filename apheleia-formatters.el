@@ -32,6 +32,7 @@
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
               (apheleia-formatters-fill-column "--line-length")
+              "--stdin-filename" filepath
               "-"))
     (brittany . ("brittany"))
     (buildifier . ("buildifier" "-type"
