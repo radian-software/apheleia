@@ -8,7 +8,7 @@
 ;; Keywords: tools
 ;; Package-Requires: ((emacs "27"))
 ;; SPDX-License-Identifier: MIT
-;; Version: 4.4
+;; Version: 4.4.1
 
 ;;; Commentary:
 

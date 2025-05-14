@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.4.1 (released 2025-05-13)
 ### Enhancements
 * Black will respect configuration in `pyproject.toml` when run via
   Apheleia.
@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog].
 
 ### Formatters
 * Format Bazel files according to their type
+
+[#299]: https://github.com/radian-software/apheleia/issues/299
 
 ## 4.4 (released 2025-02-12)
 ### Bugs fixed
