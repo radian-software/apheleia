@@ -3,6 +3,11 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Bugs fixed
+* A formatter that adds indentation while point is at the end of the
+  line would sometimes leave point at the wrong position ([#362]).
+
 ## 4.4.1 (released 2025-05-13)
 ### Enhancements
 * Black will respect configuration in `pyproject.toml` when run via
