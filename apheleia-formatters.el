@@ -104,6 +104,7 @@
     (mix-format . ("apheleia-from-project-root"
                    ".formatter.exs" "apheleia-mix-format" filepath))
     (nixfmt . ("nixfmt"))
+    (nomad . ("nomad" "fmt" "-"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
     (ocp-indent . ("ocp-indent"))
@@ -370,6 +371,7 @@ rather than using this system."
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
     (nix-ts-mode . nixfmt)
+    (nomad-mode . nomad)
     (perl-mode . perltidy)
     (php-mode . phpcs)
     (purescript-mode . purs-tidy)
