@@ -244,3 +244,22 @@ exit 1
                    (lambda (&rest props)
                      (funcall callback (plist-get props :error))))))
            (expect "line4\nline1\n|line2\nline3")))
+
+(apheleia-it-deftest supports-inserting-whitespace
+  "Running `apheleia-format-buffer' preserves point when inserting
+whitespace before point"
+  :scripts `(("apheleia-it" .
+              ,(apheleia-it-script
+                :allowed-inputs
+                '(("function main() {\na=\n  return 0\n}" .
+                   "function main() {\n  a=\n  return 0\n}")))))
+  :formatters '((apheleia-it . ("apheleia-it")))
+  :steps '((insert "function main() {\na=|\n  return 0\n}")
+           (with-callback
+            callback
+            (eval (apheleia-format-buffer
+                   'apheleia-it nil
+                   :callback
+                   (lambda (&rest props)
+                     (funcall callback (plist-get props :error))))))
+           (expect "function main() {\n  a=|\n  return 0\n}")))
