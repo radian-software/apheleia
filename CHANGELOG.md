@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog].
 
 ### Formatters
 * Format Bazel files according to their type
+* `nomad fmt` official formatter for
+  [HashiCorp Nomad](https://developer.hashicorp.com/nomad) ([#361]).
 
 [#299]: https://github.com/radian-software/apheleia/issues/299
 
