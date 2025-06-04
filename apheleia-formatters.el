@@ -92,6 +92,7 @@
                (apheleia-formatters-indent
                 "--indent-with-tabs" "--indent-spaces")
                (apheleia-formatters-fill-column "-wrap"))
+    (hurlfmt . ("hurlfmt" "--no-color"))
     (isort . ("isort" "-"))
     (js-beautify "js-beautify" "--file" "-" "--end-with-newline"
                  (apheleia-formatters-indent
@@ -349,6 +350,7 @@ rather than using this system."
     (hcl-mode . hclfmt)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
+    (hurl-mode . hurlfmt)
     (java-mode . google-java-format)
     (java-ts-mode . google-java-format)
     (jinja2-mode . nil)
