@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog].
 ### Bugs fixed
 * A formatter that adds indentation while point is at the end of the
   line would sometimes leave point at the wrong position ([#362]).
+### Formatters
+* [hurlfmt](https://hurl.dev)
+  for hurl files.
 
 ## 4.4.1 (released 2025-05-13)
 ### Enhancements
