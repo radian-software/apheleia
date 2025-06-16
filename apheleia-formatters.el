@@ -53,6 +53,7 @@
     (cljstyle . ("cljstyle" "pipe"))
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
+    (csharpier . ("dotnet-csharpier" "--write-stdout"))
     (css-beautify "css-beautify" "--file" "-" "--end-with-newline"
                   (apheleia-formatters-indent
                    "--indent-with-tabs" "--indent-size"))
@@ -329,6 +330,8 @@ rather than using this system."
     (conf-toml-mode . dprint)
     (cperl-mode . perltidy)
     (crystal-mode . crystal-tool-format)
+    (csharp-mode . clang-format)
+    (csharp-ts-mode . clang-format)
     (css-mode . prettier-css)
     (css-ts-mode . prettier-css)
     (dart-mode . dart-format)
