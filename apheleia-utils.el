@@ -61,7 +61,8 @@ always returns nil to defer to the formatter."
               (tsx-ts-mode 'typescript-ts-mode-indent-offset)
               (typescript-mode 'typescript-indent-level)
               (typescript-ts-mode 'typescript-ts-mode-indent-offset)
-              (yaml-mode 'yaml-indent-offset))))
+              (yaml-mode 'yaml-indent-offset)
+              (yaml-ts-mode 'yaml-indent-offset))))
 
     (when-let ((indent (and indent-var
                             (boundp indent-var)
