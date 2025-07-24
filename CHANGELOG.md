@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog].
 ### Formatters
 * [hurlfmt](https://hurl.dev) for hurl files.
 * [csharpier](https://github.com/belav/csharpier) for C#.
+* [taplo](https://taplo.tamasfe.dev/) for TOML.
 
 ## 4.4.1 (released 2025-05-13)
 ### Enhancements
