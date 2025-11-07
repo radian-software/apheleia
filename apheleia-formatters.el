@@ -174,6 +174,8 @@
     (robotidy . ("robotidy" "--no-color" "-"
                  (apheleia-formatters-indent nil "--indent")
                  (apheleia-formatters-fill-column "--line-length")))
+    (r-styler . ("R" "--no-echo" "--no-save" "--no-restore" "-e"
+                 "styler::style_text(readLines(file('stdin')))"))
     (python3-json
      . ("python3" "-m" "json.tool"
         (apheleia-formatters-indent "--tab" "--indent")))

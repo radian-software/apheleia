@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog].
 * [hurlfmt](https://hurl.dev) for hurl files.
 * [csharpier](https://github.com/belav/csharpier) for C#.
 * [taplo](https://taplo.tamasfe.dev/) for TOML.
+* [styler](https://styler.r-lib.org/) for R.
 
 ## 4.4.1 (released 2025-05-13)
 ### Enhancements
