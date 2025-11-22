@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.4.2 (released 2025-11-21)
 ### Bugs fixed
 * aphelia-formatters-indent did not handle yaml-ts-mode; added with
   same behaviour as yaml-mode
@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog].
 * [csharpier](https://github.com/belav/csharpier) for C#.
 * [taplo](https://taplo.tamasfe.dev/) for TOML.
 * [styler](https://styler.r-lib.org/) for R.
+
+[#362]: https://github.com/radian-software/apheleia/issues/362
 
 ## 4.4.1 (released 2025-05-13)
 ### Enhancements
