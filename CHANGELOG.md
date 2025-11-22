@@ -5,9 +5,9 @@ The format is based on [Keep a Changelog].
 
 ## 4.4.2 (released 2025-11-21)
 ### Bugs fixed
-* aphelia-formatters-indent did not handle yaml-ts-mode; added with
+* apheleia-formatters-indent did not handle yaml-ts-mode; added with
   same behaviour as yaml-mode
-* aphelia-formatters-indent did not handle js-json-mode; added with
+* apheleia-formatters-indent did not handle js-json-mode; added with
   same behaviour as json-mode
 * A formatter that adds indentation while point is at the end of the
   line would sometimes leave point at the wrong position ([#362]).
