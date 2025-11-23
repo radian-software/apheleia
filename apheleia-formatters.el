@@ -379,6 +379,9 @@ rather than using this system."
     (nix-mode . nixfmt)
     (nix-ts-mode . nixfmt)
     (nomad-mode . nomad)
+    (objc-mode . clang-format)
+    ;; Emacs doesn't yet have a mode for Objective-C++
+    ("\\.mm\\'" . clang-format)
     (perl-mode . perltidy)
     (php-mode . phpcs)
     (purescript-mode . purs-tidy)
