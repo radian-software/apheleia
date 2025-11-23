@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Formatters
+* Use clang-format for formatting Objective-C/C++ files ([#378]).
+
 ## 4.4.2 (released 2025-11-21)
 ### Bugs fixed
 * apheleia-formatters-indent did not handle yaml-ts-mode; added with
