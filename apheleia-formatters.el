@@ -20,6 +20,9 @@
 (eval-when-compile
   (require 'rx))
 
+(autoload 'bibtex-reformat "bibtex" "Reformat BibTeX entries." t)
+(declare-function bibtex-reformat "bibtex" (beg end &optional arg))
+
 (defcustom apheleia-formatters
   '((astyle . ("astyle" (apheleia-formatters-locate-file
                          "--options" ".astylerc")))
