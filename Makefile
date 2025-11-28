@@ -49,6 +49,8 @@ checkdoc: ## Check for missing or poorly formatted docstrings
 	        --eval "(or (fboundp 'checkdoc-file) (kill-emacs))" \
 	        --eval "(setq sentence-end-double-space nil)" \
 	        --eval "(checkdoc-file \"$$file\")" 2>&1 \
+		| (grep -v "Warning (emacs): \\?$$" ||:) \
+		| (grep -v "Some lines are over 80 columns wide" ||:) \
 	        | grep . && exit 1 || true ;\
 	done
 
@@ -111,6 +113,10 @@ fmt-changed: ## Get list of changed formatters on this PR
 fmt-test: ## Actually run formatter tests
 	@test/shared/run-func.bash apheleia-ft-test $(APHELEIA_FT)
 
+.PHONY: fmt-emacs  # env var: FILE
+fmt-emacs: ## Start an Emacs instance for testing formatters
+	@emacs -L . -L test/formatters -l apheleia-ft -f apheleia-global-mode $(FILE)
+
 .PHONY: lint-changelog
 lint-changelog: ## Report an error if the changelog wasn't updated
 	@scripts/lint-changelog.bash
@@ -127,3 +133,10 @@ $(BUTTERCUP):
 .PHONY: unit
 unit: $(BUTTERCUP) ## Run unit tests
 	@$(BUTTERCUP)/bin/buttercup test/unit -L $(BUTTERCUP) -L .
+
+APHELEIA_IT := -L test/integration \
+	--eval "(setq apheleia-log-debug-info t)" -l apheleia-it
+
+.PHONY: integration
+integration: ## Run integration tests
+	@test/shared/run-func.bash apheleia-it-run-all-tests $(APHELEIA_IT)

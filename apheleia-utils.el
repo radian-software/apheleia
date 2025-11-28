@@ -14,7 +14,8 @@
 (defcustom apheleia-formatters-respect-indent-level t
   "Whether formatters should respect Emacs' indent configuration."
   :type 'boolean
-  :group 'apheleia)
+  :group 'apheleia
+  :safe #'booleanp)
 
 (defun apheleia-formatters-indent (tab-flag indent-flag &optional indent-var)
   "Set flag for indentation.
@@ -47,6 +48,7 @@ always returns nil to defer to the formatter."
               (js2-mode 'js2-basic-offset)
               (js3-mode 'js3-indent-level)
               (json-mode 'js-indent-level)
+              (js-json-mode 'js-indent-level)
               (json-ts-mode 'json-ts-mode-indent-offset)
               (nxml-mode 'nxml-child-indent)
               (robot-mode 'robot-mode-basic-offset)
@@ -60,7 +62,8 @@ always returns nil to defer to the formatter."
               (tsx-ts-mode 'typescript-ts-mode-indent-offset)
               (typescript-mode 'typescript-indent-level)
               (typescript-ts-mode 'typescript-ts-mode-indent-offset)
-              (yaml-mode 'yaml-indent-offset))))
+              (yaml-mode 'yaml-indent-offset)
+              (yaml-ts-mode 'yaml-indent-offset))))
 
     (when-let ((indent (and indent-var
                             (boundp indent-var)
@@ -73,7 +76,8 @@ always returns nil to defer to the formatter."
 (defcustom apheleia-formatters-respect-fill-column nil
   "Whether formatters should set `fill-column' related flags."
   :type 'boolean
-  :group 'apheleia)
+  :group 'apheleia
+  :safe #'booleanp)
 
 (defun apheleia-formatters-fill-column (fill-flag)
   "Set flag for wrap column.

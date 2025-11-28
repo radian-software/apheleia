@@ -1,4 +1,4 @@
-name: Lint
+name: Tests and linters
 on:
   push:
     branches:
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        emacs_version: [27, 28, 29]
+        emacs_version: [27, 28, 29, 30]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,4 +22,4 @@ jobs:
         env:
           VERSION: ${{ matrix.emacs_version }}
         run: >-
-          make docker CMD="make unit lint lint-changelog"
+          make docker CMD="make unit integration lint lint-changelog"

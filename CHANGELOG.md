@@ -4,8 +4,150 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
-### Enhancements
 ### Formatters
+* Use clang-format for formatting Objective-C/C++ files ([#378]).
+
+## 4.4.2 (released 2025-11-21)
+### Bugs fixed
+* apheleia-formatters-indent did not handle yaml-ts-mode; added with
+  same behaviour as yaml-mode
+* apheleia-formatters-indent did not handle js-json-mode; added with
+  same behaviour as json-mode
+* A formatter that adds indentation while point is at the end of the
+  line would sometimes leave point at the wrong position ([#362]).
+### Formatters
+* [hurlfmt](https://hurl.dev) for hurl files.
+* [csharpier](https://github.com/belav/csharpier) for C#.
+* [taplo](https://taplo.tamasfe.dev/) for TOML.
+* [styler](https://styler.r-lib.org/) for R.
+
+[#362]: https://github.com/radian-software/apheleia/issues/362
+
+## 4.4.1 (released 2025-05-13)
+### Enhancements
+* Black will respect configuration in `pyproject.toml` when run via
+  Apheleia.
+
+### Bugs fixed
+* A formatter that moves a line to the top of the file would sometimes
+  place it as the second line instead ([#299]).
+* Fix invoking the diff command on Windows by always passing the --text
+  flag.
+
+### Formatters
+* Format Bazel files according to their type
+* `nomad fmt` official formatter for
+  [HashiCorp Nomad](https://developer.hashicorp.com/nomad) ([#361]).
+
+[#299]: https://github.com/radian-software/apheleia/issues/299
+
+## 4.4 (released 2025-02-12)
+### Bugs fixed
+* `$PATH` was not correctly respected for some remote executables ([#341]).
+
+### Formatters
+* [cljstyle](https://github.com/greglook/cljstyle)
+  for clojure, clojurescript, edn files.
+* `biome` ([#339]).
+* `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
+* `prettier-json-stringify` ([#183]).
+* `nix-ts-mode` buffers are now formatted with nixfmt like `nix-mode`
+  buffers are.
+* Fix `foumolu` arguements
+* Both `haskell-mode` and the newly added
+  `haskell-ts-mode` buffers are formatted with `fourmolu`
+
+### Internal
+* You can run the formatter tests locally with podman instead of
+  docker now, if you want. Export `USE_PODMAN=1` ([#343]).
+
+[#183]: https://github.com/radian-software/apheleia/pull/183
+[#339]: https://github.com/radian-software/apheleia/pull/339
+[#341]: https://github.com/radian-software/apheleia/pull/341
+[#342]: https://github.com/radian-software/apheleia/pull/342
+[#343]: https://github.com/radian-software/apheleia/pull/343
+
+## 4.3 (released 2024-11-12)
+### Features
+* New user option `apheleia-skip-functions`, like
+  `apheleia-inhibit-functions` but for skipping a formatter run even
+  when `apheleia-mode` is generally enabled ([#317]).
+* [`ocp-indent`](https://github.com/OCamlPro/ocp-indent) for
+  [Ocaml](https://ocaml.org/) ([#306]).
+
+### Formatters
+* `vfmt` for
+  [vlang](https://vlang.io/) ([#324]).
+* [`typstyle`](https://github.com/Enter-tainer/typstyle) for
+  [typst](https://typst.app/) ([#313]).
+* [`rubocop`](https://github.com/rubocop/rubocop) changed to use `-a`
+  instead of deprecated `--auto-correct` ([#316]).
+* `snakefmt` official formatter for
+  [Snakemake](https://snakemake.readthedocs.io) ([#307]).
+* [`gleam`](https://github.com/gleam-lang/gleam) official formatter for
+  [`gleam`](https://github.com/gleam-lang/gleam) ([#325])
+* `zig fmt` official formatter for
+  [zig](https://ziglang.org/) ([#327]).
+
+### Bugs fixed
+* `apheleia-npx` would use an incorrect path for the Yarn PnP ESM
+  loader ([#301]).
+* `apheleia-npx` did not correctly guard against word splitting and
+  would fail when directory names contained spaces ([#301]).
+* `apheleia-npx` was sometimes not able to find formatters in a Yarn
+  PnP project if there was also a `node_modules` folder at the root of
+  the project ([#301]).
+* Ormolu is now passed the `--stdin-input-file` argument, which has
+  become required ([#312]).
+* `mix format` is now passed the `--stdin-filename` argument which is
+  required in some cases. The version of Mix is autodetected and this
+  option is only passed when it is supported ([#319]).
+* `mix format` is now run with `MIX_QUIET` to supress compilation
+  output ([#326])
+* Beancount files are formatted without an error ([#309]).
+
+## Internal
+* Improvements to formatter test framework, it is now possible to
+  write tests that have additional data files ([#301]).
+
+[#301]: https://github.com/radian-software/apheleia/pull/301
+[#306]: https://github.com/radian-software/apheleia/pull/306
+[#307]: https://github.com/radian-software/apheleia/pull/307
+[#309]: https://github.com/radian-software/apheleia/issues/309
+[#312]: https://github.com/radian-software/apheleia/issues/312
+[#313]: https://github.com/radian-software/apheleia/pull/313
+[#316]: https://github.com/radian-software/apheleia/pull/316
+[#317]: https://github.com/radian-software/apheleia/issues/317
+[#319]: https://github.com/radian-software/apheleia/pull/319
+[#324]: https://github.com/radian-software/apheleia/pull/324
+[#325]: https://github.com/radian-software/apheleia/pull/325
+[#326]: https://github.com/radian-software/apheleia/pull/326
+[#327]: https://github.com/radian-software/apheleia/pull/327
+
+## 4.2 (released 2024-08-03)
+### Changes
+* Custom Emacs Lisp formatting functions have the option to report an
+  error asynchronously by invoking their callback with an error as
+  argument. Passing nil as argument indicates that there was no error,
+  as before. The old calling convention is still supported for
+  backwards compatibility, and errors can also be reported by
+  throwing, as normal. Implemented in [#204].
+
+### Features
+* New user option `apheleia-mode-predicates`. The default value
+  handles `mhtml-mode` correctly by always using whatever formatter
+  you have configured for that mode, rather than using `css-mode`,
+  `html-mode`, etc formatters depending on the position of point
+  ([#302]).
+
+### Enhancements
+* There is a new keyword argument to `apheleia-format-buffer` which is
+  a more powerful callback that is guaranteed to be called except in
+  cases of synchronous nonlocal exit. See the docstring for details.
+  The old callback, which is only invoked on success and receives no
+  information about errors, is still supported and will continue to be
+  called if provided. See [#204].
+
 ### Bugs fixed
 * The point alignment algorithm, which has been slightly wrong since
   2019, has been fixed to more correctly use dynamic programming to
@@ -16,9 +158,18 @@ The format is based on [Keep a Changelog].
 * [Formatter scripts](scripts/formatters) will now work on Windows if Emacs
   can find the executable defined in the shebang.
 
+### Internal
+* Major internal refactoring has occurred to make it possible to write
+  integration tests against Apheleia. This should improve future
+  stability but could have introduced some bugs in the initial
+  version. See [#204].
+* Some debugging log messages have changed, see [#204].
+
+[#204]: https://github.com/radian-software/apheleia/pull/204
 [#286]: https://github.com/radian-software/apheleia/pull/286
 [#285]: https://github.com/radian-software/apheleia/issues/285
 [#290]: https://github.com/radian-software/apheleia/pull/290
+[#302]: https://github.com/radian-software/apheleia/issues/302
 
 ## 4.1 (released 2024-02-25)
 ### Enhancements

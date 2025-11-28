@@ -24,7 +24,7 @@
   '((astyle . ("astyle" (apheleia-formatters-locate-file
                          "--options" ".astylerc")))
     (asmfmt . ("asmfmt"))
-    (bean-format . ("bean-format"))
+    (bean-format . ("bean-format" input))
     (beautysh . ("beautysh"
                  (apheleia-formatters-indent
                   "--tab" "--indent-size" 'sh-basic-offset)
@@ -33,9 +33,17 @@
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
               (apheleia-formatters-fill-column "--line-length")
+              "--stdin-filename" filepath
               "-"))
     (brittany . ("brittany"))
-    (buildifier . ("buildifier"))
+    (buildifier . ("buildifier" "-type"
+                   (cond
+                    ((eq major-mode 'bazel-workspace-mode) "workspace")
+                    ((eq major-mode 'bazel-module-mode) "module")
+                    ((eq major-mode 'bazel-build-mode) "build")
+                    (t "auto")
+                    )))
+    (biome . ("apheleia-npx" "biome" "format" "--stdin-file-path" filepath))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
@@ -43,8 +51,10 @@
                          (apheleia-formatters-mode-extension)
                          ".c")))
     (cljfmt . ("cljfmt" "fix" "-"))
+    (cljstyle . ("cljstyle" "pipe"))
     (cmake-format . ("cmake-format" "-"))
     (crystal-tool-format . ("crystal" "tool" "format" "-"))
+    (csharpier . ("csharpier" "format"))
     (css-beautify "css-beautify" "--file" "-" "--end-with-newline"
                   (apheleia-formatters-indent
                    "--indent-with-tabs" "--indent-size"))
@@ -62,8 +72,10 @@
     (dprint . ("dprint" "fmt" "--stdin" filepath))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
-    (fourmolu . ("fourmolu"))
+    (fourmolu . ("fourmolu" "--stdin-input-file" filepath))
     (gawk . ("gawk" "-f" "-" "--pretty-print=-"))
+    (gdformat . ("gdformat" "-"))
+    (gleam . ("gleam" "format" "--stdin"))
     (gofmt . ("gofmt"))
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
@@ -82,6 +94,7 @@
                (apheleia-formatters-indent
                 "--indent-with-tabs" "--indent-spaces")
                (apheleia-formatters-fill-column "-wrap"))
+    (hurlfmt . ("hurlfmt" "--no-color"))
     (isort . ("isort" "-"))
     (js-beautify "js-beautify" "--file" "-" "--end-with-newline"
                  (apheleia-formatters-indent
@@ -92,11 +105,13 @@
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mix-format . ("apheleia-from-project-root"
-                   ".formatter.exs" "mix" "format" "-"))
+                   ".formatter.exs" "apheleia-mix-format" filepath))
     (nixfmt . ("nixfmt"))
+    (nomad . ("nomad" "fmt" "-"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
                     "--enable-outside-detected-project"))
-    (ormolu . ("ormolu"))
+    (ocp-indent . ("ocp-indent"))
+    (ormolu . ("ormolu" "--stdin-input-file" filepath))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"
                  (apheleia-formatters-indent "-t" "-i")
                  (apheleia-formatters-fill-column "-l")))
@@ -127,6 +142,10 @@
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
         "--parser=json"
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
+    (prettier-json-stringify
+     . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
+        "--parser=json-stringify"
+        (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (prettier-markdown
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
         "--parser=markdown"
@@ -156,10 +175,12 @@
     (robotidy . ("robotidy" "--no-color" "-"
                  (apheleia-formatters-indent nil "--indent")
                  (apheleia-formatters-fill-column "--line-length")))
+    (r-styler . ("R" "--no-echo" "--no-save" "--no-restore" "-e"
+                 "styler::style_text(readLines(file('stdin')))"))
     (python3-json
      . ("python3" "-m" "json.tool"
         (apheleia-formatters-indent "--tab" "--indent")))
-    (rubocop . ("rubocop" "--stdin" filepath "--auto-correct"
+    (rubocop . ("rubocop" "--stdin" filepath "-a"
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
                       "--format" "quiet" "--fail-level" "fatal"))
@@ -176,6 +197,9 @@
                    "--fix" "--fix-only"
                    "--stdin-filename" filepath
                    "-"))
+    (snakefmt . ("snakefmt"
+                 (apheleia-formatters-fill-column "--line-length")
+                 "-"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
@@ -193,8 +217,11 @@
     (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
+    (taplo . ("taplo" "format" "--colors" "never" "-"))
     (terraform . ("terraform" "fmt" "-"))
     (treefmt . ("treefmt" "--stdin" filepath))
+    (typstyle . ("typstyle"))
+    (vfmt . ("v" "fmt"))
     (xmllint . ("xmllint" "--format" "-"))
     (yapf . ("yapf"))
     (yq-csv . ("yq" "--prettyPrint" "--no-colors"
@@ -211,7 +238,8 @@
                (apheleia-formatters-indent nil "--indent")))
     (yq-yaml . ("yq" "--prettyPrint" "--no-colors" "--no-doc"
                 "--input-format" "yaml" "--output-format" "yaml"
-                (apheleia-formatters-indent nil "--indent"))))
+                (apheleia-formatters-indent nil "--indent")))
+    (zig-fmt . ("zig" "fmt" "--stdin")))
   "Alist of code formatting commands.
 The keys may be any symbols you want, and the values are shell
 commands, lists of strings and symbols, or a function symbol.
@@ -307,6 +335,7 @@ rather than using this system."
     (conf-toml-mode . dprint)
     (cperl-mode . perltidy)
     (crystal-mode . crystal-tool-format)
+    (csharp-mode . csharpier)
     (css-mode . prettier-css)
     (css-ts-mode . prettier-css)
     (dart-mode . dart-format)
@@ -317,13 +346,18 @@ rather than using this system."
     (elm-mode . elm-format)
     (emacs-lisp-mode . lisp-indent)
     (fish-mode . fish-indent)
+    (gdscript-mode . gdformat)
+    (gdscript-ts-mode . gdformat)
+    (gleam-ts-mode . gleam)
     (go-mode . gofmt)
     (go-ts-mode . gofmt)
     (graphql-mode . prettier-graphql)
-    (haskell-mode . brittany)
+    (haskell-mode . fourmolu)
+    (haskell-ts-mode . fourmolu)
     (hcl-mode . hclfmt)
     (html-mode . prettier-html)
     (html-ts-mode . prettier-html)
+    (hurl-mode . hurlfmt)
     (java-mode . google-java-format)
     (java-ts-mode . google-java-format)
     (jinja2-mode . nil)
@@ -345,6 +379,11 @@ rather than using this system."
     ;; try imposing a standard by default
     (nasm-mode . asmfmt)
     (nix-mode . nixfmt)
+    (nix-ts-mode . nixfmt)
+    (nomad-mode . nomad)
+    (objc-mode . clang-format)
+    ;; Emacs doesn't yet have a mode for Objective-C++
+    ("\\.mm\\'" . clang-format)
     (perl-mode . perltidy)
     (php-mode . phpcs)
     (purescript-mode . purs-tidy)
@@ -356,20 +395,27 @@ rather than using this system."
     (rustic-mode . rustfmt)
     (rust-mode . rustfmt)
     (rust-ts-mode . rustfmt)
+    (snakemake-mode . snakefmt)
     (scss-mode . prettier-scss)
     (sql-mode . pgformatter)
     (svelte-mode . prettier-svelte)
     (terraform-mode . terraform)
     (TeX-latex-mode . latexindent)
     (TeX-mode . latexindent)
+    (toml-ts-mode . taplo)
     (tsx-ts-mode . prettier-typescript)
     (tuareg-mode . ocamlformat)
     (typescript-mode . prettier-typescript)
     (typescript-ts-mode . prettier-typescript)
+    (typst-mode . typstyle)
+    (typst-ts-mode . typstyle)
+    (v-mode . vfmt)
     (web-mode . prettier)
     (yaml-mode . prettier-yaml)
     (yaml-ts-mode . prettier-yaml)
-    (yang-mode . pyang))
+    (yang-mode . pyang)
+    (zig-mode . zig-fmt)
+    (zig-ts-mode . zig-fmt))
   "Alist mapping major mode names to formatters to use in those modes.
 This determines what formatter to use in buffers without a
 setting for `apheleia-formatter'. The keys are major mode
@@ -407,6 +453,32 @@ mode."
                    (symbol :tag "Formatter"))))
   :group 'apheleia)
 
+(defun apheleia-mhtml-mode-predicate ()
+  "Return `mhtml-mode' if the user is in that mode.
+This checks text properties because `mhtml-mode' sets
+`major-mode' to different values depending on where the user is
+in the buffer."
+  (when (get-text-property
+         (if (and (eobp) (not (bobp)))
+             (1- (point))
+           (point))
+         'mhtml-submode)
+    #'mhtml-mode))
+
+;;;###autoload
+(defcustom apheleia-mode-predicates '(apheleia-mhtml-mode-predicate)
+  "List of predicates that check for sneaky major modes.
+Sometimes a major mode will set `major-mode' to something other
+than itself, making it hard to correctly detect what major mode
+is active. In such cases you can add a predicate to this list to
+handle it. Predicates take no arguments, are run in the current
+buffer, and should return the name of a mode if one is detected.
+If all the predicates return nil, or if there aren't any in the
+list, then only the value of `major-mode' is used to determine
+the major mode. The detected major mode affects the selection
+from `apheleia-mode-alist'."
+  :type '(repeat function)
+  :group 'apheleia)
 
 (defcustom apheleia-formatter-exited-hook nil
   "Abnormal hook run after a formatter has finished running.
@@ -515,6 +587,9 @@ NO-QUERY, and CONNECTION-TYPE."
   (ignore name noquery connection-type)
   (let* ((run-on-remote (and (eq apheleia-remote-algorithm 'remote)
                              remote))
+	 ;; Resolve the formatter executable's path to ensure it's
+	 ;; found
+	 (command (cons (executable-find (car command) run-on-remote) (cdr command)))
          (stderr-file (apheleia--make-temp-file run-on-remote "apheleia"))
          (args
           (append
@@ -610,14 +685,16 @@ NO-QUERY, and CONNECTION-TYPE."
 (cl-defun apheleia--execute-formatter-process
     (&key ctx callback ensure exit-status)
   "Wrapper for `make-process' that behaves a bit more nicely.
-CTX is a formatter process context (see `apheleia-formatter--context').
-CALLBACK is invoked with one argument, the buffer containing the text
-from stdout, when the process terminates (if it succeeds). ENSURE is a
-callback that's invoked whether the process exited successfully or
-not. EXIT-STATUS is a function which is called with the exit
-status of the command; it should return non-nil to indicate that
-the command succeeded. If EXIT-STATUS is omitted, then the
-command succeeds provided that its exit status is 0."
+CTX is a formatter process context (see
+`apheleia-formatter--context'). CALLBACK is invoked with two
+arguments. The first is an error or nil. The second is the buffer
+containing the text from stdout, when the process terminates (if
+it succeeds). ENSURE is a callback that's invoked whether the
+process exited successfully or not. EXIT-STATUS is a function
+which is called with the exit status of the command; it should
+return non-nil to indicate that the command succeeded. If
+EXIT-STATUS is omitted, then the command succeeds provided that
+its exit status is 0."
   (apheleia--log
    'process "Trying to execute formatter process %s with %S"
    (apheleia-formatter--name ctx)
@@ -680,7 +757,7 @@ command succeeds provided that its exit status is 0."
                        (apheleia-log--formatter-result
                         ctx
                         log-name
-                        (apheleia-formatter--exit-status ctx)
+                        exit-ok
                         (buffer-local-value 'default-directory stdout)
                         (with-current-buffer stderr
                           (string-trim (buffer-string)))))
@@ -695,22 +772,29 @@ command succeeds provided that its exit status is 0."
                         :log (get-buffer log-name)))
                      (unwind-protect
                          (if exit-ok
-                             (when callback
-                               (apheleia--log
-                                'process
-                                (concat "Invoking process callback due "
-                                        "to successful exit status"))
-                               (funcall callback stdout))
-                           (message
-                            (concat
-                             "Failed to run %s: exit status %s "
-                             "(see %s %s)")
-                            (apheleia-formatter--arg1 ctx)
-                            proc-exit-status
-                            (if (string-prefix-p " " log-name)
-                                "hidden buffer"
-                              "buffer")
-                            (string-trim log-name)))
+                             (funcall callback nil stdout)
+                           (let ((errmsg
+                                  (format
+                                   (concat
+                                    "Failed to run %s: exit status %s "
+                                    "(see %s %s)")
+                                   (apheleia-formatter--arg1 ctx)
+                                   proc-exit-status
+                                   (if (string-prefix-p " " log-name)
+                                       "hidden buffer"
+                                     "buffer")
+                                   (string-trim log-name))))
+                             (message "%s" errmsg)
+                             (when noninteractive
+                               (message
+                                "%s"
+                                (concat
+                                 "(log buffer shown"
+                                 " below in batch mode)\n"
+                                 (with-current-buffer log-name
+                                   (buffer-string)))))
+                             (funcall
+                              callback (cons 'error errmsg) nil)))
                        (when ensure
                          (funcall ensure))
                        (ignore-errors
@@ -831,7 +915,10 @@ See `apheleia--run-formatters' for a description of REMOTE."
     (let ((ctx (apheleia-formatter--context)))
       (setf (apheleia-formatter--name ctx) nil ; Skip logging on failure
             (apheleia-formatter--arg1 ctx) "diff"
-            (apheleia-formatter--argv ctx) `("--rcs" "--strip-trailing-cr" "--"
+            (apheleia-formatter--argv ctx) `("--rcs"
+                                             "--strip-trailing-cr"
+                                             "--text"
+                                             "--"
                                              ,(or old-fname "-")
                                              ,(or new-fname "-"))
             (apheleia-formatter--remote ctx) remote
@@ -1026,39 +1113,49 @@ purposes."
   ;; resolve for the whole formatting process (for example
   ;; `apheleia--current-process').
   (with-current-buffer buffer
-    (when-let ((exec-path
-                (append `(,(expand-file-name
-                            "scripts/formatters"
-                            (file-name-directory
-                             (file-truename
-                              ;; Borrowed with love from Magit
-                              (let ((load-suffixes '(".el")))
-                                (locate-library "apheleia"))))))
-                        exec-path))
-               (ctx
-                (apheleia--formatter-context formatter command remote stdin)))
+    (when-let* ((script-dir (expand-file-name
+                             "scripts/formatters"
+                             (file-name-directory
+                              (file-truename
+                               ;; Borrowed with love from Magit
+                               (let ((load-suffixes '(".el")))
+                                 (locate-library "apheleia"))))))
+                ;; Gotta set both `exec-path' and the PATH env-var,
+                ;; the former is for Emacs itself while the latter is
+                ;; for subprocesses of the proc we start.
+                (exec-path (cons script-dir exec-path))
+                (process-environment
+                 (cons (concat "PATH=" script-dir ":" (getenv "PATH"))
+                       process-environment))
+                (ctx
+                 (apheleia--formatter-context formatter command remote stdin)))
       (if (executable-find (apheleia-formatter--arg1 ctx)
                            (eq apheleia-remote-algorithm 'remote))
           (apheleia--execute-formatter-process
            :ctx ctx
            :callback
-           (lambda (stdout)
-             (when-let
-                 ((output-fname (apheleia-formatter--output-fname ctx)))
-               ;; Load output-fname contents into the stdout buffer.
-               (with-current-buffer stdout
-                 (erase-buffer)
-                 (insert-file-contents-literally output-fname)))
-             (funcall callback stdout))
+           (lambda (err stdout)
+             (if err
+                 (funcall callback err stdout)
+               (when-let
+                   ((output-fname (apheleia-formatter--output-fname ctx)))
+                 ;; Load output-fname contents into the stdout buffer.
+                 (with-current-buffer stdout
+                   (erase-buffer)
+                   (insert-file-contents-literally output-fname)))
+               (funcall callback nil stdout)))
            :ensure
            (lambda ()
              (dolist (fname (list (apheleia-formatter--input-fname ctx)
                                   (apheleia-formatter--output-fname ctx)))
                (when fname
                  (ignore-errors (delete-file fname))))))
-        (apheleia--log
-         'process
-         "Could not find executable for formatter %s, skipping" formatter)))))
+        (let ((errmsg
+               (format
+                "Could not find executable for formatter %s, skipping"
+                formatter)))
+          (apheleia--log 'process "%s" errmsg)
+          (funcall callback (cons 'error errmsg) nil))))))
 
 (defun apheleia--run-formatter-function
     (func buffer remote callback stdin formatter)
@@ -1089,11 +1186,14 @@ being run, for diagnostic purposes."
                :scratch scratch
                ;; Name of the current formatter symbol, e.g. `black'.
                :formatter formatter
-               ;; Callback after successfully formatting.
+               ;; Callback. Should pass an error value (cons of symbol
+               ;; and data, like for `signal') or nil. For backwards
+               ;; compatibility it can also invoke only on success,
+               ;; with no args.
                :callback
-               (lambda ()
+               (lambda (&optional err)
                  (unwind-protect
-                     (funcall callback scratch)
+                     (funcall callback err (when (not err) scratch))
                    (kill-buffer scratch)))
                ;; The remote part of the buffers file-name or directory.
                :remote remote
@@ -1116,7 +1216,7 @@ For more implementation detail, see
     (setq-local indent-line-function
                 (buffer-local-value 'indent-line-function buffer))
     (setq-local lisp-indent-function
-		(buffer-local-value 'lisp-indent-function buffer))
+                (buffer-local-value 'lisp-indent-function buffer))
     (setq-local indent-tabs-mode
                 (buffer-local-value 'indent-tabs-mode buffer))
     (goto-char (point-min))
@@ -1138,20 +1238,25 @@ For more implementation detail, see
     (bibtex-reformat)
     (funcall callback)))
 
-(defun apheleia--run-formatters
+(cl-defun apheleia--run-formatters
     (formatters buffer remote callback &optional stdin)
   "Run one or more code formatters on the current buffer.
 FORMATTERS is a list of symbols that appear as keys in
 `apheleia-formatters'. BUFFER is the `current-buffer' when this
-function was first called. Once all the formatters in COMMANDS
-finish successfully then invoke CALLBACK with one argument, a
-buffer containing the output of all the formatters. REMOTE asserts
-whether the buffer being formatted is on a remote machine or the
-current machine. It should be the output of `file-remote-p' on the
-current variable `buffer-file-name'. REMOTE is the remote part of the
-original buffers file-name or directory'. It's used alongside
-`apheleia-remote-algorithm' to determine where the formatter process
-and any temporary files it may need should be placed.
+function was first called.
+
+CALLBACK is always invoked unless there is a synchronous nonlocal
+exit, the first argument is nil or an error. In the case of no
+error, the second argument is a buffer containing the output of
+all the formatters, otherwise it is nil.
+
+REMOTE asserts whether the buffer being formatted is on a remote
+machine or the current machine. It should be the output of
+`file-remote-p' on the current variable `buffer-file-name'.
+REMOTE is the remote part of the original buffers file-name or
+directory'. It's used alongside `apheleia-remote-algorithm' to
+determine where the formatter process and any temporary files it
+may need should be placed.
 
 STDIN is a buffer containing the standard input for the first
 formatter in COMMANDS. This should not be supplied by the caller
@@ -1175,15 +1280,20 @@ function: %s" command)))
      command
      buffer
      remote
-     (lambda (stdout)
-       (unless (string-empty-p (with-current-buffer stdout (buffer-string)))
-         (if (cdr formatters)
-             ;; Forward current stdout to remaining formatters, passing along
-             ;; the current callback and using the current formatters output
-             ;; as stdin.
-             (apheleia--run-formatters
-              (cdr formatters) buffer remote callback stdout)
-           (funcall callback stdout))))
+     (lambda (err stdout)
+       (if err
+           (funcall callback err stdout)
+         (condition-case-unless-debug err
+             (unless (string-empty-p
+                      (with-current-buffer stdout (buffer-string)))
+               (if (cdr formatters)
+                   ;; Forward current stdout to remaining formatters,
+                   ;; passing along the current callback and using the
+                   ;; current formatters output as stdin.
+                   (apheleia--run-formatters
+                    (cdr formatters) buffer remote callback stdout)
+                 (funcall callback nil stdout)))
+           (error (funcall callback err nil)))))
      stdin
      (car formatters))))
 
@@ -1228,6 +1338,7 @@ the current buffer.
 
 Consult the values of `apheleia-mode-alist' and
 `apheleia-formatter' to determine which formatter is configured.
+Consult also `apheleia-mode-predicates', if non-nil.
 
 If INTERACTIVE is non-nil, then prompt the user for which
 formatter to run if none is configured, instead of returning nil.
@@ -1256,7 +1367,12 @@ even if a formatter is configured."
                 ;; didn't exit early.
                 (let* ((unset (make-symbol "gensym-unset"))
                        (matched-mode nil)
-                       (formatters unset))
+                       (formatters unset)
+                       (mode major-mode))
+                  (cl-dolist (pred apheleia-mode-predicates)
+                    (when-let ((new-mode (funcall pred)))
+                      (setq mode new-mode)
+                      (cl-return)))
                   (cl-dolist (entry apheleia-mode-alist
                                     (unless (eq formatters unset)
                                       formatters))
@@ -1267,7 +1383,7 @@ even if a formatter is configured."
                                (eq formatters unset))
                       (cl-return (cdr entry)))
                     (when (and (symbolp (car entry))
-                               (derived-mode-p (car entry))
+                               (provided-mode-derived-p mode (car entry))
                                (or (eq formatters unset)
                                    (and
                                     (not (eq (car entry) matched-mode))

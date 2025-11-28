@@ -20,6 +20,10 @@
   "Root directory of the Git repository.
 Guaranteed to be absolute and expanded.")
 
+(defvar apheleia-ft--temp-dir
+  (expand-file-name "apheleia-ft" (temporary-file-directory))
+  "Directory for storing temporary files.")
+
 (defun apheleia-ft--relative-truename (path)
   "Given PATH relative to repo root, resolve symlinks.
 Return another path relative to repo root."
@@ -155,13 +159,67 @@ Return the filename."
 
 (defun apheleia-ft--input-files (formatter)
   "For given FORMATTER, return list of input files used in test cases.
-These are absolute filepaths beginning with \"in.\"."
-  (directory-files
+These are absolute filepaths whose basenames begin with \"in.\".
+FORMATTER is a string."
+  (directory-files-recursively
    (apheleia-ft--path-join
     apheleia-ft--test-dir
     "samplecode" formatter)
-   'full
    "^in\\."))
+
+(defun apheleia-ft--copy-inputs (formatter in-file)
+  "Prepare FORMATTER for testing by copying IN-FILE and related.
+FORMATTER is a string, IN-FILE is an absolute filepath whose
+basename begins with \"in.\". All files from the samplecode
+subdirectory for FORMATTER are copied to the toplevel of
+`apheleia-ft--temp-dir', replicating the directory structure,
+except that all the actual \"in.\" and \"out.\" files are not
+copied, except for IN-FILE, which is left in the corresponding
+place in the directory structure. Any existing files or
+directories in `apheleia-ft--temp-dir' are removed. Return the
+absolute filepath to which IN-FILE was copied in the temporary
+directory."
+  (delete-directory apheleia-ft--temp-dir 'recursive)
+  (unless (zerop
+           (call-process
+            "cp" nil nil nil
+            (apheleia-ft--path-join
+             apheleia-ft--test-dir
+             "samplecode" formatter)
+            apheleia-ft--temp-dir
+            "-RTL"))
+    (error "cp failed"))
+  (with-temp-file (expand-file-name ".dir-locals.el" apheleia-ft--temp-dir)
+    (prin1 '((nil . ((indent-tabs-mode . nil)
+                     (apheleia-formatters-respect-fill-column . nil)
+                     (apheleia-formatters-respect-indent-level . nil))))
+           (current-buffer)))
+  (let ((new-file
+         (expand-file-name
+          (replace-regexp-in-string
+           (concat "^" (regexp-quote
+                        (apheleia-ft--path-join
+                         apheleia-ft--test-dir
+                         "samplecode" formatter))
+                   "/")
+           "" in-file)
+          apheleia-ft--temp-dir)))
+    (prog1 new-file
+      (dolist (fname (directory-files-recursively
+                      apheleia-ft--temp-dir
+                      "^\\(in\\|out\\)\\."))
+        (unless (string= fname new-file)
+          (delete-file fname)))
+      (let ((init-script (expand-file-name
+                          ".apheleia-ft.bash"
+                          (file-name-directory
+                           new-file))))
+        (when (file-exists-p init-script)
+          (let ((default-directory (file-name-directory init-script)))
+            (unless (zerop
+                     (call-process
+                      "bash" nil nil nil init-script))
+              (error "init script failed: %S" init-script))))))))
 
 (defun apheleia-ft--path-join (component &rest components)
   "Join COMPONENT and COMPONENTS together, left to right.
@@ -242,12 +300,7 @@ involve running any formatters."
                       apheleia-ft--test-dir "samplecode" formatter out-file))
               (error "Input file %s is has no corresponding output file %s"
                      in-file out-file))
-            (push out-file out-files)))
-        (dolist (file all-files)
-          (unless (or (member file in-files)
-                      (member file out-files))
-            (error "Spurious sample code file at samplecode/%s/%s"
-                   formatter file)))))
+            (push out-file out-files)))))
     (dolist (samplecode-dir samplecode-dirs)
       (unless (member samplecode-dir formatters)
         (error
@@ -270,13 +323,17 @@ returned context."
   (interactive
    (unless (or current-prefix-arg noninteractive)
      (list (completing-read "Formatter: " (apheleia-ft--get-formatters)))))
-  (setq-default indent-tabs-mode nil)
+  ;; Yeah this code is super duplicative and really we should just
+  ;; refactor the original `apheleia--run-formatter-process' to be
+  ;; testable and run that instead. It would better ensure that
+  ;; behavior is the same between the test suite and the actual
+  ;; runtime. That is a future project. Or it could be a now project
+  ;; if you, dear reader, are feeling up to it.
   (dolist (formatter (or formatters (apheleia-ft--get-formatters)))
     (dolist (in-file (apheleia-ft--input-files formatter))
       (let* ((extension (file-name-extension in-file))
              (in-text (apheleia-ft--read-file in-file))
-             (in-temp-file (apheleia-ft--write-temp-file
-                            in-text extension))
+             (in-temp-file (apheleia-ft--copy-inputs formatter in-file))
              (out-temp-file nil)
              (command (alist-get (intern formatter) apheleia-formatters))
              (syms nil)
@@ -286,20 +343,28 @@ returned context."
              (exit-status nil)
              (out-file (replace-regexp-in-string
                         "/in\\([^/]+\\)" "/out\\1" in-file 'fixedcase))
-             (exec-path
-              (append `(,(expand-file-name
+             (script-dir (expand-file-name
                           "scripts/formatters"
                           (file-name-directory
                            (file-truename
                             ;; Borrowed with love from Magit
                             (let ((load-suffixes '(".el")))
                               (locate-library "apheleia"))))))
-                      exec-path)))
+             (exec-path (cons script-dir exec-path))
+             (process-environment
+              (cons (concat "PATH=" script-dir ":" (getenv "PATH"))
+                    process-environment))
+             (display-fname
+              (replace-regexp-in-string
+               (concat "^" (regexp-quote
+                            (apheleia-ft--path-join
+                             apheleia-ft--test-dir
+                             "samplecode" formatter))
+                       "/")
+               "" in-file)))
+        (when-let ((buf (get-file-buffer in-temp-file)))
+          (kill-buffer buf))
         (with-current-buffer (find-file-noselect in-temp-file)
-          ;; Some formatters use the current file-name or buffer-name to interpret the
-          ;; type of file that is being formatted. Some may not be able to determine
-          ;; this from the contents of the file so we set this to force it.
-          (rename-buffer (file-name-nondirectory in-file))
           (setq stdout-buffer (get-buffer-create
                                (format "*apheleia-ft-stdout-%S%s" formatter extension)))
           (with-current-buffer stdout-buffer
@@ -358,9 +423,12 @@ returned context."
             (apheleia-ft--print-diff
              "expected" expected-out-text
              "actual" out-text)
-            (error "Formatter %s did not format as expected" formatter)))
+            (error "Formatter %s did not format %s as expected"
+                   formatter display-fname)))
         (princ (format
                 "[format-test] success: formatter %s (file %s)\n"
-                formatter (file-name-nondirectory in-file)))))))
+                formatter display-fname))
+        ;; https://stackoverflow.com/a/66558297
+        (set-binary-mode 'stdout nil)))))
 
 (provide 'apheleia-ft)
