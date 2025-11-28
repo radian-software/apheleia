@@ -20,8 +20,6 @@
 (eval-when-compile
   (require 'rx))
 
-(autoload 'bibtex-reformat "bibtex" "Reformat BibTeX entries." t)
-(declare-function bibtex-reformat "bibtex" (beg end &optional arg))
 
 (defcustom apheleia-formatters
   '((astyle . ("astyle" (apheleia-formatters-locate-file
@@ -1238,7 +1236,8 @@ For more implementation detail, see
 `apheleia--run-formatter-function'."
   (with-current-buffer scratch
     (funcall (with-current-buffer buffer major-mode))
-    (bibtex-reformat)
+    (when (fboundp 'bibtex-reformat)
+    	(bibtex-reformat))
     (funcall callback)))
 
 (cl-defun apheleia--run-formatters
