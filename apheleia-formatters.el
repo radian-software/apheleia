@@ -1236,7 +1236,7 @@ For more implementation detail, see
   (with-current-buffer scratch
     (funcall (with-current-buffer buffer major-mode))
     (when (fboundp 'bibtex-reformat)
-        (bibtex-reformat))
+      (bibtex-reformat))
     (funcall callback)))
 
 (cl-defun apheleia--run-formatters
