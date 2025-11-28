@@ -32,7 +32,7 @@
                  (apheleia-formatters-indent
                   "--tab" "--indent-size" 'sh-basic-offset)
                  "-"))
-    (bibtex-format . apheleia-reformat-bibtex-buffer)
+    (bibtex . apheleia-reformat-bibtex-buffer)
     (black . ("black"
               (when (apheleia-formatters-extension-p "pyi") "--pyi")
               (apheleia-formatters-fill-column "--line-length")
@@ -322,7 +322,7 @@ rather than using this system."
     (bash-ts-mode . shfmt)
     (bazel-mode . buildifier)
     (beancount-mode . bean-format)
-    (bibtex-mode . bibtex-format)
+    (bibtex-mode . bibtex)
     (c++-ts-mode . clang-format)
     (caddyfile-mode . caddyfmt)
     (cc-mode . clang-format)
