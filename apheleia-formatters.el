@@ -18,7 +18,8 @@
 (require 'subr-x)
 
 (eval-when-compile
-  (require 'rx))
+  (require 'rx)
+  (require 'bibtex))
 
 (defcustom apheleia-formatters
   '((astyle . ("astyle" (apheleia-formatters-locate-file
