@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog].
 ### Formatters
 * Use clang-format for formatting Objective-C/C++ files ([#378]).
 * `bibtex-reformat` for BibTeX files.
+### Bugs fixed
+* `shfmt` did not work with `apheleia-formatters-respect-indent-level`
 
 ## 4.4.2 (released 2025-11-21)
 ### Bugs fixed
