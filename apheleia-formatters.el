@@ -181,7 +181,8 @@
      . ("python3" "-m" "json.tool"
         (apheleia-formatters-indent "--tab" "--indent")))
     (rubocop . ("rubocop" "--stdin" filepath "-a"
-                "--stderr" "--format" "quiet" "--fail-level" "fatal"))
+                "--stderr" "--format" "quiet" "--fail-level" "fatal"
+                "--force-exclusion"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
                       "--format" "quiet" "--fail-level" "fatal"))
     (ruby-syntax-tree . ("apheleia-from-project-root"
