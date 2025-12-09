@@ -7,8 +7,13 @@ The format is based on [Keep a Changelog].
 ### Formatters
 * Use clang-format for formatting Objective-C/C++ files ([#378]).
 * `bibtex-reformat` for BibTeX files.
+* `rubocop` changed to use `--force-exclusion` to obey exclusions in config
+  files ([#380]).
+
 ### Bugs fixed
 * `shfmt` did not work with `apheleia-formatters-respect-indent-level`
+
+[#380]: https://github.com/radian-software/apheleia/pull/380
 
 ## 4.4.2 (released 2025-11-21)
 ### Bugs fixed
