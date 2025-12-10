@@ -180,7 +180,7 @@
     (python3-json
      . ("python3" "-m" "json.tool"
         (apheleia-formatters-indent "--tab" "--indent")))
-    (rubocop . ("rubocop" "--stdin" filepath "-a"
+    (rubocop . ("rubocop" "--stdin" filepath "-a" ;; test
                 "--stderr" "--format" "quiet" "--fail-level" "fatal"))
     (ruby-standard . ("standardrb" "--stdin" filepath "--fix" "--stderr"
                       "--format" "quiet" "--fail-level" "fatal"))
