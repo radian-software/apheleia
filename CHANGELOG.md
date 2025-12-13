@@ -9,11 +9,14 @@ The format is based on [Keep a Changelog].
 * `bibtex-reformat` for BibTeX files.
 * `rubocop` changed to use `--force-exclusion` to obey exclusions in config
   files ([#380]).
+* [oxfmt](https://oxc.rs/docs/guide/usage/formatter) for JavaScript and
+  TypeScript files ([#382]).
 
 ### Bugs fixed
 * `shfmt` did not work with `apheleia-formatters-respect-indent-level`
 
 [#380]: https://github.com/radian-software/apheleia/pull/380
+[#382]: https://github.com/radian-software/apheleia/pull/382
 
 ## 4.4.2 (released 2025-11-21)
 ### Bugs fixed
