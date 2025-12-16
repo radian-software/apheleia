@@ -70,4 +70,6 @@ if [[ -d $dir ]]; then
 fi
 
 # Fall back to executing the command if it's installed and on the user's $PATH
-exec "$@"
+if command -v "$1" >/dev/null; then
+    exec "$@"
+fi

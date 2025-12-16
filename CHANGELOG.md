@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog].
 
 ### Bugs fixed
 * `shfmt` did not work with `apheleia-formatters-respect-indent-level`
+* `apheleia-npx` did return an error when formatter was missing
 
 [#380]: https://github.com/radian-software/apheleia/pull/380
 [#382]: https://github.com/radian-software/apheleia/pull/382
