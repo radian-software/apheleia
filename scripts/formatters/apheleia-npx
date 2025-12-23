@@ -73,3 +73,6 @@ fi
 if command -v "$1" >/dev/null; then
     exec "$@"
 fi
+
+echo "apheleia-npx:formatter_not_available" >&2
+exit 100
