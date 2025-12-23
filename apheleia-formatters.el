@@ -467,6 +467,23 @@ in the buffer."
          'mhtml-submode)
     #'mhtml-mode))
 
+;; Expected exit code and stderr output for script when real
+;; formatter is not available
+(defvar apheleia-script--formatter-not-available
+  '(:exit-code 100 :stderr "formatter_not_available"))
+
+(defun apheleia-script--formatter-not-available-p (ctx stderr)
+  "Check if script reports that no formatter has been found.
+CTX is a formatter process context.
+STDERR is the stderr output of process."
+  (and (eq (apheleia-formatter--exit-status ctx)
+           (plist-get apheleia-script--formatter-not-available :exit-code))
+       (string= stderr
+                (concat
+                 (apheleia-formatter--arg1 ctx) ":"
+                 (plist-get apheleia-script--formatter-not-available
+                            :stderr)))))
+
 ;;;###autoload
 (defcustom apheleia-mode-predicates '(apheleia-mhtml-mode-predicate)
   "List of predicates that check for sneaky major modes.
@@ -747,9 +764,14 @@ its exit status is 0."
                          proc-exit-status)
                    (let ((exit-ok (and
                                    (not proc-interrupted)
-                                   (funcall
-                                    (or exit-status #'zerop)
-                                    (apheleia-formatter--exit-status ctx)))))
+                                   (or
+                                    (funcall
+                                     (or exit-status #'zerop)
+                                     (apheleia-formatter--exit-status ctx))
+                                    (apheleia-script--formatter-not-available-p
+                                     ctx
+                                     (with-current-buffer stderr
+                                       (string-trim (buffer-string))))))))
                      ;; Append standard-error from current formatter
                      ;; to log buffer when
                      ;; `apheleia-log-only-errors' is nil or the
