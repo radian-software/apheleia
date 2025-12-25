@@ -88,6 +88,8 @@ The format is based on [Keep a Changelog].
   [Ocaml](https://ocaml.org/) ([#306]).
 
 ### Formatters
+* [Runic.jl](https://github.com/fredrikekre/Runic.jl) for 
+  [Julia](https://julialang.org) ([#331])
 * `vfmt` for
   [vlang](https://vlang.io/) ([#324]).
 * [`typstyle`](https://github.com/Enter-tainer/typstyle) for
@@ -135,6 +137,7 @@ The format is based on [Keep a Changelog].
 [#325]: https://github.com/radian-software/apheleia/pull/325
 [#326]: https://github.com/radian-software/apheleia/pull/326
 [#327]: https://github.com/radian-software/apheleia/pull/327
+[#331]: https://github.com/radian-software/apheleia/pull/331
 
 ## 4.2 (released 2024-08-03)
 ### Changes
