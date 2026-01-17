@@ -25,7 +25,7 @@ the following keys:
 - `lines': number of lines to be inserted or removed
 - `text': the string to be inserted, only for `addition'
 
-See <https://tools.ietf.org/doc/tcllib/html/rcs.html#section4>
+See <https://web.archive.org/web/20220527003730/https://tools.ietf.org/doc/tcllib/html/rcs.html#section4>
 for documentation on the RCS patch format."
   (save-excursion
     (goto-char (point-min))
@@ -100,7 +100,8 @@ contains the patch."
              ;; Account for the off-by-one error in the RCS patch spec
              ;; (namely, text is added *after* the line mentioned in
              ;; the patch).
-             (when (eq (alist-get 'command command) 'addition)
+             (when (and (eq (alist-get 'command command) 'addition)
+                        (> (alist-get 'start command) 0))
                (forward-line))
              (push `(marker . ,(point-marker)) command)
              (push command commands)
@@ -130,6 +131,7 @@ contains the patch."
                                 -1)
                              (alist-get 'start addition)))
                  (let ((text-start (alist-get 'marker deletion)))
+                   (goto-char text-start)
                    (forward-line (alist-get 'lines deletion))
                    (let ((text-end (point)))
                      (dolist (pos-spec pos-list)
@@ -206,3 +208,7 @@ contains the patch."
 (provide 'apheleia-rcs)
 
 ;;; apheleia-rcs.el ends here
+
+;; Local Variables:
+;; byte-compile-docstring-max-column: 160
+;; End:

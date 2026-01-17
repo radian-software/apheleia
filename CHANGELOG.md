@@ -3,6 +3,82 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Formatters
+* Use clang-format for formatting Objective-C/C++ files ([#378]).
+* `bibtex-reformat` for BibTeX files.
+* `rubocop` changed to use `--force-exclusion` to obey exclusions in config
+  files ([#380]).
+* [oxfmt](https://oxc.rs/docs/guide/usage/formatter) for JavaScript and
+  TypeScript files ([#382]).
+
+### Bugs fixed
+* `shfmt` did not work with `apheleia-formatters-respect-indent-level`
+* `apheleia-npx` did return an error when formatter was missing
+
+[#380]: https://github.com/radian-software/apheleia/pull/380
+[#382]: https://github.com/radian-software/apheleia/pull/382
+
+## 4.4.2 (released 2025-11-21)
+### Bugs fixed
+* apheleia-formatters-indent did not handle yaml-ts-mode; added with
+  same behaviour as yaml-mode
+* apheleia-formatters-indent did not handle js-json-mode; added with
+  same behaviour as json-mode
+* A formatter that adds indentation while point is at the end of the
+  line would sometimes leave point at the wrong position ([#362]).
+### Formatters
+* [hurlfmt](https://hurl.dev) for hurl files.
+* [csharpier](https://github.com/belav/csharpier) for C#.
+* [taplo](https://taplo.tamasfe.dev/) for TOML.
+* [styler](https://styler.r-lib.org/) for R.
+
+[#362]: https://github.com/radian-software/apheleia/issues/362
+
+## 4.4.1 (released 2025-05-13)
+### Enhancements
+* Black will respect configuration in `pyproject.toml` when run via
+  Apheleia.
+
+### Bugs fixed
+* A formatter that moves a line to the top of the file would sometimes
+  place it as the second line instead ([#299]).
+* Fix invoking the diff command on Windows by always passing the --text
+  flag.
+
+### Formatters
+* Format Bazel files according to their type
+* `nomad fmt` official formatter for
+  [HashiCorp Nomad](https://developer.hashicorp.com/nomad) ([#361]).
+
+[#299]: https://github.com/radian-software/apheleia/issues/299
+
+## 4.4 (released 2025-02-12)
+### Bugs fixed
+* `$PATH` was not correctly respected for some remote executables ([#341]).
+
+### Formatters
+* [cljstyle](https://github.com/greglook/cljstyle)
+  for clojure, clojurescript, edn files.
+* `biome` ([#339]).
+* `gdformat` for [gdscript](https://docs.godotengine.org/en/stable/tutorials/scripting/gdscript/gdscript_basics.html) ([#342]).
+* `prettier-json-stringify` ([#183]).
+* `nix-ts-mode` buffers are now formatted with nixfmt like `nix-mode`
+  buffers are.
+* Fix `foumolu` arguements
+* Both `haskell-mode` and the newly added
+  `haskell-ts-mode` buffers are formatted with `fourmolu`
+
+### Internal
+* You can run the formatter tests locally with podman instead of
+  docker now, if you want. Export `USE_PODMAN=1` ([#343]).
+
+[#183]: https://github.com/radian-software/apheleia/pull/183
+[#339]: https://github.com/radian-software/apheleia/pull/339
+[#341]: https://github.com/radian-software/apheleia/pull/341
+[#342]: https://github.com/radian-software/apheleia/pull/342
+[#343]: https://github.com/radian-software/apheleia/pull/343
+
 ## 4.3 (released 2024-11-12)
 ### Features
 * New user option `apheleia-skip-functions`, like

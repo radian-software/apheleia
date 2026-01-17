@@ -49,6 +49,8 @@ checkdoc: ## Check for missing or poorly formatted docstrings
 	        --eval "(or (fboundp 'checkdoc-file) (kill-emacs))" \
 	        --eval "(setq sentence-end-double-space nil)" \
 	        --eval "(checkdoc-file \"$$file\")" 2>&1 \
+		| (grep -v "Warning (emacs): \\?$$" ||:) \
+		| (grep -v "Some lines are over 80 columns wide" ||:) \
 	        | grep . && exit 1 || true ;\
 	done
 

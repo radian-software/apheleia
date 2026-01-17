@@ -28,7 +28,7 @@ The approach is as follows:
    has finished running, check if the buffer has been modified since
    it started; only apply the changes if not.
 2. After running the code formatter, generate an [RCS
-   patch](https://tools.ietf.org/doc/tcllib/html/rcs.html#section4)
+   patch](https://web.archive.org/web/20220527003730/https://tools.ietf.org/doc/tcllib/html/rcs.html#section4)
    showing the changes and then apply it to the buffer. This prevents
    changes elsewhere in the buffer from moving point. If a patch
    region happens to include point, then use a [dynamic programming
