@@ -238,7 +238,7 @@
     (yq-xml . ("yq" "--prettyPrint" "--no-colors"
                "--input-format" "xml" "--output-format" "xml"
                (apheleia-formatters-indent nil "--indent")))
-    (yq-yaml . ("yq" "--prettyPrint" "--no-colors" "--no-doc"
+    (yq-yaml . ("yq" "--prettyPrint" "--no-colors"
                 "--input-format" "yaml" "--output-format" "yaml"
                 (apheleia-formatters-indent nil "--indent")))
     (zig-fmt . ("zig" "fmt" "--stdin")))
