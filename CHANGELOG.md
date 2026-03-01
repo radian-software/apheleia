@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Enhancements
+
+* Better support for BSD OSes using `gdiff` for RCS formatting, 
+  fallback to `diff`, which is the default GNU utility in Linux ([#388]).
+
+[#388]: https://github.com/radian-software/apheleia/pull/388
+
 ## 4.4.3 (released 2026-02-21)
 ### Formatters
 * Removed `--no-doc` argument from yq-yaml to avoid breaking

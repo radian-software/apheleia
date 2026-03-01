@@ -938,7 +938,10 @@ See `apheleia--run-formatters' for a description of REMOTE."
 
     (let ((ctx (apheleia-formatter--context)))
       (setf (apheleia-formatter--name ctx) nil ; Skip logging on failure
-            (apheleia-formatter--arg1 ctx) "diff"
+            (apheleia-formatter--arg1 ctx)
+            ;; Search gdiff in PATH, else use diff, useful for BSD
+            (if (executable-find "gdiff") "gdiff"
+              "diff")
             (apheleia-formatter--argv ctx) `("--rcs"
                                              "--strip-trailing-cr"
                                              "--text"
