@@ -6,10 +6,15 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Enhancements
 
-* Better support for BSD OSes using `gdiff` for RCS formatting, 
+* Ocamlformat is now used in `neocaml-mode` and `neocaml-interface-mode`
+  in addition to `tuareg-mode`
+  ([#389]).
+
+* Better support for BSD OSes using `gdiff` for RCS formatting,
   fallback to `diff`, which is the default GNU utility in Linux ([#388]).
 
 [#388]: https://github.com/radian-software/apheleia/pull/388
+[#389]: https://github.com/radian-software/apheleia/pull/389
 
 ## 4.4.3 (released 2026-02-21)
 ### Formatters

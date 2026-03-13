@@ -380,6 +380,8 @@ rather than using this system."
     ;; markdown code in so many different ways and we don't want to
     ;; try imposing a standard by default
     (nasm-mode . asmfmt)
+    (neocaml-interface-mode . ocamlformat)
+    (neocaml-mode . ocamlformat)
     (nix-mode . nixfmt)
     (nix-ts-mode . nixfmt)
     (nomad-mode . nomad)
