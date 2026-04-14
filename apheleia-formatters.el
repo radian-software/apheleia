@@ -112,6 +112,7 @@
                     "--enable-outside-detected-project"))
     (ocp-indent . ("ocp-indent"))
     (ormolu . ("ormolu" "--stdin-input-file" filepath))
+    (opentofu . ("tofu" "fmt" "-"))
     (oxfmt . ("apheleia-npx" "oxfmt" inplace))
     (perltidy . ("perltidy" "--quiet" "--standard-error-output"
                  (apheleia-formatters-indent "-t" "-i")
@@ -403,7 +404,7 @@ rather than using this system."
     (scss-mode . prettier-scss)
     (sql-mode . pgformatter)
     (svelte-mode . prettier-svelte)
-    (terraform-mode . terraform)
+    (terraform-mode . opentofu)
     (TeX-latex-mode . latexindent)
     (TeX-mode . latexindent)
     (toml-ts-mode . taplo)
