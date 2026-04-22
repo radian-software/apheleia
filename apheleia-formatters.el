@@ -1249,6 +1249,10 @@ For more implementation detail, see
                 (buffer-local-value 'lisp-indent-function buffer))
     (setq-local indent-tabs-mode
                 (buffer-local-value 'indent-tabs-mode buffer))
+    (setq-local lisp-indent-offset
+                (buffer-local-value 'lisp-indent-offset buffer))
+    (setq-local lisp-body-indent
+                (buffer-local-value 'lisp-body-indent buffer))
     (goto-char (point-min))
     (let ((inhibit-message t)
           (message-log-max nil))
