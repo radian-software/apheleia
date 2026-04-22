@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-changed_files="$(git diff --name-only origin/main)"
+changed_files="$(git diff --name-only origin/main...)"
 if [[ -z "${changed_files}" ]]; then
     exit 0
 fi
