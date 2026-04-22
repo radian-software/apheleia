@@ -17,11 +17,14 @@ The format is based on [Keep a Changelog].
 ### Bugs fixed
 * `shfmt` did not work with `apheleia-formatters-respect-indent-level`
 * `apheleia-npx` did return an error when formatter was missing
+* `lisp-indent` formatter did not respect `lisp-indent-offset` and
+  `lisp-body-offset` ([#393])
 
 [#378]: https://github.com/radian-software/apheleia/pull/378
 [#380]: https://github.com/radian-software/apheleia/pull/380
 [#382]: https://github.com/radian-software/apheleia/pull/382
 [#386]: https://github.com/radian-software/apheleia/pull/386
+[#393]: https://github.com/radian-software/apheleia/pull/393
 
 ## 4.4.2 (released 2025-11-21)
 ### Bugs fixed
