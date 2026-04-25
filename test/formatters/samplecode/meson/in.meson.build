@@ -1,0 +1,3 @@
+# -*- mode: meson -*-
+project('meson-example', 'c', version: '1.2.3', default_options: ['warning_level=3', 'c_std=c11'])
+e=executable(meson.project_name(), sources: ['src' / 'lib.c','src' / 'main.c'])

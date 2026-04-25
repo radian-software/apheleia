@@ -104,6 +104,8 @@
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
+    (meson . ("meson" "format"
+	      "--editor-config" "--source-file-path" filepath "-"))
     (mix-format . ("apheleia-from-project-root"
                    ".formatter.exs" "apheleia-mix-format" filepath))
     (nixfmt . ("nixfmt"))
@@ -380,6 +382,7 @@ rather than using this system."
     ;; markdown-mode not included because so many people format
     ;; markdown code in so many different ways and we don't want to
     ;; try imposing a standard by default
+    (meson-mode . meson)
     (nasm-mode . asmfmt)
     (neocaml-interface-mode . ocamlformat)
     (neocaml-mode . ocamlformat)
