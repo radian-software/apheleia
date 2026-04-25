@@ -108,6 +108,7 @@
 	      "--editor-config" "--source-file-path" filepath "-"))
     (mix-format . ("apheleia-from-project-root"
                    ".formatter.exs" "apheleia-mix-format" filepath))
+    (muon . ("muon" "fmt" "-e" "-"))
     (nixfmt . ("nixfmt"))
     (nomad . ("nomad" "fmt" "-"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
