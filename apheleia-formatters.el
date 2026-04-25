@@ -75,6 +75,8 @@
 		   (apheleia-formatters-fill-column "--line-width")))
     (denofmt-tsx . ("deno" "fmt" "-" "--ext" "tsx"
 		    (apheleia-formatters-fill-column "--line-width")))
+    (denofmt-yaml . ("deno" "fmt" "-" "--ext" "yaml"
+		     (apheleia-formatters-fill-column "--line-width")))
     (dhall-format . ("dhall" "format"))
     (docformatter . ("apheleia-docformatter" inplace))
     (dprint . ("dprint" "fmt" "--stdin" filepath))
