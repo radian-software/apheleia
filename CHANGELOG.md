@@ -9,6 +9,11 @@ The format is based on [Keep a Changelog].
 * OpenTofu has been added as a formatter, and is now used instead of
   Terraform to format `.tf` files, by default ([#391]).
 
+* Meson and Muon formatters have been added and Meson is used by
+  default in meson-mode ([#394]).
+
+* A variant of `deno format` was added to support YAML files ([#394]).
+
 ### Enhancements
 
 * Ocamlformat is now used in `neocaml-mode` and `neocaml-interface-mode`
@@ -18,9 +23,13 @@ The format is based on [Keep a Changelog].
 * Better support for BSD OSes using `gdiff` for RCS formatting,
   fallback to `diff`, which is the default GNU utility in Linux ([#388]).
 
+* `deno format` formatters now have fill-column support using the
+  --line-width argument ([#394]).
+
 [#388]: https://github.com/radian-software/apheleia/pull/388
 [#389]: https://github.com/radian-software/apheleia/pull/389
 [#391]: https://github.com/radian-software/apheleia/pull/391
+[#394]: https://github.com/radian-software/apheleia/pull/394
 
 ## 4.4.3 (released 2026-02-21)
 ### Formatters
