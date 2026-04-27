@@ -59,14 +59,24 @@
                   (apheleia-formatters-indent
                    "--indent-with-tabs" "--indent-size"))
     (dart-format . ("dart" "format"))
-    (denofmt . ("deno" "fmt" "-"))
-    (denofmt-js . ("deno" "fmt" "-" "--ext" "js"))
-    (denofmt-json . ("deno" "fmt" "-" "--ext" "json"))
-    (denofmt-jsonc . ("deno" "fmt" "-" "--ext" "jsonc"))
-    (denofmt-jsx . ("deno" "fmt" "-" "--ext" "jsx"))
-    (denofmt-md . ("deno" "fmt" "-" "--ext" "md"))
-    (denofmt-ts . ("deno" "fmt" "-" "--ext" "ts"))
-    (denofmt-tsx . ("deno" "fmt" "-" "--ext" "tsx"))
+    (denofmt . ("deno" "fmt" "-"
+		(apheleia-formatters-fill-column "--line-width")))
+    (denofmt-js . ("deno" "fmt" "-" "--ext" "js"
+		   (apheleia-formatters-fill-column "--line-width")))
+    (denofmt-json . ("deno" "fmt" "-" "--ext" "json"
+		     (apheleia-formatters-fill-column "--line-width")))
+    (denofmt-jsonc . ("deno" "fmt" "-" "--ext" "jsonc"
+		      (apheleia-formatters-fill-column "--line-width")))
+    (denofmt-jsx . ("deno" "fmt" "-" "--ext" "jsx"
+		    (apheleia-formatters-fill-column "--line-width")))
+    (denofmt-md . ("deno" "fmt" "-" "--ext" "md"
+		   (apheleia-formatters-fill-column "--line-width")))
+    (denofmt-ts . ("deno" "fmt" "-" "--ext" "ts"
+		   (apheleia-formatters-fill-column "--line-width")))
+    (denofmt-tsx . ("deno" "fmt" "-" "--ext" "tsx"
+		    (apheleia-formatters-fill-column "--line-width")))
+    (denofmt-yaml . ("deno" "fmt" "-" "--ext" "yaml"
+		     (apheleia-formatters-fill-column "--line-width")))
     (dhall-format . ("dhall" "format"))
     (docformatter . ("apheleia-docformatter" inplace))
     (dprint . ("dprint" "fmt" "--stdin" filepath))
@@ -104,8 +114,11 @@
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
+    (meson . ("meson" "format"
+	      "--editor-config" "--source-file-path" filepath "-"))
     (mix-format . ("apheleia-from-project-root"
                    ".formatter.exs" "apheleia-mix-format" filepath))
+    (muon . ("muon" "fmt" "-e" "-"))
     (nixfmt . ("nixfmt"))
     (nomad . ("nomad" "fmt" "-"))
     (ocamlformat . ("ocamlformat" "-" "--name" filepath
@@ -380,6 +393,7 @@ rather than using this system."
     ;; markdown-mode not included because so many people format
     ;; markdown code in so many different ways and we don't want to
     ;; try imposing a standard by default
+    (meson-mode . meson)
     (nasm-mode . asmfmt)
     (neocaml-interface-mode . ocamlformat)
     (neocaml-mode . ocamlformat)
