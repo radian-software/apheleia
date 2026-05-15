@@ -14,6 +14,11 @@ The format is based on [Keep a Changelog].
 
 * A variant of `deno format` was added to support YAML files ([#394]).
 
+* `sqlfluff` has been added as a formatter. It is not enabled by
+  default; `pgformatter` remains the default for `sql-mode`. Set
+  `apheleia-formatter` to `sqlfluff` to use it. A `.sqlfluff` config
+  file specifying the SQL dialect is required in the project.
+
 ### Enhancements
 
 * Ocamlformat is now used in `neocaml-mode` and `neocaml-interface-mode`

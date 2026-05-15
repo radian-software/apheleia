@@ -216,6 +216,7 @@
     (snakefmt . ("snakefmt"
                  (apheleia-formatters-fill-column "--line-length")
                  "-"))
+    (sqlfluff . ("sqlfluff" "format" "--disable-progress-bar" "-"))
     (shfmt . ("shfmt"
               "-filename" filepath
               "-ln" (cl-case (bound-and-true-p sh-shell)
