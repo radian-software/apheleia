@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.5.0 (released 2026-05-25)
 ### Changes
 
 * OpenTofu has been added as a formatter, and is now used instead of
@@ -17,17 +17,16 @@ The format is based on [Keep a Changelog].
 * `sqlfluff` has been added as a formatter. It is not enabled by
   default; `pgformatter` remains the default for `sql-mode`. Set
   `apheleia-formatter` to `sqlfluff` to use it. A `.sqlfluff` config
-  file specifying the SQL dialect is required in the project
-  ([#395]).
+  file specifying the SQL dialect is required in the project ([#395]).
 
 ### Enhancements
 
-* Ocamlformat is now used in `neocaml-mode` and `neocaml-interface-mode`
-  in addition to `tuareg-mode`
-  ([#389]).
+* Ocamlformat is now used in `neocaml-mode` and
+  `neocaml-interface-mode` in addition to `tuareg-mode` ([#389]).
 
 * Better support for BSD OSes using `gdiff` for RCS formatting,
-  fallback to `diff`, which is the default GNU utility in Linux ([#388]).
+  fallback to `diff`, which is the default GNU utility in Linux
+  ([#388]).
 
 * `deno format` formatters now have fill-column support using the
   --line-width argument ([#394]).
