@@ -10,6 +10,12 @@ The format is based on [Keep a Changelog].
   It is not enabled by default; `phpcs` remains the default for PHP
   modes ([#397]).
 
+### Enhancements
+
+* Recognize csharp, dockerfile and php ts-modes, apply same settings as
+  for the corresponding non-ts modes ([#396]).
+
+[#396]: https://github.com/radian-software/apheleia/pull/396
 [#397]: https://github.com/radian-software/apheleia/pull/397
 
 ## 4.5.0 (released 2026-05-25)
