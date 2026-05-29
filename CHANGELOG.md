@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Changes
+
+* [golangci-lint](https://golangci-lint.run) has been added as a Go formatter.
+  It is not enabled by default; `gofmt` remains the default for Go modes
+  ([#398]).
+
+[#398]: https://github.com/radian-software/apheleia/pull/398
+
 ## 4.5.0 (released 2026-05-25)
 ### Changes
 
