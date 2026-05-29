@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog].
 * [Mago](https://mago.carthage.software) has been added as a PHP formatter.
   It is not enabled by default; `phpcs` remains the default for PHP
   modes ([#397]).
+* [golangci-lint](https://golangci-lint.run) has been added as a Go formatter.
+  It is not enabled by default; `gofmt` remains the default for Go modes
+  ([#398]).
 
 ### Enhancements
 
@@ -17,6 +20,7 @@ The format is based on [Keep a Changelog].
 
 [#396]: https://github.com/radian-software/apheleia/pull/396
 [#397]: https://github.com/radian-software/apheleia/pull/397
+[#398]: https://github.com/radian-software/apheleia/pull/398
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes

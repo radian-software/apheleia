@@ -89,6 +89,7 @@
     (gofmt . ("gofmt"))
     (gofumpt . ("gofumpt"))
     (goimports . ("goimports"))
+    (golangci-lint . ("golangci-lint" "fmt" "--stdin"))
     (google-java-format . ("google-java-format" "-"))
     (hclfmt . ("hclfmt"))
     (html-beautify "html-beautify" "--file" "-" "--end-with-newline"
