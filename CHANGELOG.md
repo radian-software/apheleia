@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Enhancements
+
+* Recognize csharp, dockerfile and php ts-modes, apply same settings as
+  for the corresponding non-ts modes ([#396]).
+
+[#396]: https://github.com/radian-software/apheleia/pull/396
+
 ## 4.5.0 (released 2026-05-25)
 ### Changes
 
