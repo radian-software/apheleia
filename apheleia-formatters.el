@@ -115,6 +115,8 @@
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
+    (mago . ("mago" "--no-version-check"
+	     "format" "--stdin-input" "--stdin-filepath" filepath))
     (meson . ("meson" "format"
 	      "--editor-config" "--source-file-path" filepath "-"))
     (mix-format . ("apheleia-from-project-root"
@@ -354,11 +356,13 @@ rather than using this system."
     (cperl-mode . perltidy)
     (crystal-mode . crystal-tool-format)
     (csharp-mode . csharpier)
+    (csharp-ts-mode . csharpier)
     (css-mode . prettier-css)
     (css-ts-mode . prettier-css)
     (dart-mode . dart-format)
     (dart-ts-mode . dart-format)
     (dockerfile-mode . dprint)
+    (dockerfile-ts-mode . dprint)
     (elixir-mode . mix-format)
     (elixir-ts-mode . mix-format)
     (elm-mode . elm-format)
@@ -407,6 +411,7 @@ rather than using this system."
     ("\\.mm\\'" . clang-format)
     (perl-mode . perltidy)
     (php-mode . phpcs)
+    (php-ts-mode . phpcs)
     (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
