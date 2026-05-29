@@ -39,7 +39,7 @@ file path. `apheleia' will delete this file on cleanup."
     :accessor apheleia-formatter--input-fname
     :initform nil)
    (output-fname
-    :documentation "Optional path to an temporary output file.
+    :documentation "Optional path to a temporary output file.
 When set the formatter process is meant to write the formatted input to this
 file. `apheleia' will delete this file on cleanup."
     :accessor apheleia-formatter--output-fname
