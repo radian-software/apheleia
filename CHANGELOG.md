@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Changes
+
+* [Mago](https://mago.carthage.software) has been added as a PHP formatter.
+  It is not enabled by default; `phpcs` remains the default for PHP
+  modes ([#397]).
+
+[#397]: https://github.com/radian-software/apheleia/pull/397
+
 ## 4.5.0 (released 2026-05-25)
 ### Changes
 

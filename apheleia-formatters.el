@@ -114,6 +114,8 @@
     (lisp-indent . apheleia-indent-lisp-buffer)
     (ktlint . ("ktlint" "--log-level=none" "--stdin" "-F" "-"))
     (latexindent . ("latexindent" "--logfile=/dev/null"))
+    (mago . ("mago" "--no-version-check"
+	     "format" "--stdin-input" "--stdin-filepath" filepath))
     (meson . ("meson" "format"
 	      "--editor-config" "--source-file-path" filepath "-"))
     (mix-format . ("apheleia-from-project-root"
