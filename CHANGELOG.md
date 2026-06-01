@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog].
 * [golangci-lint](https://golangci-lint.run) has been added as a Go formatter.
   It is not enabled by default; `gofmt` remains the default for Go modes
   ([#398]).
+* [rumdl](https://github.com/rvben/rumdl) has been added as a Markdown
+  formatter ([#400]).
 
 ### Enhancements
 
@@ -21,6 +23,7 @@ The format is based on [Keep a Changelog].
 [#396]: https://github.com/radian-software/apheleia/pull/396
 [#397]: https://github.com/radian-software/apheleia/pull/397
 [#398]: https://github.com/radian-software/apheleia/pull/398
+[#400]: https://github.com/radian-software/apheleia/pull/400
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes
