@@ -205,6 +205,7 @@
                       "--format" "quiet" "--fail-level" "fatal"))
     (ruby-syntax-tree . ("apheleia-from-project-root"
                          ".streerc" "stree" "format" filepath))
+    (rumdl . ("rumdl" "fmt" "--stdin" "--stdin-filename" filepath))
     (ruff . ("ruff" "format"
              "--silent"
              (apheleia-formatters-fill-column "--line-length")
