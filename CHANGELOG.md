@@ -20,10 +20,16 @@ The format is based on [Keep a Changelog].
 * Recognize csharp, dockerfile and php ts-modes, apply same settings as
   for the corresponding non-ts modes ([#396]).
 
+### Bugs fixed
+
+* Do not pass any parser or printer options to shfmt. Doing so causes
+  .editorconfig configuration that might be in effect to be ignored
+  altogether ([#401]).
+
 [#396]: https://github.com/radian-software/apheleia/pull/396
 [#397]: https://github.com/radian-software/apheleia/pull/397
 [#398]: https://github.com/radian-software/apheleia/pull/398
-[#400]: https://github.com/radian-software/apheleia/pull/400
+[#402]: https://github.com/radian-software/apheleia/pull/402
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes
