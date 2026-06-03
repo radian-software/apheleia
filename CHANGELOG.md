@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Changes
 
+* Apheleia no longer passes config options to shfmt based on Emacs
+  configuration, because shfmt has a behavior where doing so
+  completely erases all .editorconfig configuration, which is
+  relatively undesirable ([#402]).
+
+### New formatters
+
 * [Mago](https://mago.carthage.software) has been added as a PHP formatter.
   It is not enabled by default; `phpcs` remains the default for PHP
   modes ([#397]).
@@ -19,12 +26,6 @@ The format is based on [Keep a Changelog].
 
 * Recognize csharp, dockerfile and php ts-modes, apply same settings as
   for the corresponding non-ts modes ([#396]).
-
-### Bugs fixed
-
-* Do not pass any parser or printer options to shfmt. Doing so causes
-  .editorconfig configuration that might be in effect to be ignored
-  altogether ([#401]).
 
 [#396]: https://github.com/radian-software/apheleia/pull/396
 [#397]: https://github.com/radian-software/apheleia/pull/397
