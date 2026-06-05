@@ -28,7 +28,11 @@ mkdir /tmp/apheleia-work
 cd /tmp/apheleia-work
 
 latest_release() {
-    curl -fsSL "https://api.github.com/repos/$1/releases/latest" | jq -r .tag_name
+    local headers=()
+    if [[ -n "${GITHUB_TOKEN:-}" ]]; then
+        headers+=(-H "Authorization: Bearer ${GITHUB_TOKEN}")
+    fi
+    curl -fsSL "${headers[@]}" "https://api.github.com/repos/$1/releases/latest" | jq -r .tag_name
 }
 
 echo >&2 "-- Will install ${#FORMATTERS[@]} formatter(s) --"

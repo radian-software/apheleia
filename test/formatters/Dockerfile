@@ -13,6 +13,6 @@ FROM common
 ARG FORMATTERS
 COPY install-formatters.bash /build/
 COPY installers /build/installers/
-RUN ./install-formatters.bash
+RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN ./install-formatters.bash
 
 WORKDIR /src

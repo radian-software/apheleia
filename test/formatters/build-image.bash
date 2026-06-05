@@ -30,4 +30,5 @@ fi
 
 exec "${docker[@]}" build . "${args[@]}"       \
      -t "apheleia-formatters:${TAG:-latest}"   \
-     --build-arg "FORMATTERS=${FORMATTERS:-}"
+     --build-arg "FORMATTERS=${FORMATTERS:-}"  \
+     --secret id=GITHUB_TOKEN,env=GITHUB_TOKEN
