@@ -221,20 +221,9 @@
                  (apheleia-formatters-fill-column "--line-length")
                  "-"))
     (sqlfluff . ("sqlfluff" "format" "--disable-progress-bar" "-"))
-    (shfmt . ("shfmt"
-              "-filename" filepath
-              "-ln" (cl-case (bound-and-true-p sh-shell)
-                      (sh "posix")
-                      (t "bash"))
-              (when apheleia-formatters-respect-indent-level
-                (format
-                 "--indent=%d"
-                 (cond
-                  (indent-tabs-mode 0)
-                  ((boundp 'sh-basic-offset)
-                   sh-basic-offset)
-                  (t 4))))
-              "-"))
+    ;; Note: do not pass any parser or printer flags to shfmt,
+    ;; doing so causes editorconfig configuration to be bypassed altogether.
+    (shfmt . ("shfmt" "-filename" filepath "-"))
     (rufo . ("rufo" "--filename" filepath "--simple-exit"))
     (stylua . ("stylua" "-"))
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))

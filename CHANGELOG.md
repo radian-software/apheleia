@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Changes
 
+* Apheleia no longer passes config options to shfmt based on Emacs
+  configuration, because shfmt has a behavior where doing so
+  completely erases all .editorconfig configuration, which is
+  relatively undesirable ([#402]).
+
+### New formatters
+
 * [Mago](https://mago.carthage.software) has been added as a PHP formatter.
   It is not enabled by default; `phpcs` remains the default for PHP
   modes ([#397]).
@@ -23,7 +30,7 @@ The format is based on [Keep a Changelog].
 [#396]: https://github.com/radian-software/apheleia/pull/396
 [#397]: https://github.com/radian-software/apheleia/pull/397
 [#398]: https://github.com/radian-software/apheleia/pull/398
-[#400]: https://github.com/radian-software/apheleia/pull/400
+[#402]: https://github.com/radian-software/apheleia/pull/402
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes
