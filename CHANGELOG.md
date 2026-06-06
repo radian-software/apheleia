@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog].
   ([#398]).
 * [rumdl](https://github.com/rvben/rumdl) has been added as a Markdown
   formatter ([#400]).
+* [pkl](https://pkl-lang.org/main/current/pkl-cli/) has been added as a Pkl
+  formatter. It is used by default in `pkl-mode` ([#403]).
 
 ### Enhancements
 
@@ -31,6 +33,7 @@ The format is based on [Keep a Changelog].
 [#397]: https://github.com/radian-software/apheleia/pull/397
 [#398]: https://github.com/radian-software/apheleia/pull/398
 [#402]: https://github.com/radian-software/apheleia/pull/402
+[#403]: https://github.com/radian-software/apheleia/pull/403
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes

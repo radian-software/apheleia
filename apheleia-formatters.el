@@ -137,6 +137,7 @@
                     (apheleia-formatters-indent "--tabs" "--spaces" 'tab-width)
                     (apheleia-formatters-fill-column "--wrap-limit")))
     (phpcs . ("apheleia-phpcs"))
+    (pkl . ("apheleia-pkl" "format" "-"))
     (prettier
      . ("apheleia-npx" "prettier" "--stdin-filepath" filepath
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
@@ -402,6 +403,7 @@ rather than using this system."
     (perl-mode . perltidy)
     (php-mode . phpcs)
     (php-ts-mode . phpcs)
+    (pkl-mode . pkl)
     (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
