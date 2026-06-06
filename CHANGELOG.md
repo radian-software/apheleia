@@ -28,12 +28,14 @@ The format is based on [Keep a Changelog].
 
 * Recognize csharp, dockerfile and php ts-modes, apply same settings as
   for the corresponding non-ts modes ([#396]).
+* [yq](https://mikefarah.gitbook.io/yq) is now used in `tsv-mode` ([#406]).
 
 [#396]: https://github.com/radian-software/apheleia/pull/396
 [#397]: https://github.com/radian-software/apheleia/pull/397
 [#398]: https://github.com/radian-software/apheleia/pull/398
 [#402]: https://github.com/radian-software/apheleia/pull/402
 [#403]: https://github.com/radian-software/apheleia/pull/403
+[#406]: https://github.com/radian-software/apheleia/pull/406
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes
