@@ -23,6 +23,8 @@ The format is based on [Keep a Changelog].
   formatter ([#400]).
 * [pkl](https://pkl-lang.org/main/current/pkl-cli/) has been added as a Pkl
   formatter. It is used by default in `pkl-mode` ([#403]).
+* [yq](https://mikefarah.gitbook.io/yq) has been added as a TOML formatter.
+  It is not used by default ([#405]).
 
 ### Enhancements
 
@@ -34,6 +36,7 @@ The format is based on [Keep a Changelog].
 [#398]: https://github.com/radian-software/apheleia/pull/398
 [#402]: https://github.com/radian-software/apheleia/pull/402
 [#403]: https://github.com/radian-software/apheleia/pull/403
+[#405]: https://github.com/radian-software/apheleia/pull/405
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes

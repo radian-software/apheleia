@@ -242,6 +242,8 @@
                 (apheleia-formatters-indent nil "--indent")))
     (yq-properties . ("yq" "--prettyPrint" "--no-colors"
                       "--input-format" "props" "--output-format" "props"))
+    (yq-toml . ("yq" "--prettyPrint" "--no-colors"
+                "--input-format" "toml" "--output-format" "toml"))
     (yq-tsv . ("yq" "--prettyPrint" "--no-colors"
                "--input-format" "tsv" "--output-format" "tsv"))
     (yq-xml . ("yq" "--prettyPrint" "--no-colors"
