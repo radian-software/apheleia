@@ -423,6 +423,7 @@ rather than using this system."
     (TeX-latex-mode . latexindent)
     (TeX-mode . latexindent)
     (toml-ts-mode . taplo)
+    (tsv-mode . yq-tsv)
     (tsx-ts-mode . prettier-typescript)
     (tuareg-mode . ocamlformat)
     (typescript-mode . prettier-typescript)
