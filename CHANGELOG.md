@@ -25,6 +25,8 @@ The format is based on [Keep a Changelog].
   formatter. It is used by default in `pkl-mode` ([#403]).
 * [yq](https://mikefarah.gitbook.io/yq) has been added as a TOML formatter.
   It is not used by default ([#405]).
+* [mbake](https://github.com/EbodShojaei/bake) has been added as a Makefile
+  formatter ([#408]).
 
 ### Enhancements
 
@@ -42,6 +44,7 @@ The format is based on [Keep a Changelog].
 [#405]: https://github.com/radian-software/apheleia/pull/405
 [#406]: https://github.com/radian-software/apheleia/pull/406
 [#407]: https://github.com/radian-software/apheleia/pull/407
+[#408]: https://github.com/radian-software/apheleia/pull/408
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes
