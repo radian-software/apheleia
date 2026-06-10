@@ -345,7 +345,7 @@ rather than using this system."
     (cmake-mode . cmake-format)
     (cmake-ts-mode . cmake-format)
     (common-lisp-mode . lisp-indent)
-    (conf-toml-mode . dprint)
+    (conf-toml-mode . taplo)
     (cperl-mode . perltidy)
     (crystal-mode . crystal-tool-format)
     (csharp-mode . csharpier)
