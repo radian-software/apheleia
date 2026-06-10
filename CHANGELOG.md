@@ -33,6 +33,8 @@ The format is based on [Keep a Changelog].
 * Recognize csharp, dockerfile and php ts-modes, apply same settings as
   for the corresponding non-ts modes ([#396]).
 * [yq](https://mikefarah.gitbook.io/yq) is now used in `tsv-mode` ([#406]).
+* [taplo](https://taplo.tamasfe.dev/) is now used by default for TOML
+  also in `conf-toml-mode` ([#407]).
 
 [#396]: https://github.com/radian-software/apheleia/pull/396
 [#397]: https://github.com/radian-software/apheleia/pull/397
@@ -41,6 +43,7 @@ The format is based on [Keep a Changelog].
 [#403]: https://github.com/radian-software/apheleia/pull/403
 [#405]: https://github.com/radian-software/apheleia/pull/405
 [#406]: https://github.com/radian-software/apheleia/pull/406
+[#407]: https://github.com/radian-software/apheleia/pull/407
 [#408]: https://github.com/radian-software/apheleia/pull/408
 
 ## 4.5.0 (released 2026-05-25)
