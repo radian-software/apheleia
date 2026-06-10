@@ -117,6 +117,7 @@
     (latexindent . ("latexindent" "--logfile=/dev/null"))
     (mago . ("mago" "--no-version-check"
 	     "format" "--stdin-input" "--stdin-filepath" filepath))
+    (mbake . ("mbake" "format" "--stdin"))
     (meson . ("meson" "format"
 	      "--editor-config" "--source-file-path" filepath "-"))
     (mix-format . ("apheleia-from-project-root"
