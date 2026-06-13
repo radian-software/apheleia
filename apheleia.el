@@ -217,6 +217,7 @@ this is either an error or nil."
   :type 'hook
   :group 'apheleia)
 
+;;;###autoload
 (defcustom apheleia-inhibit-functions nil
   "List of functions that prevent Apheleia from turning on automatically.
 If one of these returns non-nil then `apheleia-mode' is not

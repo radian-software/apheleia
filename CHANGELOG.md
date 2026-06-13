@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog].
   configuration, because shfmt has a behavior where doing so
   completely erases all .editorconfig configuration, which is
   relatively undesirable ([#402]).
+* `apheleia-inhibit-functions` is now autoloaded, so you can customize
+  it prior to loading Apheleia.
 
 ### New formatters
 
