@@ -38,6 +38,12 @@ The format is based on [Keep a Changelog].
 * [taplo](https://taplo.tamasfe.dev/) is now used by default for TOML
   also in `conf-toml-mode` ([#407]).
 
+### Bugs fixed
+
+* Apheleia no longer scrolls the window after formatting when a
+  line-neutral change only moves point to the beginning of its line
+  ([#409]).
+
 [#396]: https://github.com/radian-software/apheleia/pull/396
 [#397]: https://github.com/radian-software/apheleia/pull/397
 [#398]: https://github.com/radian-software/apheleia/pull/398
@@ -47,6 +53,7 @@ The format is based on [Keep a Changelog].
 [#406]: https://github.com/radian-software/apheleia/pull/406
 [#407]: https://github.com/radian-software/apheleia/pull/407
 [#408]: https://github.com/radian-software/apheleia/pull/408
+[#409]: https://github.com/radian-software/apheleia/pull/409
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes
