@@ -85,7 +85,10 @@ contains the patch."
       (dolist (w (get-buffer-window-list nil nil t))
         (push
          `(:type window-point :pos ,(window-point w) :window ,w) pos-list)
-        (push (cons w (count-lines (window-start w) (point)))
+        (push (list w (count-lines (window-start w) (point))
+                    (- (line-number-at-pos (point))
+                       (line-number-at-pos (window-start w)))
+                    (copy-marker (window-start w)))
               window-line-list)))
     (with-current-buffer patch-buffer
       (apheleia--map-rcs-patch
@@ -194,16 +197,23 @@ contains the patch."
     ;; Restore the scroll position of each window displaying the
     ;; buffer.
     (dolist (entry window-line-list)
-      (cl-destructuring-bind (w . old-window-line) entry
+      (cl-destructuring-bind
+          (w old-window-line old-window-line-distance old-window-start) entry
         (let ((new-window-line
-               (count-lines (window-start w) (point))))
+               (count-lines (window-start w) (point)))
+              (new-window-line-distance
+               (- (line-number-at-pos (point))
+                  (line-number-at-pos old-window-start))))
           (with-selected-window w
             ;; Sometimes if the text is less than a buffer long, and
             ;; we do a deletion, it might not be possible to keep the
             ;; vertical position of point the same by scrolling.
             ;; That's okay. We just go as far as we can.
             (ignore-errors
-              (scroll-down (- old-window-line new-window-line)))))))))
+              (if (= old-window-line-distance new-window-line-distance)
+                  (set-window-start w old-window-start)
+                (scroll-down (- old-window-line new-window-line)))))
+          (set-marker old-window-start nil))))))
 
 (provide 'apheleia-rcs)
 
