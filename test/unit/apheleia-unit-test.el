@@ -145,3 +145,31 @@
      ('html-mode "ok.blah" '(fmt-blah))
      ('html-mode "ok.blah.foobar" '(fmt-foobar))
      ('html-mode "ok.blah.foobaz" '(fmt-blah)))))
+
+(describe "apheleia--apply-rcs-patch"
+  (it "does not scroll when point moves to beginning of line"
+    (let ((content-buffer (generate-new-buffer " *apheleia-test-content*"))
+          (patch-buffer (generate-new-buffer " *apheleia-test-patch*")))
+      (unwind-protect
+          (progn
+            (with-current-buffer content-buffer
+              (dotimes (i 50)
+                (if (= i 20)
+                    (insert (format "    line %02d\n" i))
+                  (insert (format "line %02d\n" i))))
+              (switch-to-buffer content-buffer)
+              (goto-char (point-min))
+              (forward-line 10)
+              (set-window-start (selected-window) (point))
+              (goto-char (point-min))
+              (forward-line 20)
+              (forward-char 4))
+            (with-current-buffer patch-buffer
+              (insert "d21 1\na21 1\nline 20\n"))
+            (with-current-buffer content-buffer
+              (apheleia--apply-rcs-patch content-buffer patch-buffer)
+              (expect (line-number-at-pos (window-start)) :to-be 11)
+              (expect (line-number-at-pos) :to-be 21)
+              (expect (current-column) :to-be 0)))
+        (kill-buffer content-buffer)
+        (kill-buffer patch-buffer)))))
