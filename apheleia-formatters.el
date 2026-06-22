@@ -21,8 +21,10 @@
   (require 'rx))
 
 (defcustom apheleia-formatters
-  '((astyle . ("astyle" (apheleia-formatters-locate-file
-                         "--options" ".astylerc")))
+  '((astyle . ("astyle"
+               (mapconcat 'identity
+                          (apheleia-formatters-locate-file
+                           "--options=" ".astylerc"))))
     (asmfmt . ("asmfmt"))
     (bean-format . ("bean-format" input))
     (beautysh . ("beautysh"
