@@ -29,6 +29,9 @@ The format is based on [Keep a Changelog].
   It is not used by default ([#405]).
 * [mbake](https://github.com/EbodShojaei/bake) has been added as a Makefile
   formatter ([#408]).
+* [dockerfmt](https://github.com/reteps/dockerfmt) has been added as a
+  Dockerfile formatter. It is not enabled by default; `dprint` remains the
+  default for Dockerfiles ([#410]).
 
 ### Enhancements
 
@@ -54,6 +57,7 @@ The format is based on [Keep a Changelog].
 [#407]: https://github.com/radian-software/apheleia/pull/407
 [#408]: https://github.com/radian-software/apheleia/pull/408
 [#409]: https://github.com/radian-software/apheleia/pull/409
+[#410]: https://github.com/radian-software/apheleia/pull/410
 
 ## 4.5.0 (released 2026-05-25)
 ### Changes
