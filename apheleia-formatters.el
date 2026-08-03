@@ -79,6 +79,7 @@
 		     (apheleia-formatters-fill-column "--line-width")))
     (dhall-format . ("dhall" "format"))
     (docformatter . ("apheleia-docformatter" inplace))
+    (dockerfmt . ("dockerfmt"))
     (dprint . ("dprint" "fmt" "--stdin" filepath))
     (elm-format . ("elm-format" "--yes" "--stdin"))
     (fish-indent . ("fish_indent"))
