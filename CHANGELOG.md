@@ -32,6 +32,8 @@ The format is based on [Keep a Changelog].
 * [dockerfmt](https://github.com/reteps/dockerfmt) has been added as a
   Dockerfile formatter. It is not enabled by default; `dprint` remains the
   default for Dockerfiles ([#410]).
+* [slint-lsp format](https://docs.slint.dev/latest/docs/slint/guide/tooling/manual-setup/#formatting-slint-files)
+  has been added as a Slint formatter ([#411]).
 
 ### Enhancements
 
