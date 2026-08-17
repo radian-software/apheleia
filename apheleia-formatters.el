@@ -220,6 +220,7 @@
                    "--fix" "--fix-only"
                    "--stdin-filename" filepath
                    "-"))
+    (slint . ("slint-lsp" "format" filepath))
     (snakefmt . ("snakefmt"
                  (apheleia-formatters-fill-column "--line-length")
                  "-"))
