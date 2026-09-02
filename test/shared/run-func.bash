@@ -14,4 +14,5 @@ exec emacs --batch -L . "$@"                  \
      --eval "(setq debug-on-error t)"         \
      --eval "(setq backtrace-line-length 0)"  \
      -f     "${func}"                         \
-     2>&1 | sed -uE 's/^(.{320}).+$/\1...[truncated]/'
+     2> >(sed -uE 's/^(.{320}).+$/\1...[truncated]/' >&2) \
+     | sed -uE 's/^(.{320}).+$/\1...[truncated]/'

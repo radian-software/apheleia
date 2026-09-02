@@ -70,7 +70,8 @@ already in memory on the current branch."
        "--batch" "-L" old-apheleia
        "--eval" "(require 'apheleia)"
        "--eval" "(prin1 apheleia-formatters)")
-      (goto-char (point-min))
+      (goto-char (point-max))
+      (backward-sexp)
       (read (current-buffer)))))
 
 (defun apheleia-ft--files-changed-since (ref)

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog].
 ## Unreleased
 ### Changes
 
+* The Biome formatter now applies configured assist actions without
+  applying lint fixes.
 * Apheleia no longer passes config options to shfmt based on Emacs
   configuration, because shfmt has a behavior where doing so
   completely erases all .editorconfig configuration, which is

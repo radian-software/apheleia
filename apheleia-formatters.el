@@ -43,7 +43,8 @@
                     ((eq major-mode 'bazel-build-mode) "build")
                     (t "auto")
                     )))
-    (biome . ("apheleia-npx" "biome" "format" "--stdin-file-path" filepath))
+    (biome . ("apheleia-npx" "biome" "check" "--write"
+              "--linter-enabled=false" "--stdin-file-path" filepath))
     (caddyfmt . ("caddy" "fmt" "-"))
     (clang-format . ("clang-format"
                      "-assume-filename"
