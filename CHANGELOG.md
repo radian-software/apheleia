@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
-## Unreleased
+## 4.6.0 (released 2026-09-02)
 ### Changes
 
 * The Biome formatter now applies configured assist actions without
