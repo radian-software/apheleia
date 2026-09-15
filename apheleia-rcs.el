@@ -33,7 +33,7 @@ for documentation on the RCS patch format."
       (unless (looking-at "$\\|\\([ad]\\)\\([0-9]+\\) \\([0-9]+\\)")
         (error "Malformed RCS patch: %S" (point)))
       (forward-line)
-      (when-let ((command (match-string 1)))
+      (when-let* ((command (match-string 1)))
         (let ((start (string-to-number (match-string 2)))
               (lines (string-to-number (match-string 3))))
           (pcase command

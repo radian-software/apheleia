@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
+## Unreleased
+### Changes
+
+* `when-let` compatibility warning fixed, replacing them with `when-let*`
+  this also happened to change `if-let` as well (replacing them with
+  `if-let*`).
+
 ## 4.6.0 (released 2026-09-02)
 ### Changes
 
