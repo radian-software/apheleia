@@ -363,7 +363,7 @@ returned context."
                              "samplecode" formatter))
                        "/")
                "" in-file)))
-        (when-let ((buf (get-file-buffer in-temp-file)))
+        (when-let* ((buf (get-file-buffer in-temp-file)))
           (kill-buffer buf))
         (with-current-buffer (find-file-noselect in-temp-file)
           (setq stdout-buffer (get-buffer-create

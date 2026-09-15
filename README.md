@@ -109,7 +109,7 @@ variables:
       ```elisp
       (push '(shfmt . ("beautysh"
                        "-filename" filepath
-                       (when-let ((indent (bound-and-true-p sh-basic-offset)))
+                       (when-let* ((indent (bound-and-true-p sh-basic-offset)))
                          (list "--indent-size" (number-to-string indent)))
                        (when indent-tabs-mode "--tab")
                        "-"))

@@ -110,7 +110,7 @@ a synchronous nonlocal exit) with a plist. Callback function must
 accept unknown keywords. At present only `:error' is included,
 this is either an error or nil."
   (interactive (progn
-                 (when-let ((err (apheleia--disallowed-p)))
+                 (when-let* ((err (apheleia--disallowed-p)))
                    (user-error err))
                  (list (apheleia--get-formatters
                         (if current-prefix-arg
@@ -141,7 +141,7 @@ this is either an error or nil."
       ;; Fail silently if disallowed, since we don't want to throw an
       ;; error on `post-command-hook'. We already took care of throwing
       ;; `user-error' on interactive usage above.
-      (if-let ((err (apheleia--disallowed-p)))
+      (if-let* ((err (apheleia--disallowed-p)))
           (progn
             (apheleia--log
              'format-buffer
@@ -246,7 +246,7 @@ operating, to prevent an infinite loop.")
   "Run code formatter for current buffer if any configured, then save."
   (unless apheleia-format-after-save-in-progress
     (when (and apheleia-mode (not (buffer-narrowed-p)))
-      (when-let ((formatters (apheleia--get-formatters)))
+      (when-let* ((formatters (apheleia--get-formatters)))
         (apheleia-format-buffer
          formatters
          (lambda ()
