@@ -4,11 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
-### Changes
+### Compatibility
 
-* `when-let` compatibility warning fixed, replacing them with `when-let*`
-  this also happened to change `if-let` as well (replacing them with
-  `if-let*`).
+* Fixed byte-compilation warnings in Emacs 31 (usage of `if-let` and
+  `when-let`). See [#413].
+
+[#414]: https://github.com/radian-software/apheleia/pull/414
 
 ## 4.6.0 (released 2026-09-02)
 ### Changes
