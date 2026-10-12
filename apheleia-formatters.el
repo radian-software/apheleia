@@ -234,6 +234,7 @@
     (rustfmt . ("rustfmt" "--quiet" "--emit" "stdout"))
     (taplo . ("taplo" "format" "--colors" "never" "-"))
     (terraform . ("terraform" "fmt" "-"))
+    (tombi . ("tombi" "format" "-"))
     (treefmt . ("treefmt" "--stdin" filepath))
     (typstyle . ("typstyle"))
     (vfmt . ("v" "fmt"))
