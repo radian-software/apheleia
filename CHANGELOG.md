@@ -11,6 +11,11 @@ The format is based on [Keep a Changelog].
 
 [#414]: https://github.com/radian-software/apheleia/pull/414
 
+### New Formatters
+
+* [tombi](https://tombi-toml.github.io/tombi) has been added as a TOML formatter.
+  It is not enabled by default; `taplo` remains the default for TOML modes.
+
 ## 4.6.0 (released 2026-09-02)
 ### Changes
 
