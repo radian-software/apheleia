@@ -23,6 +23,7 @@ git
 jq
 make
 nodejs
+python3-pip
 sudo
 unzip
 wget

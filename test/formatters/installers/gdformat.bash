@@ -1,2 +1,1 @@
-apt-get install -y python3-pip
-pip3 install "gdtoolkit==4.*"
+pip3 install --break-system-packages "gdtoolkit==4.*"
