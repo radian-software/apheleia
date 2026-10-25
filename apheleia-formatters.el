@@ -35,7 +35,6 @@
               (apheleia-formatters-fill-column "--line-length")
               "--stdin-filename" filepath
               "-"))
-    (brittany . ("brittany"))
     (buildifier . ("buildifier" "-type"
                    (cond
                     ((eq major-mode 'bazel-workspace-mode) "workspace")
