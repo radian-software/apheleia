@@ -139,9 +139,10 @@ main."
   "Print to stdout a comma-delimited list of formatters changed in this PR."
   (princ (concat
           (string-join
-           (cl-remove-duplicates
-            (apheleia-ft--get-formatters-for-pull-request)
-            :test 'string=)
+           (sort
+            (cl-remove-duplicates
+             (apheleia-ft--get-formatters-for-pull-request)
+             :test 'string=))
            ",")
           "\n")))
 

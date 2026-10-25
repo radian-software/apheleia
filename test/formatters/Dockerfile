@@ -1,9 +1,10 @@
-# Ubuntu 22.04 LTS supported until April 2027
-FROM ubuntu:22.04 AS common
+# Ubuntu 26.04 LTS supported until April 2031
+FROM ubuntu:26.04 AS common
 
 WORKDIR /build
 COPY install-common.bash /build/
 RUN ./install-common.bash
+WORKDIR /src
 
 # Add an intermediate tag so that it is possible to execute debugging
 # code before formatter installation. This is necessary because with
@@ -11,8 +12,9 @@ RUN ./install-common.bash
 # intermediate image layers by default anymore.
 FROM common
 ARG FORMATTERS
+
+WORKDIR /build
 COPY install-formatters.bash /build/
 COPY installers /build/installers/
 RUN --mount=type=secret,id=GITHUB_TOKEN,env=GITHUB_TOKEN ./install-formatters.bash
-
 WORKDIR /src

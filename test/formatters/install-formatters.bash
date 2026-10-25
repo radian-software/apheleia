@@ -5,7 +5,7 @@ set -euo pipefail
 if [[ -n "${FORMATTERS:-}" ]]; then
     IFS=' ,' read -ra FORMATTERS <<< "${FORMATTERS}"
 else
-    readarray -t FORMATTERS < <(ls installers | grep '\.bash$' | sed 's/\.bash$//')
+    readarray -t FORMATTERS < <(ls installers | sort | grep '\.bash$' | sed 's/\.bash$//')
 fi
 
 if (( "${#FORMATTERS[@]}" > 0 )); then

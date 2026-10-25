@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
+### Changed formatters
+
+* Robotidy is replaced with Robocop because upstream says the former
+  is deprecated and users should migrate to the latter.
+
+### Removed formatters
+
+* Brittany is removed since it has been unmaintained for many years
+  now, and can no longer be compiled or installed on modern systems.
+  Consider using Ormolu or Fourmolu instead.
+
 ### Compatibility
 
 * Fixed byte-compilation warnings in Emacs 31 (usage of `if-let` and

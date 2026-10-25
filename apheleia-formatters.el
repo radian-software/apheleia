@@ -35,7 +35,6 @@
               (apheleia-formatters-fill-column "--line-length")
               "--stdin-filename" filepath
               "-"))
-    (brittany . ("brittany"))
     (buildifier . ("buildifier" "-type"
                    (cond
                     ((eq major-mode 'bazel-workspace-mode) "workspace")
@@ -194,9 +193,10 @@
         (apheleia-formatters-js-indent "--use-tabs" "--tab-width")))
     (purs-tidy . ("apheleia-npx" "purs-tidy" "format"))
     (pyang . ("pyang" "--ignore-errors" "-f" "yang"))
-    (robotidy . ("robotidy" "--no-color" "-"
-                 (apheleia-formatters-indent nil "--indent")
-                 (apheleia-formatters-fill-column "--line-length")))
+    (robocop . ("robocop" "format"
+                (apheleia-formatters-indent nil "--indent")
+                (apheleia-formatters-fill-column "--line-length")
+                inplace))
     (r-styler . ("R" "--no-echo" "--no-save" "--no-restore" "-e"
                  "styler::style_text(readLines(file('stdin')))"))
     (python3-json
@@ -414,7 +414,7 @@ rather than using this system."
     (purescript-mode . purs-tidy)
     (python-mode . black)
     (python-ts-mode . black)
-    (robot-mode . robotidy)
+    (robot-mode . robocop)
     (ruby-mode . prettier-ruby)
     (ruby-ts-mode . prettier-ruby)
     (rustic-mode . rustfmt)

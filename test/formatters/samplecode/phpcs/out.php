@@ -1,5 +1,5 @@
 <?php
 
-if(true) {
+if (true) {
     echo 'Hello World';
 }

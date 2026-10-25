@@ -1,2 +1,1 @@
-apt-get install -y python3-pip
-pip install sqlfluff
+pip3 install --break-system-packages sqlfluff
