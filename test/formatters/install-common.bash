@@ -18,6 +18,7 @@ apt-get update
 packages="
 
 bsdmainutils
+bzip2
 emacs-nox
 git
 jq

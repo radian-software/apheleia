@@ -1,6 +1,6 @@
 ver="$(latest_release vlang/v)"
 
-apt-get install -y gcc libx11-dev
+apt-get install -y gcc libx11-dev libsqlite3-dev
 
 wget -nv "https://github.com/vlang/v/releases/download/${ver}/v_linux.zip" -O v.zip
 unzip -q v.zip
