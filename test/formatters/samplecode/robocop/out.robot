@@ -8,17 +8,19 @@ Test Setup    Setup Keyword
 
 
 *** Variables ***
-${var}=             2
-${bit_longer}       10
-${var2}             a
-...                 b
+${var}=          2
+${bit_longer}    10
+${var2}          a
+...              b
 
 
 *** Test Cases ***
 Test1
     Keyword
     FOR    ${var}    IN RANGE    10
-        IF    ${var}>5    Other Keyword
+        Run Keyword If    ${var}>5    Other Keyword
     END
     [Teardown]    Teardown Keyword
 
+
+*** Keywords ***
