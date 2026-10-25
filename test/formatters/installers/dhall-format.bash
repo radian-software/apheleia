@@ -1,4 +1,5 @@
-apt-get install -y ghc libghc-zlib-dev cabal-install
-cabal v2-update
-cabal v2-install dhall --reorder-goals
-cp "${HOME}/.cabal/bin/dhall" /usr/local/bin
+ver="$(latest_release dhall-lang/dhall-haskell)"
+
+wget "https://github.com/dhall-lang/dhall-haskell/releases/download/${ver}/dhall-${ver}-x86_64-linux.tar.bz2"
+tar -xf dhall*.tar.bz2
+cp bin/dhall /usr/local/bin/
