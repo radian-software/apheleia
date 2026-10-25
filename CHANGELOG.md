@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog].
 
 ## Unreleased
-### Removed
+### Changed formatters
+
+* Robotidy is replaced with Robocop because upstream says the former
+  is deprecated and users should migrate to the latter.
+
+### Removed formatters
 
 * Brittany is removed since it has been unmaintained for many years
   now, and can no longer be compiled or installed on modern systems.
