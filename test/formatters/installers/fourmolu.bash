@@ -1,4 +1,5 @@
-apt-get install -y ghc cabal-install
-cabal v2-update
-cabal v2-install fourmolu --reorder-goals
-cp "${HOME}/.cabal/bin/fourmolu" /usr/local/bin
+ver="$(latest_release fourmolu/fourmolu | sed 's/^v//')"
+
+wget "https://github.com/fourmolu/fourmolu/releases/download/v${ver}/fourmolu-${ver}-linux-x86_64.zip"
+unzip fourmolu*.zip
+cp fourmolu*/fourmolu /usr/local/bin/
