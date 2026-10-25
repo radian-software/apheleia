@@ -1,5 +1,5 @@
-# Ubuntu 22.04 LTS supported until April 2027
-FROM ubuntu:22.04 AS common
+# Ubuntu 26.04 LTS supported until April 2031
+FROM ubuntu:26.04 AS common
 
 WORKDIR /build
 COPY install-common.bash /build/
