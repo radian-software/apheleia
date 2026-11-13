@@ -2,10 +2,10 @@ name: Changed formatters
 on: [pull_request]
 jobs:
   formatters:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout pull request
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           # No shallow clone, we want to be able to compare PR branch
